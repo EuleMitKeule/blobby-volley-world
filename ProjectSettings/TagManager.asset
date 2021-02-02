@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - PlayerGround
+  - Wall
+  - Net
+  - Ball
+  - GameMaster
+  - Player1
+  - Player2
+  - NetEdge
+  - WallCollider
+  - GroundCollider
+  - Background
+  - UI
+  - Ground1
+  - Ground2
+  - SoundMaster
+  - UIMaster
+  - AIPlayer
+  - P1Score
+  - P2Score
+  - Timer
+  - PanelGameOver
+  - Foreground
+  - PlayerGraphics
+  - BallShadow
+  - BallArrow
+  - Bot
+  - Arrow
+  - InputMaster
+  - ServerPlayer
+  - Ground
+  - colored
+  - label_time
+  - colorable
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - BallActive
+  - BallInactive
+  - Player
+  - Map
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 1723454335
+    locked: 0
+  - name: Menu
+    uniqueID: 2631974009
+    locked: 0
+  - name: Ball
+    uniqueID: 1696372863
+    locked: 0
+  - name: Player
+    uniqueID: 2759933117
+    locked: 0
+  - name: Foreground
+    uniqueID: 1719117443
+    locked: 0
+  - name: Blur
+    uniqueID: 2527532717
+    locked: 0
+  - name: Overlay
+    uniqueID: 2622270661
+    locked: 0
+  - name: black
+    uniqueID: 3389568435
+    locked: 0

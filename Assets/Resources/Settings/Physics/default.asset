@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bd59a30ef8c9c744babaf8935e2b684, type: 3}
+  m_Name: default
+  m_EditorClassIdentifier: 
+  ballGravity: 40
+  ballMaxVelocity: 40
+  ballShotVelocity: 35
+  ballFriction: 4
+  ballSpin: 900
+  playerRunVelocity: 18
+  playerJumpVelocity: 55
+  playerJumpDrift: 190
+  playerGravity: 340
+  playerMinCharge: 0.85
+  playerMaxCharge: 1.85
+  playerChargeIncrease: 0.14
+  playerChargeTime: 0.04
