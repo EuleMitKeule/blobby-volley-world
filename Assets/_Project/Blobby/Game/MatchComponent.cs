@@ -12,12 +12,12 @@ using UnityEngine;
 
 namespace Blobby.Game
 {
-    public abstract class Match : IDisposable
+    public abstract class MatchComponent : IDisposable
     {
         public MatchData MatchData { get; private set; }
         public PhysicsSettings PhysicsSettings { get; private set; }
 
-        public Ball Ball { get; protected set; }
+        public BallComponent BallComponent { get; protected set; }
         public List<Player> Players { get; protected set; } = new List<Player>();
 
         public MatchTimer MatchTimer { get; protected set; }
@@ -60,7 +60,7 @@ namespace Blobby.Game
         public event Action<Side, int, int, int> Over;
         public event Action<int, bool> Alpha;
 
-        public Match(MatchData matchData)
+        public MatchComponent(MatchData matchData)
         {
             MatchTimer = new MatchTimer();
             MatchData = matchData;
@@ -90,7 +90,7 @@ namespace Blobby.Game
             {
                 player?.FixedUpdate();
             }
-            Ball?.FixedUpdate();
+            BallComponent?.FixedUpdate();
         }
 
         public void SetState(IMatchState newState)
@@ -174,7 +174,7 @@ namespace Blobby.Game
             //MainThreadManager.Run(() =>
             //{
                 SetState(ReadyState);
-                Ball.SetState(Ball.Ready);
+                BallComponent.SetState(BallComponent.Ready);
             //});
         }
 
@@ -209,13 +209,13 @@ namespace Blobby.Game
         protected virtual void OnStop()
         {
             SetState(StoppedState);
-            Ball.SetState(Ball.Stopped);
+            BallComponent.SetState(BallComponent.Stopped);
         }
 
         protected virtual void OnOver(Side winner, int scoreLeft, int scoreRight, int time)
         {
             SetState(OverState);
-            Ball?.SetState(Ball.Stopped);
+            BallComponent?.SetState(BallComponent.Stopped);
         }
 
         protected virtual void OnAlpha(int playerNum, bool value) { }
@@ -249,11 +249,11 @@ namespace Blobby.Game
 
         protected void SubscribeBallEvents()
         {
-            Ball.PlayerHit += OnPlayer;
-            Ball.GroundHit += OnGround;
-            Ball.WallHit += OnWall;
-            Ball.NetHit += OnNet;
-            Ball.SideChanged += OnSideChanged;
+            BallComponent.PlayerHit += OnPlayer;
+            BallComponent.GroundHit += OnGround;
+            BallComponent.WallHit += OnWall;
+            BallComponent.NetHit += OnNet;
+            BallComponent.SideChanged += OnSideChanged;
         }
 
         protected void SubscribeTimerEvents()
@@ -269,7 +269,7 @@ namespace Blobby.Game
         {
             TimeComponent.FixedUpdateTicked -= FixedUpdate;
 
-            Ball?.Dispose();
+            BallComponent?.Dispose();
             foreach (var player in Players) player?.Dispose();
         }
 

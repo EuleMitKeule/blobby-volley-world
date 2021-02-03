@@ -7,7 +7,7 @@ namespace Blobby.Game.Entities
     {
         static GameObject Prefab => PrefabHelper.LocalPlayer;
 
-        public LocalPlayer(LocalMatch match, PlayerData playerData) : base(match, playerData, Prefab)
+        public LocalPlayer(LocalMatchComponent matchComponent, PlayerData playerData) : base(matchComponent, playerData, Prefab)
         {
             SubscribeControls();
         }

@@ -6,15 +6,15 @@ namespace Blobby.Game.Entities
     public class SpringJumpStrategy : IJumpStrategy
     {
         Player _player;
-        Match _match;
+        MatchComponent _matchComponent;
 
         ChargeTimer _chargeTimer;
         float _jumpCharge;
 
-        public SpringJumpStrategy(Player player, Match match)
+        public SpringJumpStrategy(Player player, MatchComponent matchComponent)
         {
             _player = player;
-            _match = match;
+            _matchComponent = matchComponent;
             _chargeTimer = new ChargeTimer();
 
             _chargeTimer.ChargeTimerTicked += OnChargeTimerTicked;
@@ -33,9 +33,9 @@ namespace Blobby.Game.Entities
             if (_player.IsGrounded)
             {
                 _player.IsGrounded = false;
-                _player.Velocity = new Vector2(_player.Velocity.x, _jumpCharge * _match.PhysicsSettings.playerJumpVelocity);
+                _player.Velocity = new Vector2(_player.Velocity.x, _jumpCharge * _matchComponent.PhysicsSettings.playerJumpVelocity);
                 _chargeTimer.Stop();
-                _jumpCharge = _match.PhysicsSettings.playerMinCharge;
+                _jumpCharge = _matchComponent.PhysicsSettings.playerMinCharge;
             }
         }
 
@@ -50,12 +50,12 @@ namespace Blobby.Game.Entities
 
         void OnChargeTimerTicked()
         {
-            if (CanCharge()) _jumpCharge += _match.PhysicsSettings.playerChargeIncrease;
+            if (CanCharge()) _jumpCharge += _matchComponent.PhysicsSettings.playerChargeIncrease;
         }
 
         bool CanCharge()
         {
-            return _jumpCharge < _match.PhysicsSettings.playerMaxCharge;
+            return _jumpCharge < _matchComponent.PhysicsSettings.playerMaxCharge;
         }
     }
 }

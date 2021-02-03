@@ -5,12 +5,12 @@ namespace Blobby.Game.Entities
     public class StandardJumpStrategy : IJumpStrategy
     {
         Player _player;
-        Match _match;
+        MatchComponent _matchComponent;
 
-        public StandardJumpStrategy(Player player, Match match)
+        public StandardJumpStrategy(Player player, MatchComponent matchComponent)
         {
             _player = player;
-            _match = match;
+            _matchComponent = matchComponent;
         }
 
         public void OnJumpDown()
@@ -26,12 +26,12 @@ namespace Blobby.Game.Entities
         public void OnJump()
         {
             _player.IsGrounded = false;
-            _player.Velocity = new Vector2(_player.Velocity.x, _match.PhysicsSettings.playerJumpVelocity);
+            _player.Velocity = new Vector2(_player.Velocity.x, _matchComponent.PhysicsSettings.playerJumpVelocity);
         }
 
         public void OnJumpHold()
         {
-            _player.Velocity += Vector2.up * Time.fixedDeltaTime * _match.PhysicsSettings.playerJumpDrift;
+            _player.Velocity += Vector2.up * Time.fixedDeltaTime * _matchComponent.PhysicsSettings.playerJumpDrift;
         }
     }
 }

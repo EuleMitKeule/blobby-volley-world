@@ -10,12 +10,12 @@ using UnityEngine;
 
 namespace Blobby.Game
 {
-    public class OnlineMatch : Match, IMatch
+    public class OnlineMatchComponent : MatchComponent, IMatch
     {
         public event Action MatchStarted;
         public event Action MatchStopped;
 
-        public OnlineMatch(MatchData matchData) : base(matchData)
+        public OnlineMatchComponent(MatchData matchData) : base(matchData)
         {
             Time.timeScale = matchData.TimeScale;
             ServerConnection.SendMap(matchData.Map);
@@ -29,7 +29,7 @@ namespace Blobby.Game
             {
                 ServerConnection.SendSound(SoundHelper.SoundClip.Whistle);
 
-                Ball = new OnlineBall(this, MatchData);
+                BallComponent = new OnlineBallComponent(this, MatchData);
                 SubscribeBallEvents();
 
                 if (MatchData.JumpMode != JumpMode.NoJump) SetState(ReadyState);
@@ -67,8 +67,8 @@ namespace Blobby.Game
                 AutoDropTimer = new AutoDropTimer();
                 BombTimer = new BombTimer();
 
-                Ball?.Dispose();
-                Ball = new OnlineBall(this, MatchData);
+                BallComponent?.Dispose();
+                BallComponent = new OnlineBallComponent(this, MatchData);
 
                 SubscribeBallEvents();
                 SubscribeTimerEvents();
@@ -156,7 +156,7 @@ namespace Blobby.Game
         {
             await base.OnResetBallTimerStopped();
 
-            ServerConnection.SendBallPosition(Ball.Position);
+            ServerConnection.SendBallPosition(BallComponent.Position);
         }
 
         protected override void OnScore(Side winner)

@@ -10,12 +10,12 @@ namespace Blobby.Game.Entities.States
     public abstract class AiState
     {
         protected AiPlayer _aiPlayer;
-        protected Match _match;
+        protected MatchComponent MatchComponent;
 
-        public AiState(AiPlayer aiPlayer, Match match)
+        public AiState(AiPlayer aiPlayer, MatchComponent matchComponent)
         {
             _aiPlayer = aiPlayer;
-            _match = match;
+            MatchComponent = matchComponent;
         }
 
         public virtual void FixedUpdate()
@@ -25,12 +25,12 @@ namespace Blobby.Game.Entities.States
 
         public virtual void EnterState()
         {
-            _match.Ball.SideChanged += OnBallSideChanged;
+            MatchComponent.BallComponent.SideChanged += OnBallSideChanged;
         }
 
         public virtual void ExitState()
         {
-            _match.Ball.SideChanged -= OnBallSideChanged;
+            MatchComponent.BallComponent.SideChanged -= OnBallSideChanged;
         }
 
         protected virtual void OnBallSideChanged(Side side)

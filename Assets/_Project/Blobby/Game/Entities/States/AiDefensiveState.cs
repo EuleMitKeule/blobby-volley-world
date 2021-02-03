@@ -8,7 +8,7 @@ namespace Blobby.Game.Entities.States
 {
     public class AiDefensiveState : AiState
     {
-        public AiDefensiveState(AiPlayer aiPlayer, Match match) : base(aiPlayer, match)
+        public AiDefensiveState(AiPlayer aiPlayer, MatchComponent matchComponent) : base(aiPlayer, matchComponent)
         {
             
         }

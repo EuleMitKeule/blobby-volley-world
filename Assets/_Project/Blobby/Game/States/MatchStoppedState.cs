@@ -6,22 +6,22 @@ namespace Blobby.Game.States
 {
     public class MatchStoppedState : IMatchState
     {
-        Match _match;
+        MatchComponent _matchComponent;
         MatchData _matchData;
 
-        public MatchStoppedState(Match match, MatchData matchData) => (_match, _matchData) = (match, matchData);
+        public MatchStoppedState(MatchComponent matchComponent, MatchData matchData) => (_matchComponent, _matchData) = (matchComponent, matchData);
 
         public void EnterState()
         {
-            _match.MatchTimer?.Stop();
-            _match.BombTimer?.Stop();
+            _matchComponent.MatchTimer?.Stop();
+            _matchComponent.BombTimer?.Stop();
 
             var winner = Side.None;
 
             //determine winner by hit counts
-            for (int i = 0; i < _match.HitCounts.Length; i++)
+            for (int i = 0; i < _matchComponent.HitCounts.Length; i++)
             {
-                if (_match.HitCounts[i] > _match.MatchData.AllowedHits[i])
+                if (_matchComponent.HitCounts[i] > _matchComponent.MatchData.AllowedHits[i])
                 {
                     winner = i % 2 == 0 ? Side.Right : Side.Left;
                     break;
@@ -31,56 +31,37 @@ namespace Blobby.Game.States
             //determine winner by ground
             if (winner == Side.None)
             {
-                winner = _match.Ball.Position.x > 0f
+                winner = _matchComponent.BallComponent.Position.x > 0f
                     ? Side.Left : Side.Right;
             }
 
-            _match.HitCounts = new int[6];
+            _matchComponent.HitCounts = new int[6];
 
             //double mode alpha and side switch
-            if (_match.Players.Count == 4)
+            if (_matchComponent.Players.Count == 4)
             {
-                if (winner != _match.LastWinner && _match.LastWinner != Side.None)
+                if (winner != _matchComponent.LastWinner && _matchComponent.LastWinner != Side.None)
                 {
-                    if (winner == Side.Left) _match.LeftSwitched = !_match.LeftSwitched;
-                    else _match.RightSwitched = !_match.RightSwitched;
-
-                    // if (winner == Side.Left)
-                    // {
-                    //     _match.Players[0].Position = _matchData.SpawnPoints[_match.LeftSwitched ? 2 : 0];
-                    //     _match.Players[0].LeftLimit = _matchData.LeftLimits[_match.LeftSwitched ? 2 : 0];
-                    //     _match.Players[0].RightLimit = _matchData.RightLimits[_match.LeftSwitched ? 2 : 0];
-                    //     _match.Players[2].Position = _matchData.SpawnPoints[_match.LeftSwitched ? 0 : 2];
-                    //     _match.Players[2].LeftLimit = _matchData.LeftLimits[_match.LeftSwitched ? 0 : 2];
-                    //     _match.Players[2].RightLimit = _matchData.RightLimits[_match.LeftSwitched ? 0 : 2];
-                    // }
-                    // else
-                    // {
-                    //     _match.Players[1].Position = _matchData.SpawnPoints[_match.RightSwitched ? 3 : 1];
-                    //     _match.Players[1].LeftLimit = _matchData.LeftLimits[_match.RightSwitched ? 3 : 1];
-                    //     _match.Players[1].RightLimit = _matchData.RightLimits[_match.RightSwitched ? 3 : 1];
-                    //     _match.Players[3].Position = _matchData.SpawnPoints[_match.RightSwitched ? 1 : 3];
-                    //     _match.Players[3].LeftLimit = _matchData.LeftLimits[_match.RightSwitched ? 1 : 3];
-                    //     _match.Players[3].RightLimit = _matchData.RightLimits[_match.RightSwitched ? 1 : 3];
-                    // }
+                    if (winner == Side.Left) _matchComponent.LeftSwitched = !_matchComponent.LeftSwitched;
+                    else _matchComponent.RightSwitched = !_matchComponent.RightSwitched;
                 }
 
-                int notGivingPlayerNum = winner == Side.Left ? (_match.LeftSwitched ? 0 : 2) : (_match.RightSwitched ? 1 : 3);
-                _match.HitCounts[notGivingPlayerNum] = 1;
+                int notGivingPlayerNum = winner == Side.Left ? (_matchComponent.LeftSwitched ? 0 : 2) : (_matchComponent.RightSwitched ? 1 : 3);
+                _matchComponent.HitCounts[notGivingPlayerNum] = 1;
 
-                for (int i = 0; i < 4; i++) _match.InvokeAlpha(i, false);
+                for (int i = 0; i < 4; i++) _matchComponent.InvokeAlpha(i, false);
 
-                _match.InvokeAlpha(notGivingPlayerNum, true);
+                _matchComponent.InvokeAlpha(notGivingPlayerNum, true);
             }
 
-            _match.InvokeScore(winner);
+            _matchComponent.InvokeScore(winner);
 
-            if (_match.ScoreLeft >= _matchData.WinningScore) _match.InvokeOver(Side.Left);
-            else if (_match.ScoreRight >= _matchData.WinningScore) _match.InvokeOver(Side.Right);
+            if (_matchComponent.ScoreLeft >= _matchData.WinningScore) _matchComponent.InvokeOver(Side.Left);
+            else if (_matchComponent.ScoreRight >= _matchData.WinningScore) _matchComponent.InvokeOver(Side.Right);
             else
             {
-                _match.ResetBallTimer?.Start();
-                if (_match.MatchData.JumpMode == JumpMode.NoJump) _match.AutoDropTimer?.Start();
+                _matchComponent.ResetBallTimer?.Start();
+                if (_matchComponent.MatchData.JumpMode == JumpMode.NoJump) _matchComponent.AutoDropTimer?.Start();
             }
         }
 

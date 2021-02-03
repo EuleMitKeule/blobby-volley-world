@@ -14,13 +14,13 @@ namespace Blobby.Game.States
     {
         public void EnterState()
         {
-            ServerHandler.Match.InvokeOver(ServerHandler.Winner);
+            ServerHandler.MatchComponent.InvokeOver(ServerHandler.Winner);
 
             Debug.Log($"Match is over; {ServerHandler.Winner} side won!");
 
             ServerConnection.StopAccepting();
             ServerConnection.Unlist();
-            ServerConnection.SendOver(ServerHandler.Winner, ServerHandler.Match.ScoreLeft, ServerHandler.Match.ScoreRight, ServerHandler.Match.MatchTimer.MatchTime);
+            ServerConnection.SendOver(ServerHandler.Winner, ServerHandler.MatchComponent.ScoreLeft, ServerHandler.MatchComponent.ScoreRight, ServerHandler.MatchComponent.MatchTimer.MatchTime);
 
             ServerHandler.RevancheWanted = new bool[ServerHandler.ServerData.MatchData.PlayerCount];
 
@@ -68,7 +68,7 @@ namespace Blobby.Game.States
 
             MainThreadManager.Run(() =>
             {
-                ServerHandler.Match?.Dispose();
+                ServerHandler.MatchComponent?.Dispose();
             });
         }
 
@@ -89,7 +89,7 @@ namespace Blobby.Game.States
 
                 MainThreadManager.Run(() =>
                 {
-                    ServerHandler.Match?.Restart();
+                    ServerHandler.MatchComponent?.Restart();
                 });
 
                 ServerHandler.SetState(ServerHandler.RunningState);
@@ -102,7 +102,7 @@ namespace Blobby.Game.States
 
             MainThreadManager.Run(() =>
             {
-                ServerHandler.Match?.Dispose();
+                ServerHandler.MatchComponent?.Dispose();
             });
         }
 

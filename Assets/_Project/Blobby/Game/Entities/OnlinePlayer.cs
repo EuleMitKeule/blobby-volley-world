@@ -14,7 +14,7 @@ namespace Blobby.Game.Entities
     {
         OnlinePlayerComponent OnlinePlayerComponent { get; }
 
-        public OnlinePlayer(Match match, PlayerData playerData, MatchData matchData) : base(match, playerData)
+        public OnlinePlayer(MatchComponent matchComponent, PlayerData playerData, MatchData matchData) : base(matchComponent, playerData)
         {
             PlayerObj = NetworkManager.Instance.InstantiatePlayer(0, SpawnPoint).gameObject;
 

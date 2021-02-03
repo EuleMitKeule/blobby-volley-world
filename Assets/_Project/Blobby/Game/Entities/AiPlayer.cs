@@ -24,13 +24,13 @@ namespace Blobby.Game.Entities
         public bool[] IsTransparent { get; private set; } = { true, true, true, true };
 
         Animator _animator;
-        LocalMatch _localMatch;
+        LocalMatchComponent _localMatchComponent;
 
         static GameObject Prefab => PrefabHelper.LocalPlayer;
      
-        public AiPlayer(LocalMatch match, PlayerData playerData, MatchData matchData) : base(match, playerData, Prefab)
+        public AiPlayer(LocalMatchComponent matchComponent, PlayerData playerData, MatchData matchData) : base(matchComponent, playerData, Prefab)
         {
-            _localMatch = match;
+            _localMatchComponent = matchComponent;
 
             AiData = new AiData()
             {
@@ -39,9 +39,9 @@ namespace Blobby.Game.Entities
                 OffensiveOffset = PlayerData.Side == Side.Left ? -0.75f : 0.75f
             };
 
-            Defensive = new AiDefensiveState(this, match);
-            Offensive = new AiOffensiveState(this, match);
-            Idle = new AiIdleState(this, match);
+            Defensive = new AiDefensiveState(this, matchComponent);
+            Offensive = new AiOffensiveState(this, matchComponent);
+            Idle = new AiIdleState(this, matchComponent);
             
             if (matchData.PlayerMode == PlayerMode.Ghost && PlayerData.Side == Side.Right)
             {
@@ -69,7 +69,7 @@ namespace Blobby.Game.Entities
         {
             base.OnReady(side);
 
-            if (Match.IsSingle)
+            if (MatchComponent.IsSingle)
             {
                 if (side == PlayerData.Side)
                 {
@@ -96,7 +96,7 @@ namespace Blobby.Game.Entities
 
         void OnPlayerCounted(Player player)
         {
-            if (player == this && !Match.IsSingle)
+            if (player == this && !MatchComponent.IsSingle)
             {
                 SetState(Defensive);
             }
@@ -137,16 +137,16 @@ namespace Blobby.Game.Entities
 
         void SubscribeEventHandler()
         {
-            _localMatch.Alpha += OnAlpha;
-            _localMatch.PlayerCounted += OnPlayerCounted;
+            _localMatchComponent.Alpha += OnAlpha;
+            _localMatchComponent.PlayerCounted += OnPlayerCounted;
         }
 
         public override void Dispose()
         {
             base.Dispose();
 
-            _localMatch.Alpha -= OnAlpha;
-            _localMatch.PlayerCounted -= OnPlayerCounted;
+            _localMatchComponent.Alpha -= OnAlpha;
+            _localMatchComponent.PlayerCounted -= OnPlayerCounted;
         }
     }
 }

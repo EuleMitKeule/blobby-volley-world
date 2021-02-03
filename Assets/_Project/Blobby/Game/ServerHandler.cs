@@ -15,7 +15,7 @@ namespace Blobby.Game
     public static class ServerHandler
     {
         public static bool IsServer { get; private set; }
-        public static OnlineMatch Match { get; private set; }
+        public static OnlineMatchComponent MatchComponent { get; private set; }
         public static ServerData ServerData { get; private set; }
         public static bool[] RevancheWanted { get; set; }
         public static ServerCloseTimer ServerCloseTimer { get; private set; }
@@ -81,10 +81,10 @@ namespace Blobby.Game
         {
             Debug.Log("Server Start successful");
 
-            Match = new OnlineMatch(ServerData.MatchData);
+            MatchComponent = new OnlineMatchComponent(ServerData.MatchData);
 
-            Match.Over += OnMatchOver;
-            Match.MatchStopped += OnMatchStopped;
+            MatchComponent.Over += OnMatchOver;
+            MatchComponent.MatchStopped += OnMatchStopped;
 
             SetState(WaitingState);
 

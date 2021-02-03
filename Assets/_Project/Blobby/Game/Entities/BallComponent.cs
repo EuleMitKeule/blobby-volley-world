@@ -11,10 +11,8 @@ using Object = UnityEngine.Object;
 
 namespace Blobby.Game.Entities
 {
-    public abstract class Ball : IDisposable
+    public abstract class BallComponent : MonoBehaviour, IDisposable
     {
-        public enum NetHitResult { None, Wall, Edge}
-
         public GameObject BallObj { get; protected set; }
 
         public CircleCollider2D Collider { get; protected set; }
@@ -33,8 +31,12 @@ namespace Blobby.Game.Entities
 
         public const float BALL_SHOT_VELOCITY = 45.4f;
 
-        const float LEFT_LIMIT = -18.01f;
-        const float RIGHT_LIMIT = 18.01f;
+        public Vector2[] SpawnPoints
+        {
+            get { return new[] {new Vector2(-10, -1), new Vector2(10, -1)}; }
+        }
+
+        public const float GROUND_VELOCITY_THRESHOLD = 3.5f;
 
         #region States
 
@@ -52,7 +54,7 @@ namespace Blobby.Game.Entities
         public event Action WallHit;
         public event Action<Side> SideChanged;
 
-        protected Match _match;
+        protected MatchComponent MatchComponent;
         protected MatchData _matchData;
         IBallState _state;
 
@@ -61,16 +63,16 @@ namespace Blobby.Game.Entities
         public const float SHADOW_MOD = 0.1f;
 
         #endregion
-        
-        public Ball(Match match, MatchData matchData)
-        {
-            _match = match;
-            _matchData = matchData;
 
-            Ready = new BallReadyState(this, match, matchData);
-            Running = new BallRunningState(this, match, matchData);
-            RunningTennis = new BallRunningTennisState(this, match, matchData);
-            Stopped = new BallStoppedState(this, match, matchData);
+        void Awake()
+        {
+            var matchObj = transform.parent;
+            MatchComponent = matchObj.GetComponent<MatchComponent>();
+
+            Ready = new BallReadyState(this, MatchComponent);
+            Running = new BallRunningState(this, MatchComponent);
+            RunningTennis = new BallRunningTennisState(this, MatchComponent);
+            Stopped = new BallStoppedState(this, MatchComponent);
         }
 
         public void SetState(IBallState newState)
@@ -83,12 +85,12 @@ namespace Blobby.Game.Entities
             _state.EnterState();
         }
 
-        public virtual void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             Velocity -= Vector2.up * (Time.fixedDeltaTime * Gravity);
 
-            if (Velocity.magnitude >= _match.PhysicsSettings.ballMaxVelocity)
-                Velocity = Velocity.normalized * _match.PhysicsSettings.ballMaxVelocity;
+            if (Velocity.magnitude >= MatchComponent.PhysicsSettings.ballMaxVelocity)
+                Velocity = Velocity.normalized * MatchComponent.PhysicsSettings.ballMaxVelocity;
             
             Position += Velocity * Time.fixedDeltaTime;
 
@@ -103,6 +105,9 @@ namespace Blobby.Game.Entities
                 Side = curSide;
                 InvokeSideChanged(curSide);
             }
+
+            transform.position = Position;
+            transform.rotation = Quaternion.Euler(0, 0, Rotation);
         }
 
         public void HandleMapCollision()
@@ -192,19 +197,19 @@ namespace Blobby.Game.Entities
 
         protected virtual void OnAutoDropTimerStopped()
         {
-            if (_match.MatchData.JumpMode == JumpMode.NoJump) SetState(Running);
+            if (MatchComponent.MatchData.JumpMode == JumpMode.NoJump) SetState(Running);
         }
 
         protected virtual void SubscribeEventHandler()
         {
-            _match.AutoDropTimer.AutoDropTimerStopped += OnAutoDropTimerStopped;
-            _match.BombTimer.BombTimerStopped += OnBombTimerStopped;
+            MatchComponent.AutoDropTimer.AutoDropTimerStopped += OnAutoDropTimerStopped;
+            MatchComponent.BombTimer.BombTimerStopped += OnBombTimerStopped;
         }
 
         public virtual void Dispose()
         {
-            _match.AutoDropTimer.AutoDropTimerStopped -= OnAutoDropTimerStopped;
-            _match.BombTimer.BombTimerStopped -= OnBombTimerStopped;
+            MatchComponent.AutoDropTimer.AutoDropTimerStopped -= OnAutoDropTimerStopped;
+            MatchComponent.BombTimer.BombTimerStopped -= OnBombTimerStopped;
 
             Object.Destroy(BallObj);
         }

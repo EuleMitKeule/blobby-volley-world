@@ -8,7 +8,7 @@ namespace Blobby.Game.Entities.States
 {
     public class AiIdleState : AiState
     {
-        public AiIdleState(AiPlayer aiPlayer, Match match) : base(aiPlayer, match) { }
+        public AiIdleState(AiPlayer aiPlayer, MatchComponent matchComponent) : base(aiPlayer, matchComponent) { }
 
         public override void EnterState()
         {

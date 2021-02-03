@@ -33,9 +33,9 @@ namespace Blobby.Game.States
 
             MainThreadManager.Run(() =>
             {
-                ServerHandler.Match?.OnPlayerJoined(username, elo, color, networkingPlayer);
+                ServerHandler.MatchComponent?.OnPlayerJoined(username, elo, color, networkingPlayer);
 
-                if (ServerHandler.Match.Players.Count >= ServerHandler.Match.MatchData.PlayerCount)
+                if (ServerHandler.MatchComponent.Players.Count >= ServerHandler.MatchComponent.MatchData.PlayerCount)
                 {
                     OnAllPlayersJoined();
                 }
@@ -54,7 +54,7 @@ namespace Blobby.Game.States
         {
             Debug.Log("all Players joined");
 
-            ServerHandler.Match?.Start();
+            ServerHandler.MatchComponent?.Start();
             ServerHandler.SetState(ServerHandler.RunningState);
         }
 

@@ -7,13 +7,13 @@ namespace Blobby.Game.States
 {
     public class MatchReadyState : IMatchState
     {
-        Match _match;
+        MatchComponent _matchComponent;
 
-        public MatchReadyState(Match match) => _match = match;
+        public MatchReadyState(MatchComponent matchComponent) => _matchComponent = matchComponent;
 
         public void EnterState()
         {
-            _match.InvokeReady(_match.LastWinner);
+            _matchComponent.InvokeReady(_matchComponent.LastWinner);
         }
 
         public void ExitState()
@@ -23,31 +23,31 @@ namespace Blobby.Game.States
 
         public void OnPlayer(Player player)
         {
-            if (_match.MatchData.PlayerMode == PlayerMode.Double ||
-                _match.MatchData.PlayerMode == PlayerMode.DoubleFixed)
+            if (_matchComponent.MatchData.PlayerMode == PlayerMode.Double ||
+                _matchComponent.MatchData.PlayerMode == PlayerMode.DoubleFixed)
             {
-                _match.HitCounts[(player.PlayerData.PlayerNum + 2) % 4] = 0;
+                _matchComponent.HitCounts[(player.PlayerData.PlayerNum + 2) % 4] = 0;
             }
 
-            _match.InvokePlayerCounted(player);
+            _matchComponent.InvokePlayerCounted(player);
 
             for (int i = 0; i < 6; i++)
             {
-                if (_match.HitCounts[i] > _match.MatchData.AllowedHits[i])
+                if (_matchComponent.HitCounts[i] > _matchComponent.MatchData.AllowedHits[i])
                 {
-                    _match.InvokeStop();
+                    _matchComponent.InvokeStop();
                     return;
                 }
             }
 
-            _match.SetState(_match.RunningState);
+            _matchComponent.SetState(_matchComponent.RunningState);
         }
 
         public void OnBombTimerStopped()
         {
             MainThreadManager.Run(() =>
             {
-                _match.SetState(_match.StoppedState);
+                _matchComponent.SetState(_matchComponent.StoppedState);
             });
         }
 

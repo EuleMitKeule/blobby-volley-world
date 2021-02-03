@@ -38,7 +38,7 @@ namespace Blobby.Game.States
         {
             MainThreadManager.Run(() =>
             {
-                if (!(MatchHandler.Match is LocalMatch localMatch)) return;
+                if (!(MatchHandler.Match is LocalMatchComponent localMatch)) return;
 
                 MatchHandler.ZoomEffect?.ZoomOut();
 
@@ -53,7 +53,7 @@ namespace Blobby.Game.States
             MenuHelper.SetPanelPause(false);
             Time.timeScale = MatchHandler.MatchData.TimeScale;
 
-            if (!(MatchHandler.Match is LocalMatch localMatch)) return;
+            if (!(MatchHandler.Match is LocalMatchComponent localMatch)) return;
             localMatch.InvokeOver(Side.Right);
             SoundHelper.PlayAudio(SoundHelper.SoundClip.Whistle);
         }
@@ -87,7 +87,7 @@ namespace Blobby.Game.States
         {
             MainThreadManager.Run(() =>
             {
-                if (!(MatchHandler.Match is LocalMatch localMatch)) return;
+                if (!(MatchHandler.Match is LocalMatchComponent localMatch)) return;
 
                 var revancheButton = GameObject.Find("button_over_revanche").GetComponent<Button>();
                 revancheButton.interactable = true;
@@ -114,9 +114,9 @@ namespace Blobby.Game.States
         public void OnBlackoutOver()
         {
             MatchHandler.MatchData = MatchHandler.LocalMatchData;
-            MatchHandler.Match = new LocalMatch(MatchHandler.LocalMatchData, MatchHandler.Ai);
+            MatchHandler.Match = new LocalMatchComponent(MatchHandler.LocalMatchData, MatchHandler.Ai);
 
-            if (!(MatchHandler.Match is LocalMatch localMatch)) return;
+            if (!(MatchHandler.Match is LocalMatchComponent localMatch)) return;
 
             localMatch.Over += MatchHandler.OnMatchOver; 
 
@@ -127,7 +127,7 @@ namespace Blobby.Game.States
         {
             MainThreadManager.Run(() =>
             {
-                if (!(MatchHandler.Match is LocalMatch localMatch)) return;
+                if (!(MatchHandler.Match is LocalMatchComponent localMatch)) return;
 
                 localMatch.Start();
             });

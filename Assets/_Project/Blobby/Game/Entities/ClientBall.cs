@@ -14,7 +14,7 @@ namespace Blobby.Game.Entities
         MatchData _matchData;
         GameObject _ballObj;
 
-        OnlineBallComponent _onlineBallComponent;
+        Components.OnlineBallComponent _onlineBallComponent;
 
         public ClientBall(ClientMatch clientMatch, MatchData matchData, GameObject ballObj)
         {
@@ -22,7 +22,7 @@ namespace Blobby.Game.Entities
             _matchData = matchData;
             _ballObj = ballObj;
 
-            _onlineBallComponent = _ballObj.GetComponent<OnlineBallComponent>();
+            _onlineBallComponent = _ballObj.GetComponent<Components.OnlineBallComponent>();
             _onlineBallComponent.MatchData = _matchData;
 
             _onlineBallComponent.Switched = _clientMatch.Switched;

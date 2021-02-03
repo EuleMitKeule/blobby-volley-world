@@ -11,8 +11,8 @@ namespace Blobby.Game.Entities
         public GameObject PlayerObj { get; protected set; }
         public PlayerData PlayerData { get; }
         protected PlayerGraphics PlayerGraphics { get; set; }
-        protected Match Match { get; }
-        Ball Ball => Match.Ball;
+        protected MatchComponent MatchComponent { get; }
+        BallComponent BallComponent => MatchComponent.Ball;
 
         #region Physics Member
 
@@ -49,9 +49,9 @@ namespace Blobby.Game.Entities
         #region Map
 
         Vector2 MapCenter => Vector2.zero;
-        protected Vector2 SpawnPoint => Match.SpawnPoints[BlobNum];
-        float LeftLimit => Match.LeftLimits[BlobNum];
-        float RightLimit => Match.RightLimits[BlobNum];
+        protected Vector2 SpawnPoint => MatchComponent.SpawnPoints[BlobNum];
+        float LeftLimit => MatchComponent.LeftLimits[BlobNum];
+        float RightLimit => MatchComponent.RightLimits[BlobNum];
         bool IsOnLeftSide => Position.IsLeftOf(MapCenter);
 
         #endregion
@@ -83,17 +83,17 @@ namespace Blobby.Game.Entities
 
         #region Collision
 
-        Vector2 BallDeltaDirection => Ball.Velocity.DirectionTo(Velocity);
-        float BallDeltaDistance => Ball.Velocity.To(Velocity).magnitude * Time.fixedDeltaTime;
+        Vector2 BallDeltaDirection => BallComponent.Velocity.DirectionTo(Velocity);
+        float BallDeltaDistance => BallComponent.Velocity.To(Velocity).magnitude * Time.fixedDeltaTime;
         bool IsCollidingBelow => Bottom.y <= PhysicsWorld.Ground;
         bool IsCollidingLeft => Position.x < LeftLimit;
         bool IsCollidingRight => Position.x > RightLimit;
         bool IsBelowNetEdge => Bottom.IsBelow(PhysicsWorld.NetEdgeTop);
-        bool CanCollideWithNet => Match.IsJumpOverNet && IsBelowNetEdge;
+        bool CanCollideWithNet => MatchComponent.IsJumpOverNet && IsBelowNetEdge;
 
         #region Ball Collision
 
-        int BallLayerMask => 1 << Ball.LAYER;
+        int BallLayerMask => 1 << BallComponent.LAYER;
         struct BallCollisionResult
         {
             public RaycastHit2D Result;
@@ -170,7 +170,7 @@ namespace Blobby.Game.Entities
         public Side OwnSide => DefaultBlobNum % 2 == 0 ? Side.Left : Side.Right;
         public Side EnemySide => OwnSide.Other();
         bool IsOnLeftTeam => PlayerData.Side == Side.Left;
-        bool IsSwitched => IsOnLeftTeam ? Match.LeftSwitched : Match.RightSwitched;
+        bool IsSwitched => IsOnLeftTeam ? MatchComponent.LeftSwitched : MatchComponent.RightSwitched;
         int BlobNum => IsSwitched ? TeamBlobNum : DefaultBlobNum;
         int DefaultBlobNum => PlayerData.PlayerNum;
         int TeamBlobNum => (PlayerData.PlayerNum + 2) % 4;
@@ -191,9 +191,9 @@ namespace Blobby.Game.Entities
         
         #endregion
         
-        protected Player(Match match, PlayerData playerData, GameObject prefab = null)
+        protected Player(MatchComponent matchComponent, PlayerData playerData, GameObject prefab = null)
         {
-            Match = match;
+            MatchComponent = matchComponent;
             PlayerData = playerData;
 
             if (prefab)
@@ -206,7 +206,7 @@ namespace Blobby.Game.Entities
             UpperCollider = Colliders[0];
             LowerCollider = Colliders[1];
             
-            JumpStrategy = JumpStrategyFactory.Create(this, match);
+            JumpStrategy = JumpStrategyFactory.Create(this, matchComponent);
 
             Position = SpawnPoint;
 
@@ -230,17 +230,17 @@ namespace Blobby.Game.Entities
             Velocity = ClampedVelocity;
             Position = ClampedPosition;
 
-            if (Match.Ball != null)
+            if (MatchComponent.Ball != null)
             {
                 var ballCollisionResult = BallCollision;
 
                 if (ballCollisionResult.HasValue)
                 {
-                    var largeRadius = ballCollisionResult.Value.Radius + Match.Ball.Radius;
+                    var largeRadius = ballCollisionResult.Value.Radius + MatchComponent.Ball.Radius;
                     var ballCentroid = Position + ballCollisionResult.Value.Offset -
                                      ballCollisionResult.Value.Result.normal * largeRadius;
                     var ballNormal = -ballCollisionResult.Value.Result.normal;
-                    Match.Ball.ResolvePlayerCollision(this, ballCentroid, ballNormal);
+                    MatchComponent.Ball.ResolvePlayerCollision(this, ballCentroid, ballNormal);
                 }
             }
 
@@ -271,9 +271,9 @@ namespace Blobby.Game.Entities
 
         protected virtual void OnStop()
         {
-            if (Match.IsPogo) KeyPressed[0] = false;
+            if (MatchComponent.IsPogo) KeyPressed[0] = false;
 
-            if (!Match.IsJumpOverNet) return;
+            if (!MatchComponent.IsJumpOverNet) return;
 
             Position = SpawnPoint;
         }
@@ -295,18 +295,18 @@ namespace Blobby.Game.Entities
 
         void SubscribeEventHandler()
         {
-            Match.Ready += OnReady;
-            Match.Alpha += OnAlpha;
-            Match.Stop += OnStop;
-            Match.Over += OnOver;
+            MatchComponent.Ready += OnReady;
+            MatchComponent.Alpha += OnAlpha;
+            MatchComponent.Stop += OnStop;
+            MatchComponent.Over += OnOver;
         }
 
         public virtual void Dispose()
         {
-            Match.Ready -= OnReady;
-            Match.Alpha -= OnAlpha;
-            Match.Stop -= OnStop;
-            Match.Over -= OnOver;
+            MatchComponent.Ready -= OnReady;
+            MatchComponent.Alpha -= OnAlpha;
+            MatchComponent.Stop -= OnStop;
+            MatchComponent.Over -= OnOver;
 
             if (PlayerObj) Object.Destroy(PlayerObj);
         }

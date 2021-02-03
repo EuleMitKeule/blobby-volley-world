@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Blobby.Game
 {
-    public class LocalMatch : Match, IClientMatch
+    public class LocalMatchComponent : MatchComponent, IClientMatch
     {
         public event Action MatchStarted;
         public event Action<int, int, Side> ScoreChanged;
@@ -23,7 +23,7 @@ namespace Blobby.Game
 
         MatchScore _matchScore;
 
-        public LocalMatch(MatchData matchData, bool isAiGame = false) : base(matchData)
+        public LocalMatchComponent(MatchData matchData, bool isAiGame = false) : base(matchData)
         {
             MainThreadManager.Run(() =>
             {
@@ -50,7 +50,7 @@ namespace Blobby.Game
                     }
                 }
 
-                Ball = new LocalBall(this, matchData);
+                BallComponent = new LocalBallComponent(this, matchData);
 
                 _matchScore = new MatchScore(this, Players[0].PlayerData, Players[1].PlayerData);
 
@@ -102,8 +102,8 @@ namespace Blobby.Game
 
                 _matchScore = new MatchScore(this, Players[0].PlayerData, Players[1].PlayerData);
 
-                Ball?.Dispose();
-                Ball = new LocalBall(this, MatchData);
+                BallComponent?.Dispose();
+                BallComponent = new LocalBallComponent(this, MatchData);
 
                 SubscribeBallEvents();
                 SubscribeTimerEvents();

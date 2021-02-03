@@ -7,57 +7,57 @@ namespace Blobby.Game.States
 {
     public class MatchRunningTennisState : IMatchState
     {
-        Match _match;
+        MatchComponent _matchComponent;
         MatchData _matchData;
 
-        public MatchRunningTennisState(Match match, MatchData matchData) => (_match, _matchData) = (match, matchData);
+        public MatchRunningTennisState(MatchComponent matchComponent, MatchData matchData) => (_matchComponent, _matchData) = (matchComponent, matchData);
 
         public void OnPlayer(Player player)
         {
             //set other sides hit count to 0
-            _match.SetHitCounts(player.EnemySide, 0);
+            _matchComponent.SetHitCounts(player.EnemySide, 0);
 
             //check if hit can count again
-            if (!_match.CanHit()) return;
+            if (!_matchComponent.CanHit()) return;
 
-            _match.InvokePlayerCounted(player);
+            _matchComponent.InvokePlayerCounted(player);
 
             //check if hit count exceeds max allowed hit count
             for (int i = 0; i < 6; i++)
             {
-                if (_match.HitCounts[i] > _match.MatchData.AllowedHits[i])
+                if (_matchComponent.HitCounts[i] > _matchComponent.MatchData.AllowedHits[i])
                 {
-                    _match.InvokeStop();
+                    _matchComponent.InvokeStop();
                     break;
                 }
             }
 
             //make ground deadly
-            if (_match.Ball.Position.x <= 0f && player.PlayerData.PlayerNum % 2 == 0 || 
-                _match.Ball.Position.x > 0f && player.PlayerData.PlayerNum % 2 == 1)
+            if (_matchComponent.BallComponent.Position.x <= 0f && player.PlayerData.PlayerNum % 2 == 0 ||
+                _matchComponent.BallComponent.Position.x > 0f && player.PlayerData.PlayerNum % 2 == 1)
             {
-                _match.SetState(_match.RunningState);
-                _match.Ball.SetState(_match.Ball.Running);
+                _matchComponent.SetState(_matchComponent.RunningState);
+                _matchComponent.BallComponent.SetState(_matchComponent.BallComponent.Running);
             }
         }
 
         public void OnGround()
         {
-            _match.SetState(_match.RunningState);
+            _matchComponent.SetState(_matchComponent.RunningState);
         }
 
         public void OnSideChanged(Side newSide)
         {
             var otherSide = (Side)(((int)newSide + 1) % 2);
 
-            _match.SetHitCounts(otherSide, 0);
+            _matchComponent.SetHitCounts(otherSide, 0);
         }
 
         public void OnBombTimerStopped()
         {
             MainThreadManager.Run(() =>
             {
-                _match.SetState(_match.StoppedState);
+                _matchComponent.SetState(_matchComponent.StoppedState);
             });
         }
 

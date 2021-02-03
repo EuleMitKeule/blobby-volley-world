@@ -1,6 +1,6 @@
 ﻿using Blobby.Game.Physics;
 using UnityEngine;
-using static Blobby.Game.Entities.Ball;
+using static Blobby.Game.Entities.BallComponent;
 
 namespace Blobby.Game.Entities
 {

@@ -7,29 +7,29 @@ namespace Blobby.Game.States
 {
     public class MatchRunningState : IMatchState
     {
-        Match _match;
+        MatchComponent _matchComponent;
         MatchData _matchData;
 
-        public MatchRunningState(Match match, MatchData matchData) => (_match, _matchData) = (match, matchData);
+        public MatchRunningState(MatchComponent matchComponent, MatchData matchData) => (_matchComponent, _matchData) = (matchComponent, matchData);
 
         public void OnPlayer(Player player)
         {
-            _match.SetHitCounts(player.EnemySide, 0);
+            _matchComponent.SetHitCounts(player.EnemySide, 0);
 
             //set other players hit count to 0
-            if (_match.Players.Count == 4) _match.HitCounts[(player.PlayerData.PlayerNum + 2) % 4] = 0;
+            if (_matchComponent.Players.Count == 4) _matchComponent.HitCounts[(player.PlayerData.PlayerNum + 2) % 4] = 0;
 
             //check if hit can count again
-            if (!_match.CanHit()) return;
+            if (!_matchComponent.CanHit()) return;
 
-            _match.InvokePlayerCounted(player);
+            _matchComponent.InvokePlayerCounted(player);
 
             //check if hit count exceeds max allowed hit count
             for (int i = 0; i < 6; i++)
             {
-                if (_match.HitCounts[i] > _match.MatchData.AllowedHits[i])
+                if (_matchComponent.HitCounts[i] > _matchComponent.MatchData.AllowedHits[i])
                 {
-                    _match.InvokeStop();
+                    _matchComponent.InvokeStop();
                     break;
                 }
             }
@@ -37,36 +37,36 @@ namespace Blobby.Game.States
 
         public void OnGround()
         {
-            _match.InvokeStop();
+            _matchComponent.InvokeStop();
         }
 
         public void OnSideChanged(Side newSide)
         {
             var otherSide = (Side)(((int)newSide + 1) % 2);
 
-            _match.SetHitCounts(otherSide, 0);
+            _matchComponent.SetHitCounts(otherSide, 0);
 
             //change to tennis state
-            if (_match.MatchData.GameMode == GameMode.Tennis)
+            if (_matchComponent.MatchData.GameMode == GameMode.Tennis)
             {
-                _match.SetState(_match.RunningTennisState);
-                _match.Ball.SetState(_match.Ball.RunningTennis);
+                _matchComponent.SetState(_matchComponent.RunningTennisState);
+                _matchComponent.BallComponent.SetState(_matchComponent.BallComponent.RunningTennis);
             }
         }
 
         public void EnterState()
         {
-            _match.MatchTimer?.Start();
+            _matchComponent.MatchTimer?.Start();
         
-            if (_match.MatchData.GameMode == GameMode.Bomb)
-                _match.BombTimer?.Start();
+            if (_matchComponent.MatchData.GameMode == GameMode.Bomb)
+                _matchComponent.BombTimer?.Start();
         }
 
         public void OnBombTimerStopped()
         {
             MainThreadManager.Run(() =>
             {
-                _match.SetState(_match.StoppedState);
+                _matchComponent.SetState(_matchComponent.StoppedState);
             });
         }
 

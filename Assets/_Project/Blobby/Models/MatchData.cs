@@ -54,14 +54,6 @@ namespace Blobby.Models
             }
         }
 
-        public Vector2[] BallSpawnPoints
-        {
-            get
-            {
-                return new Vector2[] { new Vector2(-10, -1), new Vector2(10, -1) };
-            }
-        }
-
         public float[] LeftLimits
         {
             get
@@ -205,6 +197,5 @@ namespace Blobby.Models
 
         public float ArrowLimit { get { return 10.85f; } }
 
-        public float GroundVelocityTreshold { get { return 3.5f; } }
     }
 }

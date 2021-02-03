@@ -7,20 +7,19 @@ using Blobby.Models;
 
 namespace Blobby.Game.Entities
 {
-    public class LocalBall : Ball
+    public class LocalBallComponent : BallComponent
     {
         GameObject _arrowObj, _shadowObj;
         SpriteRenderer _arrowSR;
 
-        LocalMatch _localMatch;
+        LocalMatchComponent _localMatchComponent;
 
-        public LocalBall(LocalMatch match, MatchData matchData) : base(match, matchData)
+        void Awake()
         {
-            _localMatch = match;
+            var matchObj = transform.parent;
+            _localMatchComponent = matchObj.GetComponent<LocalMatchComponent>();
 
-            BallObj = Object.Instantiate(matchData.BallPrefab, new Vector2(-10, 5), Quaternion.identity);
-
-            Collider = BallObj.GetComponent<CircleCollider2D>();
+            Collider = GetComponent<CircleCollider2D>();
 
             _shadowObj = BallObj.transform.GetChild(0).gameObject;
             _arrowObj = BallObj.transform.GetChild(1).gameObject;
@@ -32,9 +31,8 @@ namespace Blobby.Game.Entities
             SetState(Ready);
         }
 
-        public override void FixedUpdate()
+        protected override void FixedUpdate()
         {
-            base.FixedUpdate();
             BallObj.transform.position = Position;
             BallObj.transform.rotation = Quaternion.Euler(0, 0, Rotation);
 

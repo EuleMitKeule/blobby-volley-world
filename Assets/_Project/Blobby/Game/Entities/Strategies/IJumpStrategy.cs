@@ -15,14 +15,14 @@ public interface IJumpStrategy
 
 public static class JumpStrategyFactory
 {
-    public static IJumpStrategy Create(Player player, Match match)
+    public static IJumpStrategy Create(Player player, MatchComponent matchComponent)
     {
-        return match.JumpMode switch
+        return matchComponent.JumpMode switch
         {
-            JumpMode.Standard => new StandardJumpStrategy(player, match),
+            JumpMode.Standard => new StandardJumpStrategy(player, matchComponent),
             JumpMode.NoJump => new NoJumpStrategy(),
-            JumpMode.Pogo => new PogoJumpStrategy(player, match),
-            JumpMode.Spring => new SpringJumpStrategy(player, match),
+            JumpMode.Pogo => new PogoJumpStrategy(player, matchComponent),
+            JumpMode.Spring => new SpringJumpStrategy(player, matchComponent),
             _ => null
         };
     }
