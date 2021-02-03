@@ -1,0 +1,13 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/contentModel.xml
+/projectSettingsUpdater.xml
+/modules.xml
+/.idea.blobby-volley-world.iml
+# Datasource local storage ignored files
+/../../../../../../../../../:\Users\Lennard\Projekte\Unity\blobby-volley-world\.idea\.idea.blobby-volley-world\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
