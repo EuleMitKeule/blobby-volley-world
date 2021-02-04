@@ -192,10 +192,5 @@ namespace Blobby.Models
                 return new float[] { -1.75f, 1.75f };
             }
         }
-
-        public float ArrowHeight { get { return 10.5f; } }
-
-        public float ArrowLimit { get { return 10.85f; } }
-
     }
 }

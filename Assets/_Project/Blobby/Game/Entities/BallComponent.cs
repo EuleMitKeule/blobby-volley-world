@@ -13,7 +13,7 @@ namespace Blobby.Game.Entities
 {
     public abstract class BallComponent : MonoBehaviour, IDisposable
     {
-        public GameObject BallObj { get; protected set; }
+        GameObject MatchObject => transform.parent.gameObject;
 
         public CircleCollider2D Collider { get; protected set; }
         public float Radius => Collider.radius;
@@ -26,6 +26,7 @@ namespace Blobby.Game.Entities
         
         public float Gravity { get; set; }
         public Side Side { get; set; }
+        public bool IsSwitched { get; set; }
 
         public const int LAYER = 6;
 
@@ -66,13 +67,16 @@ namespace Blobby.Game.Entities
 
         void Awake()
         {
-            var matchObj = transform.parent;
-            MatchComponent = matchObj.GetComponent<MatchComponent>();
+            Collider = GetComponent<CircleCollider2D>();
 
+            MatchComponent = MatchObject.GetComponent<MatchComponent>();
+            
             Ready = new BallReadyState(this, MatchComponent);
             Running = new BallRunningState(this, MatchComponent);
             RunningTennis = new BallRunningTennisState(this, MatchComponent);
             Stopped = new BallStoppedState(this, MatchComponent);
+
+            SetState(Ready);
         }
 
         public void SetState(IBallState newState)
@@ -115,7 +119,7 @@ namespace Blobby.Game.Entities
             var layerMask = 1 << PhysicsWorld.MAP_LAYER;
             var playerLayerMask = 1 << Player.LAYER;
             
-            var lastPosition = (Vector2)BallObj.transform.position;
+            var lastPosition = (Vector2)transform.position;
             var traveledDistance = (Velocity * Time.fixedDeltaTime).magnitude;
             
             var result = Physics2D.CircleCast(lastPosition, Radius, Velocity, traveledDistance, layerMask);
