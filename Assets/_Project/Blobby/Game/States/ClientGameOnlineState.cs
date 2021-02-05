@@ -81,14 +81,14 @@ namespace Blobby.Game.States
             {
                 if (!(MatchHandler.Match is ClientMatch clientMatch)) return;
 
-                ClientPlayer targetPlayer;
+                GameObject targetPlayer;
 
                 if (winner == Side.None)
                 {
                     var revancheButton = GameObject.Find("button_over_revanche").GetComponent<Button>();
                     revancheButton.interactable = false;
 
-                    targetPlayer = clientMatch.Players[clientMatch.OwnPlayerNum];
+                    targetPlayer = clientMatch.Players[clientMatch.NetPlayerNum];
                 }
                 else
                 {
@@ -98,7 +98,7 @@ namespace Blobby.Game.States
                     targetPlayer = winner == Side.Left ? clientMatch.Players[0] : clientMatch.Players[1];
                 }
 
-                var targetPlayerObj = targetPlayer.PlayerObj;
+                var targetPlayerObj = targetPlayer;
 
                 var usernames = (from playerData in clientMatch.PlayerDataList select playerData.Name).ToArray();
 
@@ -115,7 +115,7 @@ namespace Blobby.Game.States
         {
             if (!(MatchHandler.Match is ClientMatch clientMatch)) return;
 
-            clientMatch.Ball?.Dispose();
+            // clientMatch.Ball?.Dispose();
 
             MatchHandler.ZoomEffect?.ZoomOut();
         }
@@ -131,7 +131,7 @@ namespace Blobby.Game.States
         {
             ClientConnection.Connect();
 
-            MatchHandler.Match?.Dispose();
+            // MatchHandler.Match?.Dispose();
             MatchHandler.Match = new ClientMatch(MatchHandler.ServerData);
         }
 

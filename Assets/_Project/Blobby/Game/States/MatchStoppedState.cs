@@ -7,9 +7,8 @@ namespace Blobby.Game.States
     public class MatchStoppedState : IMatchState
     {
         MatchComponent _matchComponent;
-        MatchData _matchData;
 
-        public MatchStoppedState(MatchComponent matchComponent, MatchData matchData) => (_matchComponent, _matchData) = (matchComponent, matchData);
+        public MatchStoppedState(MatchComponent matchComponent) => (_matchComponent) = (matchComponent);
 
         public void EnterState()
         {
@@ -56,8 +55,8 @@ namespace Blobby.Game.States
 
             _matchComponent.InvokeScore(winner);
 
-            if (_matchComponent.ScoreLeft >= _matchData.WinningScore) _matchComponent.InvokeOver(Side.Left);
-            else if (_matchComponent.ScoreRight >= _matchData.WinningScore) _matchComponent.InvokeOver(Side.Right);
+            if (_matchComponent.ScoreLeft >= MatchComponent.WIN_SCORE) _matchComponent.InvokeOver(Side.Left);
+            else if (_matchComponent.ScoreRight >= MatchComponent.WIN_SCORE) _matchComponent.InvokeOver(Side.Right);
             else
             {
                 _matchComponent.ResetBallTimer?.Start();
@@ -80,7 +79,7 @@ namespace Blobby.Game.States
 
         }
 
-        public void OnPlayer(Player player)
+        public void OnPlayer(PlayerComponent playerComponent)
         {
 
         }

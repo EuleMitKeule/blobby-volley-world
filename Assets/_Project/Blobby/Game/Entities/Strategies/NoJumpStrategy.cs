@@ -1,4 +1,6 @@
-﻿namespace Blobby.Game.Entities
+﻿using Blobby.Game.Entities.Strategies;
+
+namespace Blobby.Game.Entities
 {
     public class NoJumpStrategy : IJumpStrategy
     {

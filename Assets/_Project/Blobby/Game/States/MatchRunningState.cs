@@ -8,21 +8,20 @@ namespace Blobby.Game.States
     public class MatchRunningState : IMatchState
     {
         MatchComponent _matchComponent;
-        MatchData _matchData;
 
-        public MatchRunningState(MatchComponent matchComponent, MatchData matchData) => (_matchComponent, _matchData) = (matchComponent, matchData);
+        public MatchRunningState(MatchComponent matchComponent) => (_matchComponent) = (matchComponent);
 
-        public void OnPlayer(Player player)
+        public void OnPlayer(PlayerComponent playerComponent)
         {
-            _matchComponent.SetHitCounts(player.EnemySide, 0);
+            _matchComponent.SetHitCounts(playerComponent.EnemySide, 0);
 
             //set other players hit count to 0
-            if (_matchComponent.Players.Count == 4) _matchComponent.HitCounts[(player.PlayerData.PlayerNum + 2) % 4] = 0;
+            if (_matchComponent.Players.Count == 4) _matchComponent.HitCounts[(playerComponent.PlayerData.PlayerNum + 2) % 4] = 0;
 
             //check if hit can count again
             if (!_matchComponent.CanHit()) return;
 
-            _matchComponent.InvokePlayerCounted(player);
+            _matchComponent.InvokePlayerCounted(playerComponent);
 
             //check if hit count exceeds max allowed hit count
             for (int i = 0; i < 6; i++)

@@ -6,19 +6,15 @@ namespace Blobby.Game.Entities
 {
     public interface IBallState
     {
-        void FixedUpdate();
-
         void EnterState();
 
         void ExitState();
 
-        void OnPlayerHit(Player player, Vector2 centroid, Vector2 normal);
+        void FixedUpdate();
 
-        void OnWallHit();
+        void OnCollision(RaycastHit2D result);
 
-        void OnNetHit();
-
-        void OnGroundHit();
+        void OnPlayerHit(PlayerComponent playerComponent, Vector2 centroid, Vector2 normal);
 
         void OnBombTimerStopped();
     }

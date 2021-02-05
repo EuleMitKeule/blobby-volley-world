@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Blobby.Game.States
 {
@@ -83,7 +85,11 @@ namespace Blobby.Game.States
             {
                 MenuHelper.SetPanelPause(false);
 
-                MatchHandler.Match?.Dispose();
+                // MatchHandler.Match?.Dispose();
+                if (MatchHandler.Match is MatchComponent matchComponent)
+                {
+                    UnityEngine.Object.Destroy(matchComponent.gameObject);
+                }
 
                 MatchHandler.ZoomEffect?.ZoomOut();
             });

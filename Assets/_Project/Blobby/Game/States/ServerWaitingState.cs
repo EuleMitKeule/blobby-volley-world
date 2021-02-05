@@ -54,7 +54,7 @@ namespace Blobby.Game.States
         {
             Debug.Log("all Players joined");
 
-            ServerHandler.MatchComponent?.Start();
+            ServerHandler.MatchComponent?.StartMatch();
             ServerHandler.SetState(ServerHandler.RunningState);
         }
 

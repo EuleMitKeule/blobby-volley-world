@@ -1,41 +1,38 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Blobby.Game.Entities
+namespace Blobby.Game.Entities.Strategies
 {
     public class SpringJumpStrategy : IJumpStrategy
     {
-        Player _player;
-        MatchComponent _matchComponent;
+        PlayerComponent PlayerComponent { get; }
 
-        ChargeTimer _chargeTimer;
-        float _jumpCharge;
+        ChargeTimer ChargeTimer { get; }
+        float JumpCharge { get; set; }
 
-        public SpringJumpStrategy(Player player, MatchComponent matchComponent)
+        public SpringJumpStrategy(PlayerComponent playerComponent)
         {
-            _player = player;
-            _matchComponent = matchComponent;
-            _chargeTimer = new ChargeTimer();
+            PlayerComponent = playerComponent;
+            ChargeTimer = new ChargeTimer();
 
-            _chargeTimer.ChargeTimerTicked += OnChargeTimerTicked;
+            ChargeTimer.ChargeTimerTicked += OnChargeTimerTicked;
         }
 
         public void OnJumpDown()
         {
-            _player.KeyPressed[0] = true;
-            _chargeTimer.Start();
+            PlayerComponent.KeyPressed[0] = true;
+            ChargeTimer.Start();
         }
 
         public void OnJumpUp()
         {
-            _player.KeyPressed[0] = false;
+            PlayerComponent.KeyPressed[0] = false;
 
-            if (_player.IsGrounded)
+            if (PlayerComponent.IsGrounded)
             {
-                _player.IsGrounded = false;
-                _player.Velocity = new Vector2(_player.Velocity.x, _jumpCharge * _matchComponent.PhysicsSettings.playerJumpVelocity);
-                _chargeTimer.Stop();
-                _jumpCharge = _matchComponent.PhysicsSettings.playerMinCharge;
+                PlayerComponent.IsGrounded = false;
+                PlayerComponent.Velocity = new Vector2(PlayerComponent.Velocity.x, JumpCharge * PlayerComponent.JUMP_VELOCITY);
+                ChargeTimer.Stop();
+                JumpCharge = PlayerComponent.MIN_CHARGE;
             }
         }
 
@@ -50,12 +47,12 @@ namespace Blobby.Game.Entities
 
         void OnChargeTimerTicked()
         {
-            if (CanCharge()) _jumpCharge += _matchComponent.PhysicsSettings.playerChargeIncrease;
+            if (CanCharge()) JumpCharge += PlayerComponent.CHARGE_INCREASE;
         }
 
         bool CanCharge()
         {
-            return _jumpCharge < _matchComponent.PhysicsSettings.playerMaxCharge;
+            return JumpCharge < PlayerComponent.MAX_CHARGE;
         }
     }
 }

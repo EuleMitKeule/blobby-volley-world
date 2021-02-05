@@ -16,7 +16,7 @@ namespace Blobby.Game
 
         void ExitState();
 
-        void OnPlayer(Player player);
+        void OnPlayer(PlayerComponent playerComponent);
 
         void OnGround();
 

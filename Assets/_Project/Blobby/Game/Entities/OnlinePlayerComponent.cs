@@ -10,31 +10,18 @@ using Blobby.Components;
 
 namespace Blobby.Game.Entities
 {
-    public class OnlinePlayer : Player
+    public class OnlinePlayerComponent : PlayerComponent
     {
-        OnlinePlayerComponent OnlinePlayerComponent { get; }
-
-        public OnlinePlayer(MatchComponent matchComponent, PlayerData playerData, MatchData matchData) : base(matchComponent, playerData)
+        protected override void Awake()
         {
-            PlayerObj = NetworkManager.Instance.InstantiatePlayer(0, SpawnPoint).gameObject;
-
-            var colliders = PlayerObj.GetComponents<CircleCollider2D>();
-            UpperCollider = colliders[0];
-            LowerCollider = colliders[1];
-            
-            OnlinePlayerComponent = PlayerObj.GetComponent<OnlinePlayerComponent>();
-            OnlinePlayerComponent.MatchData = matchData;
+            base.Awake();
 
             SubscribeControls();
         }
 
-        public override void FixedUpdate()
+        void OnDestroy()
         {
-            base.FixedUpdate();
-
-            PlayerObj.transform.position = Position;
-            
-            OnlinePlayerComponent.PlayerUpdate(Position, IsGrounded, IsRunning);
+            UnsubscribeControls();
         }
 
         void SubscribeControls()
@@ -83,13 +70,6 @@ namespace Blobby.Game.Entities
                     OnRightUp();
                     break;
             }
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            
-            UnsubscribeControls();
         }
     }
 }

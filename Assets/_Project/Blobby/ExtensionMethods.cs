@@ -47,5 +47,7 @@ namespace Blobby.Game
     public static class FloatExtensions
     {
         public static float Squared(this float value) => value * value;
+
+        public static Quaternion ToQuaternion(this float zValue) => Quaternion.Euler(0f, 0f, zValue);
     }
 }

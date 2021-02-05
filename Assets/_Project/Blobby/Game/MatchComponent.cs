@@ -12,13 +12,14 @@ using UnityEngine;
 
 namespace Blobby.Game
 {
-    public abstract class MatchComponent : IDisposable
+    public abstract class MatchComponent : MonoBehaviour
     {
-        public MatchData MatchData { get; private set; }
-        public PhysicsSettings PhysicsSettings { get; private set; }
+        public const int WIN_SCORE = 16;
+
+        public virtual MatchData MatchData => null;
 
         public BallComponent BallComponent { get; protected set; }
-        public List<Player> Players { get; protected set; } = new List<Player>();
+        public List<PlayerComponent> Players { get; protected set; } = new List<PlayerComponent>();
 
         public MatchTimer MatchTimer { get; protected set; }
         public ResetBallTimer ResetBallTimer { get; protected set; }
@@ -39,6 +40,7 @@ namespace Blobby.Game
         public Vector2[] SpawnPoints => MatchData.SpawnPoints;
         public float[] LeftLimits => MatchData.LeftLimits;
         public float[] RightLimits => MatchData.RightLimits;
+        public PlayerMode PlayerMode => MatchData.PlayerMode;
         public bool IsSingle => MatchData.PlayerCount == 2;
         public JumpMode JumpMode => MatchData.JumpMode;
         public bool IsPogo => MatchData.JumpMode == JumpMode.Pogo;
@@ -46,51 +48,35 @@ namespace Blobby.Game
         
         protected IMatchState _matchState;
         
-        public readonly IMatchState InitState;
-        public readonly IMatchState ReadyState;
-        public readonly IMatchState RunningState;
-        public readonly IMatchState RunningTennisState;
-        public readonly IMatchState StoppedState;
-        public readonly IMatchState OverState;
+        public IMatchState InitState {get; private set; }
+        public IMatchState ReadyState {get; private set; }
+        public IMatchState RunningState {get; private set; }
+        public IMatchState RunningTennisState {get; private set; }
+        public IMatchState StoppedState {get; private set; }
+        public IMatchState OverState {get; private set; }
 
         public event Action<Side> Score;
-        public event Action<Player> PlayerCounted;
+        public event Action<PlayerComponent> PlayerCounted;
         public event Action<Side> Ready;
         public event Action Stop;
         public event Action<Side, int, int, int> Over;
         public event Action<int, bool> Alpha;
 
-        public MatchComponent(MatchData matchData)
+        protected virtual void Awake()
         {
             MatchTimer = new MatchTimer();
-            MatchData = matchData;
-            PhysicsSettings = Resources.Load<PhysicsSettings>("Settings/Physics/eule");
-
             ResetBallTimer = new ResetBallTimer();
             AutoDropTimer = new AutoDropTimer();
             BombTimer = new BombTimer();
 
-            #region Init States
-
             InitState = new MatchInitState();
             ReadyState = new MatchReadyState(this);
-            RunningState = new MatchRunningState(this, matchData);
-            RunningTennisState = new MatchRunningTennisState(this, matchData);
-            StoppedState = new MatchStoppedState(this, matchData);
+            RunningState = new MatchRunningState(this);
+            RunningTennisState = new MatchRunningTennisState(this);
+            StoppedState = new MatchStoppedState(this);
             OverState = new MatchOverState(this);
 
-            #endregion
-
             SetState(InitState);
-        }
-
-        public virtual void FixedUpdate()
-        {
-            foreach (var player in Players)
-            {
-                player?.FixedUpdate();
-            }
-            BallComponent?.FixedUpdate();
         }
 
         public void SetState(IMatchState newState)
@@ -103,9 +89,9 @@ namespace Blobby.Game
             _matchState.EnterState();
         }
 
-        protected virtual void OnPlayer(Player player) 
+        protected virtual void OnPlayer(PlayerComponent playerComponent)
         {
-            _matchState.OnPlayer(player);
+            _matchState.OnPlayer(playerComponent);
         }
 
         protected virtual void OnGround()
@@ -148,34 +134,30 @@ namespace Blobby.Game
             LastWinner = winner;
         }
 
-        protected virtual void OnPlayerCounted(Player player) 
+        protected virtual void OnPlayerCounted(PlayerComponent playerComponent)
         {
             LastHit = Time.fixedTime;
 
-            HitCounts[player.PlayerData.PlayerNum]++;
+            HitCounts[playerComponent.PlayerData.PlayerNum]++;
 
-            if (Players.Count == 4)
+            if (Players.Count != 4) return;
+
+            for (var i = 0; i < 4; i++)
             {
-                for (int i = 0; i < 4; i++)
-                {
-                    Alpha?.Invoke(i, false);
-                }
-
-                HitCounts[player.PlayerData.PlayerNum % 2 + 4]++;
-
-                Alpha?.Invoke(player.PlayerData.PlayerNum, true);
+                Alpha?.Invoke(i, false);
             }
+
+            HitCounts[playerComponent.PlayerData.PlayerNum % 2 + 4]++;
+
+            Alpha?.Invoke(playerComponent.PlayerData.PlayerNum, true);
         }
 
         protected virtual async Task OnResetBallTimerStopped()
         {
             await WaitForGrounded();
 
-            //MainThreadManager.Run(() =>
-            //{
-                SetState(ReadyState);
-                BallComponent.SetState(BallComponent.Ready);
-            //});
+            SetState(ReadyState);
+            BallComponent.SetState(BallComponent.Ready);
         }
 
         async Task WaitForGrounded()
@@ -196,7 +178,7 @@ namespace Blobby.Game
             while (true);
         }
 
-        protected virtual void OnAutoDropTimerStopped()
+        void OnAutoDropTimerStopped()
         {
             MainThreadManager.Run(() =>
             {
@@ -237,8 +219,6 @@ namespace Blobby.Game
 
         protected virtual void SubscribeEventHandler()
         {
-            TimeComponent.FixedUpdateTicked += FixedUpdate;
-
             Ready += OnReady;
             PlayerCounted += OnPlayerCounted;
             Alpha += OnAlpha;
@@ -265,16 +245,14 @@ namespace Blobby.Game
             AutoDropTimer.AutoDropTimerStopped += OnAutoDropTimerStopped;
         }
 
-        public virtual void Dispose()
+        void OnDestroy()
         {
-            TimeComponent.FixedUpdateTicked -= FixedUpdate;
-
-            BallComponent?.Dispose();
-            foreach (var player in Players) player?.Dispose();
+            Destroy(BallComponent.gameObject);
+            foreach (var player in Players) Destroy(player.gameObject);
         }
 
         public void InvokeReady(Side beginningSide) => Ready?.Invoke(beginningSide);
-        public void InvokePlayerCounted(Player player) => PlayerCounted?.Invoke(player);
+        public void InvokePlayerCounted(PlayerComponent playerComponent) => PlayerCounted?.Invoke(playerComponent);
         public void InvokeAlpha(int playerNum, bool isTransparent) => Alpha?.Invoke(playerNum, isTransparent);
         public void InvokeScore(Side lastWinner) => Score?.Invoke(lastWinner);
         public void InvokeStop() => Stop?.Invoke();

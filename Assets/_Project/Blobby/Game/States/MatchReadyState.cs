@@ -21,15 +21,15 @@ namespace Blobby.Game.States
 
         }
 
-        public void OnPlayer(Player player)
+        public void OnPlayer(PlayerComponent playerComponent)
         {
             if (_matchComponent.MatchData.PlayerMode == PlayerMode.Double ||
                 _matchComponent.MatchData.PlayerMode == PlayerMode.DoubleFixed)
             {
-                _matchComponent.HitCounts[(player.PlayerData.PlayerNum + 2) % 4] = 0;
+                _matchComponent.HitCounts[(playerComponent.PlayerData.PlayerNum + 2) % 4] = 0;
             }
 
-            _matchComponent.InvokePlayerCounted(player);
+            _matchComponent.InvokePlayerCounted(playerComponent);
 
             for (int i = 0; i < 6; i++)
             {

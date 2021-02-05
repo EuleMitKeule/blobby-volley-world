@@ -8,13 +8,13 @@ namespace Blobby.Game.Entities.States
 {
     public class AiIdleState : AiState
     {
-        public AiIdleState(AiPlayer aiPlayer, MatchComponent matchComponent) : base(aiPlayer, matchComponent) { }
+        public AiIdleState(AiPlayerComponent aiPlayerComponent, MatchComponent matchComponent) : base(aiPlayerComponent, matchComponent) { }
 
         public override void EnterState()
         {
-            _aiPlayer.KeyPressed[0] = false;
-            _aiPlayer.KeyPressed[1] = false;
-            _aiPlayer.KeyPressed[2] = false;
+            AiPlayerComponent.KeyPressed[0] = false;
+            AiPlayerComponent.KeyPressed[1] = false;
+            AiPlayerComponent.KeyPressed[2] = false;
         }
 
         public override void ExitState()

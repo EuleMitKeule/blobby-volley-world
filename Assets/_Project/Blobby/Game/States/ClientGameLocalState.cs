@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Blobby.Game.States
 {
@@ -42,7 +43,7 @@ namespace Blobby.Game.States
 
                 MatchHandler.ZoomEffect?.ZoomOut();
 
-                localMatch?.Restart();
+                localMatch.Restart();
             });
         }
 
@@ -95,7 +96,7 @@ namespace Blobby.Game.States
                 MenuHelper.SetPanelPause(false);
 
                 //MatchHandler.ZoomEffect?.Dispose();
-                MatchHandler.ZoomEffect?.ZoomIn(localMatch.Players[winner == Side.Left ? 0 : 1].PlayerObj.transform);
+                MatchHandler.ZoomEffect?.ZoomIn(localMatch.Players[winner == Side.Left ? 0 : 1].transform);
 
                 var usernames = (from i in Enumerable.Range(0, 4) select $"Blob_{i}").ToArray();
                 PanelOver.Populate(usernames, new int[] { localMatch.ScoreLeft, localMatch.ScoreRight }, localMatch.MatchTimer.MatchTime, winner);
@@ -114,7 +115,8 @@ namespace Blobby.Game.States
         public void OnBlackoutOver()
         {
             MatchHandler.MatchData = MatchHandler.LocalMatchData;
-            MatchHandler.Match = new LocalMatchComponent(MatchHandler.LocalMatchData, MatchHandler.Ai);
+            var matchObject = Object.Instantiate(PrefabHelper.LocalMatch);
+            MatchHandler.Match = matchObject.GetComponent<IMatch>();
 
             if (!(MatchHandler.Match is LocalMatchComponent localMatch)) return;
 
@@ -129,7 +131,7 @@ namespace Blobby.Game.States
             {
                 if (!(MatchHandler.Match is LocalMatchComponent localMatch)) return;
 
-                localMatch.Start();
+                localMatch.StartMatch();
             });
         }
 

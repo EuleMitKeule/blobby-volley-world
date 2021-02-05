@@ -2,28 +2,31 @@
 using Blobby.Game;
 using Blobby.Game.Entities;
 
-public interface IJumpStrategy
+namespace Blobby.Game.Entities.Strategies
 {
-    void OnJumpDown();
-
-    void OnJumpUp();
-
-    void OnJump();
-
-    void OnJumpHold();
-}
-
-public static class JumpStrategyFactory
-{
-    public static IJumpStrategy Create(Player player, MatchComponent matchComponent)
+    public interface IJumpStrategy
     {
-        return matchComponent.JumpMode switch
+        void OnJumpDown();
+
+        void OnJumpUp();
+
+        void OnJump();
+
+        void OnJumpHold();
+    }
+
+    public static class JumpStrategyFactory
+    {
+        public static IJumpStrategy Create(PlayerComponent playerComponent, JumpMode jumpMode)
         {
-            JumpMode.Standard => new StandardJumpStrategy(player, matchComponent),
-            JumpMode.NoJump => new NoJumpStrategy(),
-            JumpMode.Pogo => new PogoJumpStrategy(player, matchComponent),
-            JumpMode.Spring => new SpringJumpStrategy(player, matchComponent),
-            _ => null
-        };
+            return jumpMode switch
+            {
+                JumpMode.Standard => new StandardJumpStrategy(playerComponent),
+                JumpMode.NoJump => new NoJumpStrategy(),
+                JumpMode.Pogo => new PogoJumpStrategy(playerComponent),
+                JumpMode.Spring => new SpringJumpStrategy(playerComponent),
+                _ => null
+            };
+        }
     }
 }

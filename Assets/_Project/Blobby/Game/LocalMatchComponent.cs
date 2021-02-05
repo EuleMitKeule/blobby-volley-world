@@ -14,6 +14,10 @@ namespace Blobby.Game
 {
     public class LocalMatchComponent : MatchComponent, IClientMatch
     {
+        [SerializeField] bool _isAiGame;
+
+        public override MatchData MatchData => MatchHandler.MatchData;
+
         public event Action MatchStarted;
         public event Action<int, int, Side> ScoreChanged;
         public event Action<int> TimeChanged;
@@ -23,34 +27,46 @@ namespace Blobby.Game
 
         MatchScore _matchScore;
 
-        public LocalMatchComponent(MatchData matchData, bool isAiGame = false) : base(matchData)
+        protected override void Awake()
         {
+            base.Awake();
+
             MainThreadManager.Run(() =>
             {
-                Time.timeScale = matchData.TimeScale;
-                MapHelper.ChangeMap(matchData.Map);
+                Time.timeScale = MatchData.TimeScale;
+                MapHelper.ChangeMap(MatchData.Map);
 
-                if (!isAiGame)
+                if (!_isAiGame)
                 {
-                    for (int i = 0; i < matchData.PlayerCount; i++)
+                    for (int i = 0; i < MatchData.PlayerCount; i++)
                     {
                         var playerData = new PlayerData(i, "", PanelSettings.SettingsData.Colors[i]);
-                        Players.Add(new LocalPlayer(this, playerData));
+                        var playerObject = Instantiate(PrefabHelper.LocalPlayer, transform);
+                        var playerComponent = playerObject.GetComponent<PlayerComponent>();
+                        playerComponent.PlayerData = playerData;
+                        Players.Add(playerComponent);
                     }
                 }
                 else
                 {
                     var playerData = new PlayerData(0, "", PanelSettings.SettingsData.Colors[0]);
-                    Players.Add(new LocalPlayer(this, playerData));
+                    var playerObject = Instantiate(PrefabHelper.LocalPlayer, transform);
+                    var playerComponent = playerObject.GetComponent<PlayerComponent>();
+                    playerComponent.PlayerData = playerData;
+                    Players.Add(playerComponent);
 
-                    for (int i = 1; i < matchData.PlayerCount; i++)
+                    for (var i = 1; i < MatchData.PlayerCount; i++)
                     {
                         playerData = new PlayerData(i, $"COM_{i}", PanelSettings.SettingsData.Colors[i]);
-                        Players.Add(new AiPlayer(this, playerData, matchData));
+                        playerObject = Instantiate(PrefabHelper.AiPlayer, transform);
+                        playerComponent = playerObject.GetComponent<PlayerComponent>();
+                        playerComponent.PlayerData = playerData;
+                        Players.Add(playerComponent);
                     }
                 }
 
-                BallComponent = new LocalBallComponent(this, matchData);
+                var ballObject = Instantiate(PrefabHelper.Ball, transform);
+                BallComponent = ballObject.GetComponent<BallComponent>();
 
                 _matchScore = new MatchScore(this, Players[0].PlayerData, Players[1].PlayerData);
 
@@ -60,7 +76,7 @@ namespace Blobby.Game
             });
         }
 
-        public void Start()
+        public void StartMatch()
         {
             MainThreadManager.Run(() =>
             {
@@ -79,10 +95,6 @@ namespace Blobby.Game
             {
                 for (int i = 0; i < MatchData.PlayerCount; i++)
                 {
-                    // Players[i].Position = MatchData.SpawnPoints[i];
-                    // Players[i].LeftLimit = MatchData.LeftLimits[i];
-                    // Players[i].RightLimit = MatchData.RightLimits[i];
-
                     if (MatchData.PlayerCount == 4) InvokeAlpha(i, false);
                 }
 
@@ -102,8 +114,9 @@ namespace Blobby.Game
 
                 _matchScore = new MatchScore(this, Players[0].PlayerData, Players[1].PlayerData);
 
-                BallComponent?.Dispose();
-                BallComponent = new LocalBallComponent(this, MatchData);
+                if (BallComponent) Destroy(BallComponent.gameObject);
+                var ballObject = Instantiate(PrefabHelper.Ball, transform);
+                BallComponent = ballObject.GetComponent<BallComponent>();
 
                 SubscribeBallEvents();
                 SubscribeTimerEvents();
@@ -113,9 +126,9 @@ namespace Blobby.Game
             });
         }
 
-        protected override void OnPlayer(Player player)
+        protected override void OnPlayer(PlayerComponent playerComponent)
         {
-            base.OnPlayer(player);
+            base.OnPlayer(playerComponent);
 
             SoundHelper.PlayAudio(SoundHelper.SoundClip.WallHit);
         }
@@ -188,10 +201,8 @@ namespace Blobby.Game
             base.OnOver(winner, scoreLeft, scoreRight, time);
         }
 
-        public override void Dispose()
+        void OnDestroy()
         {
-            base.Dispose();
-
             MatchStopped?.Invoke();
         }
     }

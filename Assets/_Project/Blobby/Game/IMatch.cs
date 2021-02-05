@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Blobby.Game
 {
-    public interface IMatch : IDisposable
+    public interface IMatch
     {
         public event Action MatchStarted;
         public event Action MatchStopped;

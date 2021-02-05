@@ -1,36 +1,54 @@
 ﻿using Blobby.Models;
 using System;
+using Blobby.Game.Entities.Strategies;
 using Blobby.Game.Physics;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Blobby.Game.Entities
 {
-    public class Player
+    [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(PlayerGraphicsComponent))]
+    public class PlayerComponent : MonoBehaviour, IPlayerAnimProvider
     {
-        public GameObject PlayerObj { get; protected set; }
-        public PlayerData PlayerData { get; }
-        protected PlayerGraphics PlayerGraphics { get; set; }
-        protected MatchComponent MatchComponent { get; }
-        BallComponent BallComponent => MatchComponent.Ball;
+        GameObject MatchObject => transform.parent.gameObject;
+        protected MatchComponent MatchComponent { get; private set; }
+        BallComponent BallComponent => MatchComponent.BallComponent;
+
+        PlayerData _playerData;
+        public PlayerData PlayerData
+        {
+            get => _playerData;
+            set
+            {
+                _playerData = value;
+                PlayerDataChanged?.Invoke(value);
+            }
+        }
+        public event Action<PlayerData> PlayerDataChanged;
 
         #region Physics Member
 
         public Vector2 Position { get; private set; }
         public Vector2 Velocity { get; set; }
-        Vector2 TransformPosition => PlayerObj.transform.position;
+        Vector2 TransformPosition => transform.position;
 
         #region Constants
 
         public const int LAYER = 8;
         const float GRAVITY = 406f;
         const float RUN_VELOCITY = 16.9f;
+        public const float JUMP_VELOCITY = 62f;
+        public const float JUMP_DRIFT = 216f;
+        public const float MIN_CHARGE = 0.85f;
+        public const float MAX_CHARGE = 1.85f;
+        public const float CHARGE_INCREASE = 0.14f;
 
         #endregion
 
         #region Collider
 
-        CircleCollider2D[] Colliders => PlayerObj.GetComponents<CircleCollider2D>();
+        CircleCollider2D[] Colliders => GetComponents<CircleCollider2D>();
         protected CircleCollider2D UpperCollider { get; set; }
         protected CircleCollider2D LowerCollider { get; set; }
         float UpperRadius => UpperCollider.radius;
@@ -152,7 +170,7 @@ namespace Blobby.Game.Entities
 
         public bool[] KeyPressed { get; } = new bool[3];
         public bool IsGrounded { get; set; }
-        protected bool IsRunning => KeyPressed[1] || KeyPressed[2];
+        public bool IsRunning => KeyPressed[1] || KeyPressed[2];
         Side MoveSide => KeyPressed[1] switch
         {
             true when !KeyPressed[2] => Side.Left,
@@ -161,7 +179,7 @@ namespace Blobby.Game.Entities
         };
         int MoveSign => MoveSide.GetSign();
         bool IsJumping => KeyPressed[0];
-        IJumpStrategy JumpStrategy { get; }
+        IJumpStrategy JumpStrategy { get; set; }
 
         #endregion
 
@@ -170,50 +188,27 @@ namespace Blobby.Game.Entities
         public Side OwnSide => DefaultBlobNum % 2 == 0 ? Side.Left : Side.Right;
         public Side EnemySide => OwnSide.Other();
         bool IsOnLeftTeam => PlayerData.Side == Side.Left;
-        bool IsSwitched => IsOnLeftTeam ? MatchComponent.LeftSwitched : MatchComponent.RightSwitched;
+        public bool IsSwitched => IsOnLeftTeam ? MatchComponent.LeftSwitched : MatchComponent.RightSwitched;
         int BlobNum => IsSwitched ? TeamBlobNum : DefaultBlobNum;
-        int DefaultBlobNum => PlayerData.PlayerNum;
+        public int DefaultBlobNum => PlayerData.PlayerNum;
         int TeamBlobNum => (PlayerData.PlayerNum + 2) % 4;
+        public virtual bool IsInvisible => false;
 
         #endregion
 
-        #region Graphics Member
-
-        public const float NAME_LABEL_OFFSET = -9.3f;
-        public const float SHADOW_X = 1.588f;
-        public const float SHADOW_Y = -1.73f;
-        public const float SHADOW_MOD = 0.1f;
-        
-        static readonly int IsRunningAnim = Animator.StringToHash("isRunning");
-        static readonly int IsGroundedAnim = Animator.StringToHash("grounded");
-        
-        Animator Animator { get; }
-        
-        #endregion
-        
-        protected Player(MatchComponent matchComponent, PlayerData playerData, GameObject prefab = null)
+        protected virtual void Awake()
         {
-            MatchComponent = matchComponent;
-            PlayerData = playerData;
-
-            if (prefab)
-            {
-                PlayerObj = Object.Instantiate(prefab, SpawnPoint, Quaternion.identity);
-                PlayerGraphics = new PlayerGraphics(this, PlayerData);
-                Animator = PlayerObj.GetComponent<Animator>();
-            }
+            MatchComponent = MatchObject.GetComponent<MatchComponent>();
 
             UpperCollider = Colliders[0];
             LowerCollider = Colliders[1];
-            
-            JumpStrategy = JumpStrategyFactory.Create(this, matchComponent);
 
-            Position = SpawnPoint;
+            JumpStrategy = JumpStrategyFactory.Create(this, MatchComponent.JumpMode);
 
             SubscribeEventHandler();
         }
 
-        public virtual void FixedUpdate()
+        void FixedUpdate()
         {
             Velocity -= DeltaGravity;
             Velocity = MoveVelocity;
@@ -230,43 +225,34 @@ namespace Blobby.Game.Entities
             Velocity = ClampedVelocity;
             Position = ClampedPosition;
 
-            if (MatchComponent.Ball != null)
+            if (MatchComponent.BallComponent)
             {
                 var ballCollisionResult = BallCollision;
 
                 if (ballCollisionResult.HasValue)
                 {
-                    var largeRadius = ballCollisionResult.Value.Radius + MatchComponent.Ball.Radius;
+                    var largeRadius = ballCollisionResult.Value.Radius + MatchComponent.BallComponent.Radius;
                     var ballCentroid = Position + ballCollisionResult.Value.Offset -
                                      ballCollisionResult.Value.Result.normal * largeRadius;
                     var ballNormal = -ballCollisionResult.Value.Result.normal;
-                    MatchComponent.Ball.ResolvePlayerCollision(this, ballCentroid, ballNormal);
+                    MatchComponent.BallComponent.ResolvePlayerCollision(this, ballCentroid, ballNormal);
                 }
             }
 
-            if (!PlayerObj) return;
+            transform.position = Position;
+        }
 
-            PlayerObj.transform.position = Position;
-
-            Animator.SetBool(IsRunningAnim, IsRunning);
-            Animator.SetBool(IsGroundedAnim, IsGrounded);
-
-            PlayerGraphics.SetShadow();
-            PlayerGraphics.SetNameLabelPos();
+        void OnDestroy()
+        {
+            MatchComponent.Ready -= OnReady;
+            MatchComponent.Stop -= OnStop;
+            MatchComponent.Over -= OnOver;
         }
 
         #region Match Methods
 
         protected virtual void OnReady(Side side)
         {
-        }
-
-        protected virtual void OnAlpha(int playerNum, bool isTransparent)
-        {
-            if (playerNum == DefaultBlobNum)
-            {
-                PlayerGraphics?.SetAlpha(isTransparent);
-            }
         }
 
         protected virtual void OnStop()
@@ -296,19 +282,8 @@ namespace Blobby.Game.Entities
         void SubscribeEventHandler()
         {
             MatchComponent.Ready += OnReady;
-            MatchComponent.Alpha += OnAlpha;
             MatchComponent.Stop += OnStop;
             MatchComponent.Over += OnOver;
-        }
-
-        public virtual void Dispose()
-        {
-            MatchComponent.Ready -= OnReady;
-            MatchComponent.Alpha -= OnAlpha;
-            MatchComponent.Stop -= OnStop;
-            MatchComponent.Over -= OnOver;
-
-            if (PlayerObj) Object.Destroy(PlayerObj);
         }
     }
 }

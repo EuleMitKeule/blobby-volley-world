@@ -3,19 +3,25 @@ using UnityEngine;
 
 namespace Blobby.Game.Entities
 {
-    public class LocalPlayer : Player
+    public class LocalPlayerComponent : PlayerComponent
     {
-        static GameObject Prefab => PrefabHelper.LocalPlayer;
+        protected override void Awake()
+        {
+            base.Awake();
 
-        public LocalPlayer(LocalMatchComponent matchComponent, PlayerData playerData) : base(matchComponent, playerData, Prefab)
+            if (MatchComponent is LocalMatchComponent localMatchComponent)
+            {
+                localMatchComponent.MatchStarted += OnMatchStarted;
+            }
+        }
+
+        void OnMatchStarted()
         {
             SubscribeControls();
         }
 
-        public override void Dispose()
+        void OnDestroy()
         {
-            base.Dispose();
-            
             UnsubscribeControls();
         }
 

@@ -19,7 +19,7 @@ namespace Blobby.Game.Entities
         {
             MainThreadManager.Run(() =>
             {
-                _ballComponent.BallObj.layer = 7;
+                _ballComponent.gameObject.layer = 7;
             });
         }
 
@@ -33,21 +33,24 @@ namespace Blobby.Game.Entities
             _ballComponent.HandleMapCollision();
         }
 
-        public void OnPlayerHit(Player player, Vector2 centroid, Vector2 normal) { }
-
-        public void OnWallHit()
+        public void OnCollision(RaycastHit2D result)
         {
-            
+            if (result.collider == PhysicsWorld.GroundCollider)
+            {
+                if (Mathf.Abs(_ballComponent.Velocity.y) > GROUND_VELOCITY_THRESHOLD) _ballComponent.InvokeGroundHit();
+            }
+            else if (result.collider == PhysicsWorld.NetEdgeCollider)
+            {
+                _ballComponent.InvokeNetHit();
+            }
+            else
+            {
+                _ballComponent.InvokeWallHit();
+            }
         }
 
-        public void OnNetHit()
+        public void OnPlayerHit(PlayerComponent playerComponent, Vector2 centroid, Vector2 normal)
         {
-            
-        }
-
-        public void OnGroundHit()
-        {
-            if (Mathf.Abs(_ballComponent.Velocity.y) > GROUND_VELOCITY_THRESHOLD) _ballComponent.InvokeGroundHit();
         }
 
         public void OnBombTimerStopped()

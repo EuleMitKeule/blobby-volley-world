@@ -19,7 +19,7 @@ namespace Blobby.Game.Entities
         {
             MainThreadManager.Run(() =>
             {
-                _ballComponent.BallObj.layer = 6;
+                _ballComponent.gameObject.layer = 6;
 
                 var ballPos = _matchComponent.LastWinner == Side.Left ||
                               _matchComponent.LastWinner == Side.None
@@ -27,7 +27,7 @@ namespace Blobby.Game.Entities
                     : _ballComponent.SpawnPoints[1];
 
                 _ballComponent.Position = ballPos;
-                _ballComponent.BallObj.transform.position = ballPos;
+                _ballComponent.transform.position = ballPos;
                 _ballComponent.Velocity = Vector2.zero;
                 _ballComponent.Rotation = 0f;
                 _ballComponent.AngularVelocity = 0f;
@@ -47,26 +47,16 @@ namespace Blobby.Game.Entities
         {
         }
 
-        public void OnPlayerHit(Player player, Vector2 centroid, Vector2 normal)
+        public void OnPlayerHit(PlayerComponent playerComponent, Vector2 centroid, Vector2 normal)
         {
             _ballComponent.Position = centroid;
-            _ballComponent.Velocity = normal * BALL_SHOT_VELOCITY;
+            _ballComponent.Velocity = normal * SHOT_VELOCITY;
 
-            _ballComponent.InvokePlayerHit(player);
+            _ballComponent.InvokePlayerHit(playerComponent);
             _ballComponent.SetState(_ballComponent.Running);
         }
 
-        public void OnWallHit()
-        {
-            
-        }
-
-        public void OnNetHit()
-        {
-            
-        }
-
-        public void OnGroundHit()
+        public void OnCollision(RaycastHit2D result)
         {
 
         }

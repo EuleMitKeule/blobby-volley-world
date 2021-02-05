@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Blobby.Game.Entities
 {
-    public class AiPlayer : Player
+    public class AiPlayerComponent : PlayerComponent
     {
         public AiData AiData { get; private set; }
 
@@ -22,35 +22,36 @@ namespace Blobby.Game.Entities
         public AiState AiState { get; private set; }
 
         public bool[] IsTransparent { get; private set; } = { true, true, true, true };
-
-        Animator _animator;
-        LocalMatchComponent _localMatchComponent;
+        public override bool IsInvisible => MatchComponent.PlayerMode == PlayerMode.Ghost && OwnSide == Side.Right;
 
         static GameObject Prefab => PrefabHelper.LocalPlayer;
-     
-        public AiPlayer(LocalMatchComponent matchComponent, PlayerData playerData, MatchData matchData) : base(matchComponent, playerData, Prefab)
+
+        protected override void Awake()
         {
-            _localMatchComponent = matchComponent;
+            base.Awake();
+
+            SubscribeEventHandler();
 
             AiData = new AiData()
             {
                 DefensivePositionX = PlayerData.Side == Side.Left ? -12f : 12f,
                 Threshold = 0.5f,
-                OffensiveOffset = PlayerData.Side == Side.Left ? -0.75f : 0.75f
+                OffensiveOffset = PlayerData.Side == Side.Left ? -0.75f : 0.75f,
             };
 
-            Defensive = new AiDefensiveState(this, matchComponent);
-            Offensive = new AiOffensiveState(this, matchComponent);
-            Idle = new AiIdleState(this, matchComponent);
-            
-            if (matchData.PlayerMode == PlayerMode.Ghost && PlayerData.Side == Side.Right)
-            {
-                PlayerGraphics.SetInvisible(true);
-            }
+            Defensive = new AiDefensiveState(this, MatchComponent);
+            Offensive = new AiOffensiveState(this, MatchComponent);
+            Idle = new AiIdleState(this, MatchComponent);
+        }
 
-            _animator = PlayerObj.GetComponent<Animator>();
+        void FixedUpdate()
+        {
+            AiState?.FixedUpdate();
+        }
 
-            SubscribeEventHandler();
+        void OnDestroy()
+        {
+            MatchComponent.PlayerCounted -= OnPlayerCounted;
         }
 
         protected override void OnStop()
@@ -87,20 +88,15 @@ namespace Blobby.Game.Entities
         void OnAlpha(int playerNum, bool isAlpha)
         {
             IsTransparent[playerNum] = isAlpha;
-
-            if (playerNum == PlayerData.PlayerNum)
-            {
-                PlayerGraphics.SetAlpha(isAlpha);
-            }
         }
 
-        void OnPlayerCounted(Player player)
+        void OnPlayerCounted(PlayerComponent playerComponent)
         {
-            if (player == this && !MatchComponent.IsSingle)
+            if (playerComponent == this && !MatchComponent.IsSingle)
             {
                 SetState(Defensive);
             }
-            else if (player is AiPlayer aiPlayer)
+            else if (playerComponent is AiPlayerComponent aiPlayer)
             {
                 var playerNum = aiPlayer.PlayerData.PlayerNum;
                 if (playerNum == (PlayerData.PlayerNum + 2) % 4)
@@ -108,7 +104,7 @@ namespace Blobby.Game.Entities
                     SetState(Offensive);
                 }
             }
-            else if (player is LocalPlayer localPlayer)
+            else if (playerComponent is LocalPlayerComponent localPlayer)
             {
                 var playerNum = localPlayer.PlayerData.PlayerNum;
                 if (playerNum == (PlayerData.PlayerNum + 2) % 4)
@@ -128,25 +124,9 @@ namespace Blobby.Game.Entities
             AiState?.EnterState();
         }
 
-        public override void FixedUpdate()
-        {
-            base.FixedUpdate();
-
-            AiState?.FixedUpdate();
-        }
-
         void SubscribeEventHandler()
         {
-            _localMatchComponent.Alpha += OnAlpha;
-            _localMatchComponent.PlayerCounted += OnPlayerCounted;
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-
-            _localMatchComponent.Alpha -= OnAlpha;
-            _localMatchComponent.PlayerCounted -= OnPlayerCounted;
+            MatchComponent.PlayerCounted += OnPlayerCounted;
         }
     }
 }

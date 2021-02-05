@@ -81,7 +81,7 @@ namespace Blobby.Game
         {
             Debug.Log("Server Start successful");
 
-            MatchComponent = new OnlineMatchComponent(ServerData.MatchData);
+            //MatchComponent = new OnlineMatchComponent(ServerData.MatchData); //TODO hier muss das match object gespawned werden
 
             MatchComponent.Over += OnMatchOver;
             MatchComponent.MatchStopped += OnMatchStopped;

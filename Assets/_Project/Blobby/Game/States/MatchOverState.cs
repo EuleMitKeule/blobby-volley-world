@@ -34,7 +34,7 @@ namespace Blobby.Game.States
 
         }
 
-        public void OnPlayer(Player player)
+        public void OnPlayer(PlayerComponent playerComponent)
         {
 
         }

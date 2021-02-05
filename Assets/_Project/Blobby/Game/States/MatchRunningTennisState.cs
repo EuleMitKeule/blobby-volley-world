@@ -8,19 +8,18 @@ namespace Blobby.Game.States
     public class MatchRunningTennisState : IMatchState
     {
         MatchComponent _matchComponent;
-        MatchData _matchData;
 
-        public MatchRunningTennisState(MatchComponent matchComponent, MatchData matchData) => (_matchComponent, _matchData) = (matchComponent, matchData);
+        public MatchRunningTennisState(MatchComponent matchComponent) => (_matchComponent) = (matchComponent);
 
-        public void OnPlayer(Player player)
+        public void OnPlayer(PlayerComponent playerComponent)
         {
             //set other sides hit count to 0
-            _matchComponent.SetHitCounts(player.EnemySide, 0);
+            _matchComponent.SetHitCounts(playerComponent.EnemySide, 0);
 
             //check if hit can count again
             if (!_matchComponent.CanHit()) return;
 
-            _matchComponent.InvokePlayerCounted(player);
+            _matchComponent.InvokePlayerCounted(playerComponent);
 
             //check if hit count exceeds max allowed hit count
             for (int i = 0; i < 6; i++)
@@ -33,8 +32,8 @@ namespace Blobby.Game.States
             }
 
             //make ground deadly
-            if (_matchComponent.BallComponent.Position.x <= 0f && player.PlayerData.PlayerNum % 2 == 0 ||
-                _matchComponent.BallComponent.Position.x > 0f && player.PlayerData.PlayerNum % 2 == 1)
+            if (_matchComponent.BallComponent.Position.x <= 0f && playerComponent.PlayerData.PlayerNum % 2 == 0 ||
+                _matchComponent.BallComponent.Position.x > 0f && playerComponent.PlayerData.PlayerNum % 2 == 1)
             {
                 _matchComponent.SetState(_matchComponent.RunningState);
                 _matchComponent.BallComponent.SetState(_matchComponent.BallComponent.Running);

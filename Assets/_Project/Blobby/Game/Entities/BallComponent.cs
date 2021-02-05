@@ -11,216 +11,194 @@ using Object = UnityEngine.Object;
 
 namespace Blobby.Game.Entities
 {
-    public abstract class BallComponent : MonoBehaviour, IDisposable
+    public abstract class BallComponent : MonoBehaviour
     {
         GameObject MatchObject => transform.parent.gameObject;
+        MatchComponent MatchComponent { get; set; }
 
-        public CircleCollider2D Collider { get; protected set; }
-        public float Radius => Collider.radius;
-
-        public Vector2 Position { get; set; }
-        public Vector2 Velocity { get; set; }
-
-        public float Rotation { get; set; }
-        public float AngularVelocity { get; set; }
-        
-        public float Gravity { get; set; }
-        public Side Side { get; set; }
         public bool IsSwitched { get; set; }
+        public Vector2[] SpawnPoints => new[] { new Vector2(-10, -1), new Vector2(10, -1) };
+
+        #region Physics Member
 
         public const int LAYER = 6;
-
-        public const float BALL_SHOT_VELOCITY = 45.4f;
-
-        public Vector2[] SpawnPoints
-        {
-            get { return new[] {new Vector2(-10, -1), new Vector2(10, -1)}; }
-        }
-
+        const int MAP_LAYERMASK = 1 << PhysicsWorld.MAP_LAYER;
+        const int PLAYER_LAYERMASK = 1 << PlayerComponent.LAYER;
+        public const float SHOT_VELOCITY = 45.4f;
+        const float MAX_VELOCITY = 52.2f;
         public const float GROUND_VELOCITY_THRESHOLD = 3.5f;
+        public const float GRAVITY = 78f;
 
-        #region States
+        public Vector2 Position { get; set; }
+        Vector2 TransformPosition => transform.position;
+        public Vector2 Velocity { get; set; }
+        public float Gravity { get; set; }
+        public float Rotation { get; set; }
+        public float AngularVelocity { get; set; }
+
+        Vector2 DeltaVelocity => Vector2.up * (Time.fixedDeltaTime * Gravity);
+        Vector2 DeltaPosition => Velocity * Time.fixedDeltaTime;
+        float DeltaRotation => Time.fixedDeltaTime * AngularVelocity;
+        Vector2 ClampedVelocity =>
+            Velocity.magnitude > MAX_VELOCITY ? Velocity.normalized * MAX_VELOCITY : Velocity;
+        float TraveledDistance => (Velocity * Time.fixedDeltaTime).magnitude;
+
+        bool IsOnLeftSide => Position.IsLeftOf(0f);
+        Side CurrentSide => IsOnLeftSide ? Side.Left : Side.Right;
+        bool HasSideChanged => CurrentSide != Side;
+        public Side Side { get; set; }
+
+        CircleCollider2D Collider { get; set; }
+        public float Radius => Collider.radius;
+
+        RaycastHit2D MapCollision =>
+            Physics2D.CircleCast(TransformPosition, Radius, Velocity, TraveledDistance, MAP_LAYERMASK);
+        RaycastHit2D PlayerCollision =>
+            Physics2D.CircleCast(TransformPosition, Radius, Velocity, TraveledDistance, PLAYER_LAYERMASK);
+        bool IsCollidingWithPlayer => PlayerCollision.collider;
+        bool CanCollideWithPlayer => State != Stopped;
+
+        Vector2 GroundNormal => new Vector2(Velocity.x * 0.5f, Velocity.y * -0.5f).normalized * 0.5f;
+        Vector2 GroundTennisNormal => Velocity = new Vector2(Velocity.x, -0.95f * Velocity.y).normalized * 0.95f;
+
+        #endregion
+
+        #region State Member
 
         public IBallState Ready { get; private set; }
         public IBallState Running { get; private set; }
         public IBallState RunningTennis { get; private set; }
         public IBallState Stopped { get; private set; }
 
+        IBallState State { get; set; }
+
         #endregion
 
+        #region Event Member
+
         public event Action NetHit;
-        public event Action NetEdgeHit;
         public event Action GroundHit;
-        public event Action<Player> PlayerHit;
+        public event Action<PlayerComponent> PlayerHit;
         public event Action WallHit;
         public event Action<Side> SideChanged;
 
-        protected MatchComponent MatchComponent;
-        protected MatchData _matchData;
-        IBallState _state;
-
-        #region Graphics Member
-
-        public const float SHADOW_MOD = 0.1f;
-
         #endregion
 
-        void Awake()
+        protected virtual void Awake()
         {
             Collider = GetComponent<CircleCollider2D>();
-
             MatchComponent = MatchObject.GetComponent<MatchComponent>();
             
             Ready = new BallReadyState(this, MatchComponent);
-            Running = new BallRunningState(this, MatchComponent);
-            RunningTennis = new BallRunningTennisState(this, MatchComponent);
+            Running = new BallRunningState(this);
+            RunningTennis = new BallRunningTennisState(this);
             Stopped = new BallStoppedState(this, MatchComponent);
 
             SetState(Ready);
+
+            SubscribeEventHandler();
+        }
+
+        void FixedUpdate()
+        {
+            Velocity -= DeltaVelocity;
+            Velocity = ClampedVelocity;
+
+            Position += DeltaPosition;
+            Rotation += DeltaRotation;
+
+            State.FixedUpdate();
+
+            if (HasSideChanged)
+            {
+                Side = CurrentSide;
+                InvokeSideChanged(Side);
+            }
+
+            transform.position = Position;
+            transform.rotation = Rotation.ToQuaternion();
         }
 
         public void SetState(IBallState newState)
         {
             if (newState == null) return;
 
-            _state?.ExitState();
+            State?.ExitState();
 
-            _state = newState;
-            _state.EnterState();
-        }
-
-        protected virtual void FixedUpdate()
-        {
-            Velocity -= Vector2.up * (Time.fixedDeltaTime * Gravity);
-
-            if (Velocity.magnitude >= MatchComponent.PhysicsSettings.ballMaxVelocity)
-                Velocity = Velocity.normalized * MatchComponent.PhysicsSettings.ballMaxVelocity;
-            
-            Position += Velocity * Time.fixedDeltaTime;
-
-            _state.FixedUpdate();
-            
-            Rotation += Time.fixedDeltaTime * AngularVelocity;
-
-            var curSide = Position.x > 0f ? Side.Right : Side.Left;
-
-            if (Side != curSide)
-            {
-                Side = curSide;
-                InvokeSideChanged(curSide);
-            }
-
-            transform.position = Position;
-            transform.rotation = Quaternion.Euler(0, 0, Rotation);
+            State = newState;
+            State.EnterState();
         }
 
         public void HandleMapCollision()
         {
-            var layerMask = 1 << PhysicsWorld.MAP_LAYER;
-            var playerLayerMask = 1 << Player.LAYER;
-            
-            var lastPosition = (Vector2)transform.position;
-            var traveledDistance = (Velocity * Time.fixedDeltaTime).magnitude;
-            
-            var result = Physics2D.CircleCast(lastPosition, Radius, Velocity, traveledDistance, layerMask);
-            
-            var playerResult = Physics2D.CircleCast(lastPosition, Radius, Velocity, traveledDistance, playerLayerMask);
-            var isCollidingWithPlayer = playerResult.collider != null;
-            
-            if (result.collider == null) return;
-            
-            var normal = -result.normal;
-            
-            if (result.collider == PhysicsWorld.GroundCollider)
+            var mapResult = MapCollision;
+
+            if (!mapResult.collider) return;
+
+            State.OnCollision(mapResult);
+
+            var normal = CalculateMapCollisionNormal(mapResult);
+            var speed = Velocity.magnitude;
+
+            if (CanCollideWithPlayer && IsCollidingWithPlayer)
             {
-                normal = new Vector2(Velocity.x * 0.5f, Velocity.y * -0.5f);
-                _state.OnGroundHit();
+                var playerResult = PlayerCollision;
+                normal = (normal * speed + playerResult.normal).normalized;
+                speed = SHOT_VELOCITY;
             }
-            else if (result.collider == PhysicsWorld.NetEdgeCollider)
-            {
-                normal = (Velocity - 2 * Vector2.Dot(Velocity, normal) * normal).normalized * Velocity.magnitude;
-                _state.OnNetHit();
-            }
-            else
-            {
-                var leftWall = BallObj.transform.position.x < -9.6f || 0f < BallObj.transform.position.x && BallObj.transform.position.x < 9.6f;
-                var sign = leftWall ? 1f : -1f;
-            
-                normal = new Vector2(Mathf.Abs(Velocity.x) * sign, Velocity.y);
-                _state.OnWallHit();
-            }
-                        
-            if (isCollidingWithPlayer && _state != Stopped)
-            {
-                normal = (normal + playerResult.normal).normalized * BALL_SHOT_VELOCITY;
-            }
-            Velocity = normal;
-            Position = result.centroid + normal * 0.02f;
+
+            Velocity = normal * speed;
+            Position = mapResult.centroid + normal * (speed * 0.02f);
         }
 
-        public void HandleMapCollisionTennis()
+        Vector2 CalculateMapCollisionNormal(RaycastHit2D result)
         {
-            var layerMask = 1 << PhysicsWorld.MAP_LAYER;
-
-            var lastPosition = (Vector2)BallObj.transform.position;
-            var traveledDistance = (Velocity * Time.fixedDeltaTime).magnitude;
-
-            var result = Physics2D.CircleCast(lastPosition, Radius, Velocity, traveledDistance, layerMask);
-
-            if (result.collider == null) return;
-
-            Position = result.centroid;
+            if (!result.collider) return Vector2.zero;
 
             if (result.collider == PhysicsWorld.GroundCollider)
             {
-                InvokeGroundHit();
-                Velocity = new Vector2(Velocity.x, -0.95f * Velocity.y);
+                return State == RunningTennis ? GroundTennisNormal : GroundNormal;
             }
-            else if (result.collider == PhysicsWorld.NetEdgeCollider)
+
+            if (result.collider == PhysicsWorld.NetEdgeCollider)
             {
-                InvokeNetHit();
-                var resetNormal = (Velocity - 2 * Vector2.Dot(Velocity, -result.normal) * -result.normal).normalized;
-                Velocity = resetNormal * Velocity.magnitude;
+                return (Velocity - 2 * Velocity.Dot(-result.normal) * -result.normal).normalized;
             }
-            else
-            {
-                InvokeWallHit();
-                Velocity = new Vector2(-Velocity.x, Velocity.y);
-            }
+
+            var quarterSide = TransformPosition.IsLeftOf(Side.GetSign() * 9.6f) ? Side.Left : Side.Right;
+            return new Vector2(Mathf.Abs(Velocity.x) * -quarterSide.GetSign(), Velocity.y).normalized;
         }
         
-        public void ResolvePlayerCollision(Player player, Vector2 centroid, Vector2 normal)
+        public void ResolvePlayerCollision(PlayerComponent playerComponent, Vector2 centroid, Vector2 normal)
         {
-            _state.OnPlayerHit(player, centroid, normal);
+            State.OnPlayerHit(playerComponent, centroid, normal);
         }
 
         void OnBombTimerStopped()
         {
-            _state.OnBombTimerStopped();
+            State.OnBombTimerStopped();
         }
 
-        protected virtual void OnAutoDropTimerStopped()
+        void OnAutoDropTimerStopped()
         {
             if (MatchComponent.MatchData.JumpMode == JumpMode.NoJump) SetState(Running);
         }
 
-        protected virtual void SubscribeEventHandler()
+        void SubscribeEventHandler()
         {
             MatchComponent.AutoDropTimer.AutoDropTimerStopped += OnAutoDropTimerStopped;
             MatchComponent.BombTimer.BombTimerStopped += OnBombTimerStopped;
         }
 
-        public virtual void Dispose()
+        public void OnDestroy()
         {
             MatchComponent.AutoDropTimer.AutoDropTimerStopped -= OnAutoDropTimerStopped;
             MatchComponent.BombTimer.BombTimerStopped -= OnBombTimerStopped;
-
-            Object.Destroy(BallObj);
         }
 
         public void InvokeNetHit() => NetHit?.Invoke();
         public void InvokeGroundHit() => GroundHit?.Invoke();
-        public void InvokePlayerHit(Player player) => PlayerHit?.Invoke(player);
+        public void InvokePlayerHit(PlayerComponent playerComponent) => PlayerHit?.Invoke(playerComponent);
         public void InvokeWallHit() => WallHit?.Invoke();
         public void InvokeSideChanged(Side side) => SideChanged?.Invoke(side);
     }
