@@ -72,7 +72,7 @@ namespace Blobby.Game.States
 
         public void OnMatchStopped()
         {
-            Debug.Log("match stopped");
+
         }
 
         public void OnSlideOver() { }
@@ -85,7 +85,6 @@ namespace Blobby.Game.States
             {
                 MenuHelper.SetPanelPause(false);
 
-                // MatchHandler.Match?.Dispose();
                 if (MatchHandler.Match is MatchComponent matchComponent)
                 {
                     UnityEngine.Object.Destroy(matchComponent.gameObject);

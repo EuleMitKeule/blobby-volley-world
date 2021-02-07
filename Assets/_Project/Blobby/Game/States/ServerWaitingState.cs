@@ -16,7 +16,6 @@ namespace Blobby.Game.States
     {
         public void EnterState()
         {
-            Debug.Log("Waiting state");
             MainThreadManager.Run(() =>
             {
                 var matchObj = Object.Instantiate(PrefabHelper.OnlineMatch);
@@ -44,8 +43,6 @@ namespace Blobby.Game.States
 
         public void OnPlayerJoined(PlayerData playerData)
         {
-            Debug.Log($"Player \"{playerData.Name}\" joined");
-
             MainThreadManager.Run(() =>
             {
                 ServerHandler.MatchComponent.OnPlayerJoined(playerData);
@@ -54,8 +51,6 @@ namespace Blobby.Game.States
 
         public void OnAllPlayersConnected()
         {
-            Debug.Log("all Players connected");
-
             ServerConnection.StopAccepting();
             ServerConnection.Unlist();
         }
@@ -69,8 +64,6 @@ namespace Blobby.Game.States
         {
             var winner = Side.None;
 
-            Debug.Log($"Received surrender, winner: {winner}");
-
             ServerHandler.Winner = winner;
             ServerHandler.SetState(ServerHandler.OverState);
         }
@@ -78,8 +71,6 @@ namespace Blobby.Game.States
         public void OnPlayerDisconnected(int playernum)
         {
             var winner = Side.None;
-
-            Debug.Log($"Received surrender, winner: {winner}");
 
             ServerHandler.Winner = winner;
             ServerHandler.SetState(ServerHandler.OverState);

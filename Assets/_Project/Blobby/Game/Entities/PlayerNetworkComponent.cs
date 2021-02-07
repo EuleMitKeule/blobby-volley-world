@@ -66,17 +66,12 @@ namespace Blobby.Game.Entities
             var index = OnlineMatchComponent.PlayerObjList.IndexOf(gameObject);
             var playerData = OnlineMatchComponent.PlayerDataList[index];
 
-            Debug.Log("Sending RPC");
-
             networkObject.SendRpc(PlayerBehavior.RPC_SET_PLAYER_DATA, Receivers.All,
                 playerData.PlayerNum, playerData.Name, playerData.Color);
-                
-            Debug.Log($"RPC gesendet: {playerData.PlayerNum}");
             
             OnlineMatchComponent.Players.Add(PlayerComponent);
 
             if (OnlineMatchComponent.Players.Count < OnlineMatchComponent.MatchData.PlayerCount) return;
-            Debug.Log("all Players joined");
 
             OnlineMatchComponent.StartMatch();
             ServerHandler.SetState(ServerHandler.RunningState);
@@ -112,7 +107,6 @@ namespace Blobby.Game.Entities
             if (IsServer)
             {
                PlayerComponent.PlayerData = PlayerData;
-               Debug.Log("SetPlayerData RPC Called on server!");
             }
         }
     }

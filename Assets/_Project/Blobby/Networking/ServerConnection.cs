@@ -63,8 +63,6 @@ namespace Blobby.Networking
 
         public static void Start()
         {
-            Debug.Log("START   Server");
-
             try
             {
                 _udpServer = new UDPServer(_matchData.PlayerCount + 1);
@@ -87,8 +85,6 @@ namespace Blobby.Networking
 
         public static void Stop()
         {
-            Debug.Log("STOP   Server shutting down");
-
             _udpServer.bindSuccessful -= OnBindSuccessful;
             _udpServer.bindFailure -= OnBindFailed;
             _udpServer.playerAccepted -= OnPlayerAccepted;
@@ -114,7 +110,6 @@ namespace Blobby.Networking
 
         public static void List()
         {
-            Debug.Log("Was anderes");
             var serverId = "Blobby Volley World";
             var serverName = _serverData.Name;
             var type = _serverData.Token != "" ? "official" : "custom";
@@ -126,10 +121,7 @@ namespace Blobby.Networking
             var masterServerData = NetworkManager.Instance.MasterServerRegisterData(_udpServer, serverId, serverName, type, mode, comment, useElo, eloRequired);
             NetworkManager.Instance.Initialize(_udpServer, _serverData.MasterServerHost, _serverData.MasterServerPort, masterServerData);
 
-            Debug.Log($"Listed Server on MasterServer ({_serverData.MasterServerHost}:{_serverData.MasterServerPort})");
-
             NetworkObject.Flush(_udpServer);
-            Debug.Log(_serverData.Port);
 
         }
 
@@ -139,7 +131,6 @@ namespace Blobby.Networking
             {
                 NetworkManager.Instance.MasterServerNetworker.Disconnect(false);
             }
-            else Debug.Log("clever, Lennard!\nWärst du damals bloß nicht über die römische Mauer gesprungen!");
         }
 
         public static void StopAccepting()
@@ -161,8 +152,6 @@ namespace Blobby.Networking
 
         public static void SendSound(SoundHelper.SoundClip sound)
         {
-            Debug.Log($"SendSound({sound})");
-
             _udpServer.Send(Receivers.Others, null, SOUND, true, (int)sound);
         }
 
@@ -178,15 +167,11 @@ namespace Blobby.Networking
 
         public static void SendScore(int scoreLeft, int scoreRight, Side lastWinner)
         {
-            Debug.Log($"SendScore({scoreLeft}, {scoreRight}, {lastWinner})");
-
             _udpServer.Send(Receivers.Others, null, SCORE, true, scoreLeft, scoreRight, (int)lastWinner);
         }
 
         public static void SendTime(int time)
         {
-            Debug.Log($"SendTime({time})");
-
             _udpServer.Send(Receivers.Others, null, TIME, true, time);
         }
 
@@ -254,7 +239,7 @@ namespace Blobby.Networking
 
         static void OnPlayerRejected(NetworkingPlayer player, NetWorker sender)
         {
-            Debug.Log("rejected");
+
         }
 
         static void OnPlayerDisconnected(NetworkingPlayer player, NetWorker sender)

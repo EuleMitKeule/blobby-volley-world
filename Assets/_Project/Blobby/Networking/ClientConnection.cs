@@ -301,8 +301,6 @@ namespace Blobby.Networking
 
         static void OnDisconnected(NetWorker sender)
         {
-            Debug.Log("Disconnected");
-
             MainThreadManager.Run(() => Disconnected?.Invoke());
         }
 

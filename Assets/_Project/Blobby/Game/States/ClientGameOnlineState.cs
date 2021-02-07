@@ -38,18 +38,15 @@ namespace Blobby.Game.States
         {
             MenuHelper.SetPanelPause(false);
             ClientConnection.SendSurrender();
-            Debug.Log("Sending surrender");
         }
 
         public void OnButtonRevanche()
         {
-            Debug.Log("Sending Revanche wanted");
             ClientConnection.SendRevanche(true);
         }
 
         public void OnButtonMenu()
         {
-            Debug.Log("Sending Revanche not wanted");
             ClientConnection.SendRevanche(false);
 
             MatchHandler.SetState(MatchHandler.ClientMenuState);
@@ -69,15 +66,11 @@ namespace Blobby.Game.States
 
         public void OnDisconnected()
         {
-            Debug.Log("Disconnected from server");
-
             MatchHandler.SetState(MatchHandler.ClientMenuState);
         }
 
         public void OnMatchOver(Side winner, int scoreLeft, int scoreRight, int time)
         {
-            Debug.Log($"Over Received, winner = {winner}");
-
             MainThreadManager.Run(() =>
             {
                 if (!(MatchHandler.Match is ClientMatchComponent clientMatch)) return;
@@ -116,7 +109,7 @@ namespace Blobby.Game.States
         {
             if (!(MatchHandler.Match is ClientMatchComponent clientMatch)) return;
 
-            // clientMatch.Ball?.Dispose();
+            //TODO Ball destroyen ??
 
             MatchHandler.ZoomEffect?.ZoomOut();
         }
@@ -134,7 +127,6 @@ namespace Blobby.Game.States
             {
                 ClientConnection.Connect();
 
-                // MatchHandler.Match?.Dispose();
                 var clientMatchObj = Object.Instantiate(PrefabHelper.ClientMatch);
                 var clientMatchComponent = clientMatchObj.GetComponent<ClientMatchComponent>();
                 clientMatchComponent.MatchData = MatchHandler.ServerData.MatchData;

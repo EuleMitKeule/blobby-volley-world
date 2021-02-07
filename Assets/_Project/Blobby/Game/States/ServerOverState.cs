@@ -13,8 +13,6 @@ namespace Blobby.Game.States
         {
             ServerHandler.MatchComponent.InvokeOver(ServerHandler.Winner);
 
-            Debug.Log($"Match is over; {ServerHandler.Winner} side won!");
-
             ServerConnection.StopAccepting();
             ServerConnection.Unlist();
             ServerConnection.SendOver(ServerHandler.Winner, ServerHandler.MatchComponent.ScoreLeft, ServerHandler.MatchComponent.ScoreRight, ServerHandler.MatchComponent.MatchTimer.MatchTime);
@@ -73,13 +71,8 @@ namespace Blobby.Game.States
         {
             ServerHandler.RevancheWanted[playerNum] = isRevanche;
 
-            if (isRevanche) Debug.Log($"Player {playerNum} wants a revanche!");
-            else Debug.Log($"Player {playerNum} does not want a revanche");
-
             if (ServerHandler.RevancheWanted.All(val => val))
             {
-                Debug.Log("Revanche!");
-
                 ServerHandler.ServerCloseTimer?.Stop();
 
                 ServerConnection.SendRematch();
@@ -95,8 +88,6 @@ namespace Blobby.Game.States
 
         public void OnServerCloseTimerStopped()
         {
-            Debug.Log("Server close timer stopped");
-
             MainThreadManager.Run(() =>
             {
                 if (ServerHandler.MatchComponent) Object.Destroy(ServerHandler.MatchComponent.gameObject);

@@ -24,5 +24,7 @@ namespace Blobby.Models
         };
 
         public float Volume;
+
+        public bool Windowed;
     }
 }

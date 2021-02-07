@@ -20,21 +20,18 @@ namespace Blobby.Game.Entities.States
 
             if (AiPlayerComponent.Position.x < MatchComponent.BallComponent.Position.x + AiPlayerComponent.AiData.OffensiveOffset - AiPlayerComponent.AiData.Threshold)
             {
-                //Debug.Log("links");
                 //_aiPlayer.KeyPressed[0] = false;
                 AiPlayerComponent.KeyPressed[1] = false;
                 AiPlayerComponent.KeyPressed[2] = true;
             }
             else if (AiPlayerComponent.Position.x > MatchComponent.BallComponent.Position.x + AiPlayerComponent.AiData.OffensiveOffset + AiPlayerComponent.AiData.Threshold)
             {
-                //Debug.Log("rechts");
                 //_aiPlayer.KeyPressed[0] = false;
                 AiPlayerComponent.KeyPressed[1] = true;
                 AiPlayerComponent.KeyPressed[2] = false;
             }
             else
             {
-                //Debug.Log("sprung");
                 AiPlayerComponent.KeyPressed[0] = true;
                 AiPlayerComponent.KeyPressed[1] = false;
                 AiPlayerComponent.KeyPressed[2] = false;

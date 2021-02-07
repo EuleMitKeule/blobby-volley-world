@@ -187,13 +187,11 @@ namespace Blobby.Networking
             if (response != null)
             {
                 //var json = await response.Content.ReadAsStringAsync();
-                //Debug.Log($"{json}");
+
                 //var node = JSON.Parse(json);
 
                 //var playersOnline = int.Parse(node["online"]);
                 //var playersQueue = int.Parse(node["queue"]);
-
-                //Debug.Log($"online: {playersOnline}   queue: {playersQueue}");
 
                 //QueueInfoChanged?.Invoke(playersOnline, playersQueue);
 

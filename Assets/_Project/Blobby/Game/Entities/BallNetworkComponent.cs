@@ -42,7 +42,6 @@ namespace Blobby.Game.Entities
             BallComponent = gameObject.AddComponent<BallComponent>();
             
             MatchComponent.BallComponent = BallComponent;
-            Debug.Log($"Ballcomponent existiert? {BallComponent != null}");
             MatchComponent.SubscribeBallEvents();
         }
         void ClientAwake()

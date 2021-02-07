@@ -20,8 +20,9 @@ namespace Blobby.Game.Entities
             SubscribeControls();
         }
 
-        void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             UnsubscribeControls();
         }
 

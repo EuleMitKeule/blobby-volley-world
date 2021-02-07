@@ -26,8 +26,6 @@ namespace Blobby.Game
         {
             base.Awake();
 
-            Debug.Log("OnlineMatchComponent.Awake()");
-
             NetworkManager.Instance.objectInitialized += OnObjectInitialized;
 
             PlayerDataList = new List<PlayerData>();
@@ -38,7 +36,6 @@ namespace Blobby.Game
 
         public void StartMatch()
         {
-            Debug.Log("OnlineMatchComponent.StartMatch()");
             MainThreadManager.Run(() =>
             {
                 ServerConnection.SendSound(SoundHelper.SoundClip.Whistle);
@@ -103,8 +100,6 @@ namespace Blobby.Game
 
         void OnObjectInitialized(INetworkBehavior networkBehavior, NetworkObject networkObject)
         {
-            Debug.Log("OnlineMatchComponent.OnObjectInitialized");
-
             if (networkBehavior is PlayerBehavior playerBehavior)
             {
                 
@@ -203,8 +198,6 @@ namespace Blobby.Game
         protected override void OnDestroy()
         {
             base.OnDestroy();
-
-            Debug.Log("OnlineMatchComponent.OnDestroy()");
 
             MatchStopped?.Invoke();
         }

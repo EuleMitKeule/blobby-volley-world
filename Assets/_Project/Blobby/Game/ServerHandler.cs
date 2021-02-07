@@ -30,11 +30,9 @@ namespace Blobby.Game
 
         public static void SetState(IServerState state)
         {
-            //if (state == null) return;
+            if (state == null) return;
 
-            Debug.Log(state.GetType().Name);
-
-            if (_state != null) _state.ExitState();
+            _state?.ExitState();
 
             _state = state;
             _state.EnterState();
@@ -79,8 +77,6 @@ namespace Blobby.Game
 
         static void OnServerStartSuccess()
         {
-            Debug.Log("Server Start successful");
-
             SetState(WaitingState);
 
             ServerConnection.List();
@@ -88,14 +84,11 @@ namespace Blobby.Game
 
         static void OnServerStartFailed()
         {
-            Debug.Log("Server Start failed");
-
             Application.Quit();
         }
 
         static void OnPlayerJoined(PlayerData playerData)
         {
-            Debug.Log("Player joined " + playerData.PlayerNum + " " + playerData.Name);
             _state.OnPlayerJoined(playerData);
         }
 

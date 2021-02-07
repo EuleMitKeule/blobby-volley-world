@@ -54,7 +54,7 @@ namespace Blobby.UserInterface
             sliderHueImage.preserveAspect = false;
         }
 
-        private static void OnButtonSettingsSave()
+        static void OnButtonSettingsSave()
         {
             IoHelper.SaveSettingsData(SettingsData);
             if (ClientConnection.UserData != null)
@@ -68,6 +68,8 @@ namespace Blobby.UserInterface
                     Task.Run(() => LoginHelper.PostColor(ClientConnection.UserData));
                 }
             }
+
+            PopulateSettings();
         }
 
         static void OnButtonSettings()
@@ -79,6 +81,7 @@ namespace Blobby.UserInterface
         {
             SettingsData = IoHelper.LoadSettingsData();
             SettingsData ??= new SettingsData();
+            PopulateSettings();
         }
 
         static void OnButtonSideLeft()
@@ -122,7 +125,17 @@ namespace Blobby.UserInterface
             PopulateSettings();
         }
 
-        static void OnSliderVolumeChanged(float value) => SettingsData.Volume = value;
+        static void OnToggleWindowed()
+        {
+            SettingsData.Windowed = !SettingsData.Windowed;
+            PopulateSettings();
+        }
+
+        static void OnSliderVolumeChanged(float value)
+        {
+            SettingsData.Volume = value;
+            PopulateSettings();
+        }
 
         static void OnLogin(UserData userData)
         {
@@ -155,7 +168,13 @@ namespace Blobby.UserInterface
             sliderHue.GetComponentsInChildren<Image>()[1].color = SettingsData.Colors[SelectedPlayerNum];
             buttonPlayer.GetComponent<Image>().color = SettingsData.Colors[SelectedPlayerNum];
 
+            var sliderVolume = GameObject.Find("slider_volume").GetComponent<Slider>();
+            sliderVolume.value = SettingsData.Volume;
             AudioListener.volume = SettingsData.Volume;
+
+            var toggleWindowed = GameObject.Find("toggle_windowed").GetComponent<Toggle>();
+            toggleWindowed.SetIsOnWithoutNotify(SettingsData.Windowed);
+            Screen.fullScreenMode = SettingsData.Windowed ? FullScreenMode.Windowed : FullScreenMode.FullScreenWindow;
         }
 
         static void Update()
@@ -188,6 +207,7 @@ namespace Blobby.UserInterface
             SliderHue.ValueChanged += OnSliderHueChanged;
             LoginHelper.Login += OnLogin;
             SliderVolume.ValueChanged += OnSliderVolumeChanged;
+            ToggleWindowed.Toggled += OnToggleWindowed;
         }
 
         static void UnsubscribeEventHandler()
@@ -203,6 +223,8 @@ namespace Blobby.UserInterface
             ButtonPlayer.Clicked -= OnButtonPlayer;
             SliderHue.ValueChanged -= OnSliderHueChanged;
             LoginHelper.Login -= OnLogin;
+            SliderVolume.ValueChanged -= OnSliderVolumeChanged;
+            ToggleWindowed.Toggled -= OnToggleWindowed;
         }
     }
 }
