@@ -32,25 +32,22 @@ namespace Blobby.Game.Entities
 
             SubscribeEventHandler();
 
-            AiData = new AiData()
-            {
-                DefensivePositionX = PlayerData.Side == Side.Left ? -12f : 12f,
-                Threshold = 0.5f,
-                OffensiveOffset = PlayerData.Side == Side.Left ? -0.75f : 0.75f,
-            };
-
             Defensive = new AiDefensiveState(this, MatchComponent);
             Offensive = new AiOffensiveState(this, MatchComponent);
             Idle = new AiIdleState(this, MatchComponent);
         }
 
-        void FixedUpdate()
+        protected override void FixedUpdate()
         {
+            base.FixedUpdate();
+            
             AiState?.FixedUpdate();
         }
 
-        void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
+            
             MatchComponent.PlayerCounted -= OnPlayerCounted;
         }
 
@@ -85,9 +82,11 @@ namespace Blobby.Game.Entities
             }
         }
 
-        void OnAlpha(int playerNum, bool isAlpha)
+        protected override void OnAlpha(int playerNum, bool isTransparent)
         {
-            IsTransparent[playerNum] = isAlpha;
+            base.OnAlpha(playerNum, isTransparent);
+            
+            IsTransparent[playerNum] = isTransparent;
         }
 
         void OnPlayerCounted(PlayerComponent playerComponent)
@@ -124,8 +123,19 @@ namespace Blobby.Game.Entities
             AiState?.EnterState();
         }
 
+        void OnPlayerDataChanged(PlayerData playerData)
+        {
+            AiData = new AiData()
+            {
+                DefensivePositionX = PlayerData.Side == Side.Left ? -12f : 12f,
+                Threshold = 0.5f,
+                OffensiveOffset = PlayerData.Side == Side.Left ? -0.75f : 0.75f,
+            };
+        }
+
         void SubscribeEventHandler()
         {
+            PlayerDataChanged += OnPlayerDataChanged;
             MatchComponent.PlayerCounted += OnPlayerCounted;
         }
     }

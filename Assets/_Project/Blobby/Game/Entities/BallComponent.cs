@@ -3,6 +3,7 @@ using Blobby.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using Blobby.Game.Physics;
@@ -11,7 +12,7 @@ using Object = UnityEngine.Object;
 
 namespace Blobby.Game.Entities
 {
-    public abstract class BallComponent : MonoBehaviour
+    public class BallComponent : MonoBehaviour
     {
         GameObject MatchObject => transform.parent.gameObject;
         MatchComponent MatchComponent { get; set; }
@@ -59,7 +60,7 @@ namespace Blobby.Game.Entities
         bool CanCollideWithPlayer => State != Stopped;
 
         Vector2 GroundNormal => new Vector2(Velocity.x * 0.5f, Velocity.y * -0.5f).normalized * 0.5f;
-        Vector2 GroundTennisNormal => Velocity = new Vector2(Velocity.x, -0.95f * Velocity.y).normalized * 0.95f;
+        Vector2 GroundTennisNormal => new Vector2(Velocity.x, -0.95f * Velocity.y).normalized * 0.95f;
 
         #endregion
 
@@ -83,8 +84,8 @@ namespace Blobby.Game.Entities
         public event Action<Side> SideChanged;
 
         #endregion
-
-        protected virtual void Awake()
+        
+        protected void Awake()
         {
             Collider = GetComponent<CircleCollider2D>();
             MatchComponent = MatchObject.GetComponent<MatchComponent>();

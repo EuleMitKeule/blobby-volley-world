@@ -1,12 +1,9 @@
-﻿using BeardedManStudios.Forge.Networking;
-using BeardedManStudios.Forge.Networking.Unity;
+﻿using BeardedManStudios.Forge.Networking.Unity;
 using Blobby.Networking;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blobby.Models;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Blobby.Game.States
 {
@@ -37,7 +34,7 @@ namespace Blobby.Game.States
             Application.Quit();
         }
 
-        public void OnPlayerJoined(string username, int elo, Color color, NetworkingPlayer networkingPlayer)
+        public void OnPlayerJoined(PlayerData playerData)
         {
 
         }
@@ -68,7 +65,7 @@ namespace Blobby.Game.States
 
             MainThreadManager.Run(() =>
             {
-                ServerHandler.MatchComponent?.Dispose();
+                if (ServerHandler.MatchComponent) Object.Destroy(ServerHandler.MatchComponent.gameObject);
             });
         }
 
@@ -89,7 +86,7 @@ namespace Blobby.Game.States
 
                 MainThreadManager.Run(() =>
                 {
-                    ServerHandler.MatchComponent?.Restart();
+                    if (ServerHandler.MatchComponent) ServerHandler.MatchComponent.Restart();
                 });
 
                 ServerHandler.SetState(ServerHandler.RunningState);
@@ -102,7 +99,7 @@ namespace Blobby.Game.States
 
             MainThreadManager.Run(() =>
             {
-                ServerHandler.MatchComponent?.Dispose();
+                if (ServerHandler.MatchComponent) Object.Destroy(ServerHandler.MatchComponent.gameObject);
             });
         }
 

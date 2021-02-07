@@ -15,7 +15,7 @@ namespace Blobby.Game
     public static class ServerHandler
     {
         public static bool IsServer { get; private set; }
-        public static OnlineMatchComponent MatchComponent { get; private set; }
+        public static OnlineMatchComponent MatchComponent { get; set; }
         public static ServerData ServerData { get; private set; }
         public static bool[] RevancheWanted { get; set; }
         public static ServerCloseTimer ServerCloseTimer { get; private set; }
@@ -30,7 +30,7 @@ namespace Blobby.Game
 
         public static void SetState(IServerState state)
         {
-            if (state == null) return;
+            //if (state == null) return;
 
             Debug.Log(state.GetType().Name);
 
@@ -81,11 +81,6 @@ namespace Blobby.Game
         {
             Debug.Log("Server Start successful");
 
-            //MatchComponent = new OnlineMatchComponent(ServerData.MatchData); //TODO hier muss das match object gespawned werden
-
-            MatchComponent.Over += OnMatchOver;
-            MatchComponent.MatchStopped += OnMatchStopped;
-
             SetState(WaitingState);
 
             ServerConnection.List();
@@ -98,9 +93,10 @@ namespace Blobby.Game
             Application.Quit();
         }
 
-        private static void OnPlayerJoined(string username, int elo, Color color, NetworkingPlayer networkingPlayer)
+        static void OnPlayerJoined(PlayerData playerData)
         {
-            _state.OnPlayerJoined(username, elo, color, networkingPlayer);
+            Debug.Log("Player joined " + playerData.PlayerNum + " " + playerData.Name);
+            _state.OnPlayerJoined(playerData);
         }
 
         static void OnAllPlayersConnected()
@@ -146,6 +142,12 @@ namespace Blobby.Game
         static void OnMatchStopped()
         {
             _state.OnMatchStopped();
+        }
+
+        public static void SubscribeMatchEvents()
+        {
+            MatchComponent.Over += OnMatchOver;
+            MatchComponent.MatchStopped += OnMatchStopped;
         }
     }
 }

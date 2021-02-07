@@ -17,7 +17,7 @@ namespace Blobby.Game.Entities
     public class PlayerGraphicsComponent : MonoBehaviour
     {
         Animator Animator { get; set; }
-        IPlayerAnimProvider PlayerAnimProvider { get; set; }
+        IPlayerGraphicsProvider PlayerGraphicsProvider { get; set; }
         PlayerData PlayerData { get; set; }
 
         Vector2 TransformPosition => transform.position;
@@ -38,19 +38,18 @@ namespace Blobby.Game.Entities
 
         void Awake()
         {
-            ClientConnection.AlphaReceived += OnAlpha;
-
             Animator = GetComponent<Animator>();
             LowerCollider = Colliders[1];
 
-            PlayerAnimProvider = GetComponent<IPlayerAnimProvider>();
-            PlayerAnimProvider.PlayerDataChanged += OnPlayerDataChanged;
+            PlayerGraphicsProvider = GetComponent<IPlayerGraphicsProvider>();
+            PlayerGraphicsProvider.PlayerDataChanged += OnPlayerDataChanged;
+            PlayerGraphicsProvider.AlphaChanged += OnAlpha;
         }
 
         void Update()
         {
-            Animator.SetBool(IsRunningAnim, PlayerAnimProvider.IsRunning);
-            Animator.SetBool(IsGroundedAnim, PlayerAnimProvider.IsGrounded);
+            Animator.SetBool(IsRunningAnim, PlayerGraphicsProvider.IsRunning);
+            Animator.SetBool(IsGroundedAnim, PlayerGraphicsProvider.IsGrounded);
 
             SetShadow();
             SetNameLabelPos();
@@ -59,15 +58,18 @@ namespace Blobby.Game.Entities
         void OnPlayerDataChanged(PlayerData playerData)
         {
             PlayerData = playerData;
-            Apply();
+            MainThreadManager.Run(Apply);
         }
 
         void OnAlpha(int playerNum, bool isTransparent)
         {
-            if (playerNum != PlayerData.PlayerNum) return;
+            MainThreadManager.Run(() =>
+            {
+                if (playerNum != PlayerData.PlayerNum) return;
 
-            var sr = GetComponent<SpriteRenderer>();
-            sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, isTransparent ? 0.5f : 1f);
+                var sr = GetComponent<SpriteRenderer>();
+                sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, isTransparent ? 0.5f : 1f);
+            });
         }
 
         void SetNameLabelPos()
@@ -88,7 +90,9 @@ namespace Blobby.Game.Entities
 
         void Apply()
         {
-            SetInvisible(PlayerAnimProvider.IsInvisible);
+            SetInvisible(PlayerGraphicsProvider.IsInvisible);
+
+            if (PlayerData.PlayerNum == 2) OnAlpha(2, true);
 
             var spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
             var num = (PlayerData.PlayerNum + 2) % 4;

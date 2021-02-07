@@ -14,7 +14,7 @@ using Object = UnityEngine.Object;
 
 namespace Blobby.Game
 {
-    public class ClientMatch : IClientMatch, IDisposable
+    public class ClientMatchComponent : MonoBehaviour, IClientMatch, IDisposable
     {
         public int NetPlayerNum { get; private set; }
         public Side OwnSide { get { return NetPlayerNum % 2 == 0 ? Side.Left : Side.Right; } }
@@ -30,14 +30,12 @@ namespace Blobby.Game
         public event Action<int, int, Side> ScoreChanged;
         public event Action MatchStopped;
 
-        MatchData _matchData;
+        public MatchData MatchData { get; set; }
         MatchScore _matchScore;
 
-        public ClientMatch(ServerData serverData)
+        void Awake()
         {
             SubscribeEventHandler();
-
-            _matchData = serverData.MatchData;
         }
 
         void OnObjectInitialized(INetworkBehavior behavior, NetworkObject networkObject)
@@ -49,13 +47,16 @@ namespace Blobby.Game
                 if (behavior is BallBehavior ballBehavior)
                 {
                     Ball = ballBehavior.gameObject;
+                    Ball.transform.SetParent(transform);
+                    Ball.GetComponent<BallNetworkComponent>().ClientMatchComponent = this;
+                    
                     MatchStarted?.Invoke();
                 }
                 else if (behavior is PlayerBehavior playerBehavior)
                 {
-                    var newPlayerNum = Players.Count;
-                    var playerData = PlayerDataList[newPlayerNum];
                     var clientPlayer = playerBehavior.gameObject;
+                    clientPlayer.transform.SetParent(transform);
+                    clientPlayer.GetComponent<PlayerNetworkComponent>().ClientMatchComponent = this;
 
                     Players.Add(clientPlayer);
                 }
@@ -72,11 +73,11 @@ namespace Blobby.Game
 
         void OnInfoReceived(int playerNum, string username, Color color)
         {
-            var playerData = new PlayerData(playerNum, username, color);
-            PlayerDataList.Add(playerData);
-
-            if (playerNum == 0) _matchScore.SetLeftPlayerData(playerData);
-            else if (playerNum == 1) _matchScore.SetRightPlayerData(playerData);
+            // var playerData = new PlayerData(playerNum, username, color);
+            // PlayerDataList.Add(playerData);
+            //
+            // if (playerNum == 0) _matchScore.SetLeftPlayerData(playerData);
+            // else if (playerNum == 1) _matchScore.SetRightPlayerData(playerData);
         }
 
         void OnScoreReceived(int scoreLeft, int scoreRight, Side lastWinner)

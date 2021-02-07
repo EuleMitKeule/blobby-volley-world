@@ -47,6 +47,37 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (fieldAltered != null) fieldAltered("position", _position, timestep);
 		}
 		[ForgeGeneratedField]
+		private bool _isGrounded;
+		public event FieldEvent<bool> isGroundedChanged;
+		public Interpolated<bool> isGroundedInterpolation = new Interpolated<bool>() { LerpT = 0f, Enabled = false };
+		public bool isGrounded
+		{
+			get { return _isGrounded; }
+			set
+			{
+				// Don't do anything if the value is the same
+				if (_isGrounded == value)
+					return;
+
+				// Mark the field as dirty for the network to transmit
+				_dirtyFields[0] |= 0x2;
+				_isGrounded = value;
+				hasDirtyFields = true;
+			}
+		}
+
+		public void SetisGroundedDirty()
+		{
+			_dirtyFields[0] |= 0x2;
+			hasDirtyFields = true;
+		}
+
+		private void RunChange_isGrounded(ulong timestep)
+		{
+			if (isGroundedChanged != null) isGroundedChanged(_isGrounded, timestep);
+			if (fieldAltered != null) fieldAltered("isGrounded", _isGrounded, timestep);
+		}
+		[ForgeGeneratedField]
 		private bool _isRunning;
 		public event FieldEvent<bool> isRunningChanged;
 		public Interpolated<bool> isRunningInterpolation = new Interpolated<bool>() { LerpT = 0f, Enabled = false };
@@ -60,7 +91,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					return;
 
 				// Mark the field as dirty for the network to transmit
-				_dirtyFields[0] |= 0x2;
+				_dirtyFields[0] |= 0x4;
 				_isRunning = value;
 				hasDirtyFields = true;
 			}
@@ -68,7 +99,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		public void SetisRunningDirty()
 		{
-			_dirtyFields[0] |= 0x2;
+			_dirtyFields[0] |= 0x4;
 			hasDirtyFields = true;
 		}
 
@@ -76,37 +107,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		{
 			if (isRunningChanged != null) isRunningChanged(_isRunning, timestep);
 			if (fieldAltered != null) fieldAltered("isRunning", _isRunning, timestep);
-		}
-		[ForgeGeneratedField]
-		private bool _grounded;
-		public event FieldEvent<bool> groundedChanged;
-		public Interpolated<bool> groundedInterpolation = new Interpolated<bool>() { LerpT = 0f, Enabled = false };
-		public bool grounded
-		{
-			get { return _grounded; }
-			set
-			{
-				// Don't do anything if the value is the same
-				if (_grounded == value)
-					return;
-
-				// Mark the field as dirty for the network to transmit
-				_dirtyFields[0] |= 0x4;
-				_grounded = value;
-				hasDirtyFields = true;
-			}
-		}
-
-		public void SetgroundedDirty()
-		{
-			_dirtyFields[0] |= 0x4;
-			hasDirtyFields = true;
-		}
-
-		private void RunChange_grounded(ulong timestep)
-		{
-			if (groundedChanged != null) groundedChanged(_grounded, timestep);
-			if (fieldAltered != null) fieldAltered("grounded", _grounded, timestep);
 		}
 
 		protected override void OwnershipChanged()
@@ -118,8 +118,8 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		public void SnapInterpolations()
 		{
 			positionInterpolation.current = positionInterpolation.target;
+			isGroundedInterpolation.current = isGroundedInterpolation.target;
 			isRunningInterpolation.current = isRunningInterpolation.target;
-			groundedInterpolation.current = groundedInterpolation.target;
 		}
 
 		public override int UniqueIdentity { get { return IDENTITY; } }
@@ -127,8 +127,8 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		protected override BMSByte WritePayload(BMSByte data)
 		{
 			UnityObjectMapper.Instance.MapBytes(data, _position);
+			UnityObjectMapper.Instance.MapBytes(data, _isGrounded);
 			UnityObjectMapper.Instance.MapBytes(data, _isRunning);
-			UnityObjectMapper.Instance.MapBytes(data, _grounded);
 
 			return data;
 		}
@@ -139,14 +139,14 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			positionInterpolation.current = _position;
 			positionInterpolation.target = _position;
 			RunChange_position(timestep);
+			_isGrounded = UnityObjectMapper.Instance.Map<bool>(payload);
+			isGroundedInterpolation.current = _isGrounded;
+			isGroundedInterpolation.target = _isGrounded;
+			RunChange_isGrounded(timestep);
 			_isRunning = UnityObjectMapper.Instance.Map<bool>(payload);
 			isRunningInterpolation.current = _isRunning;
 			isRunningInterpolation.target = _isRunning;
 			RunChange_isRunning(timestep);
-			_grounded = UnityObjectMapper.Instance.Map<bool>(payload);
-			groundedInterpolation.current = _grounded;
-			groundedInterpolation.target = _grounded;
-			RunChange_grounded(timestep);
 		}
 
 		protected override BMSByte SerializeDirtyFields()
@@ -157,9 +157,9 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if ((0x1 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _position);
 			if ((0x2 & _dirtyFields[0]) != 0)
-				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _isRunning);
+				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _isGrounded);
 			if ((0x4 & _dirtyFields[0]) != 0)
-				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _grounded);
+				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _isRunning);
 
 			// Reset all the dirty fields
 			for (int i = 0; i < _dirtyFields.Length; i++)
@@ -191,6 +191,19 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			}
 			if ((0x2 & readDirtyFlags[0]) != 0)
 			{
+				if (isGroundedInterpolation.Enabled)
+				{
+					isGroundedInterpolation.target = UnityObjectMapper.Instance.Map<bool>(data);
+					isGroundedInterpolation.Timestep = timestep;
+				}
+				else
+				{
+					_isGrounded = UnityObjectMapper.Instance.Map<bool>(data);
+					RunChange_isGrounded(timestep);
+				}
+			}
+			if ((0x4 & readDirtyFlags[0]) != 0)
+			{
 				if (isRunningInterpolation.Enabled)
 				{
 					isRunningInterpolation.target = UnityObjectMapper.Instance.Map<bool>(data);
@@ -200,19 +213,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 				{
 					_isRunning = UnityObjectMapper.Instance.Map<bool>(data);
 					RunChange_isRunning(timestep);
-				}
-			}
-			if ((0x4 & readDirtyFlags[0]) != 0)
-			{
-				if (groundedInterpolation.Enabled)
-				{
-					groundedInterpolation.target = UnityObjectMapper.Instance.Map<bool>(data);
-					groundedInterpolation.Timestep = timestep;
-				}
-				else
-				{
-					_grounded = UnityObjectMapper.Instance.Map<bool>(data);
-					RunChange_grounded(timestep);
 				}
 			}
 		}
@@ -227,15 +227,15 @@ namespace BeardedManStudios.Forge.Networking.Generated
 				_position = (Vector2)positionInterpolation.Interpolate();
 				//RunChange_position(positionInterpolation.Timestep);
 			}
+			if (isGroundedInterpolation.Enabled && !isGroundedInterpolation.current.UnityNear(isGroundedInterpolation.target, 0.0015f))
+			{
+				_isGrounded = (bool)isGroundedInterpolation.Interpolate();
+				//RunChange_isGrounded(isGroundedInterpolation.Timestep);
+			}
 			if (isRunningInterpolation.Enabled && !isRunningInterpolation.current.UnityNear(isRunningInterpolation.target, 0.0015f))
 			{
 				_isRunning = (bool)isRunningInterpolation.Interpolate();
 				//RunChange_isRunning(isRunningInterpolation.Timestep);
-			}
-			if (groundedInterpolation.Enabled && !groundedInterpolation.current.UnityNear(groundedInterpolation.target, 0.0015f))
-			{
-				_grounded = (bool)groundedInterpolation.Interpolate();
-				//RunChange_grounded(groundedInterpolation.Timestep);
 			}
 		}
 

@@ -23,7 +23,7 @@ namespace Blobby.Networking
 
         public static event Action ServerStartSuccess;
         public static event Action ServerStartFailed;
-        public static event Action<string, int, Color, NetworkingPlayer> PlayerJoined;
+        public static event Action<PlayerData> PlayerJoined;
         public static event Action AllPlayersJoined;
         public static event Action<int> PlayerDisconnected;
         public static event Action AllPlayersDisconnected;
@@ -245,7 +245,7 @@ namespace Blobby.Networking
         {
             player.PingInterval = 2000;
             player.TimeoutMilliseconds = 15000;
-
+            
             if (_udpServer.Players.Count - 1 >= _serverData.MatchData.PlayerCount)
             {
                 AllPlayersJoined?.Invoke();
@@ -275,80 +275,59 @@ namespace Blobby.Networking
                 switch (frame.GroupId)
                 {
                     case CLIENT_HANDSHAKE:
-
-                        Debug.Log("handshake received");
+            
+            
                         string username = frame.StreamData.GetBasicType<string>();
                         string token = frame.StreamData.GetBasicType<string>();
-
-                        //if (token != "") GetUserData(username, token, networkingPlayer);
-                        MainThreadManager.Run(() => PlayerJoined?.Invoke(username, 0, Color.gray, networkingPlayer)); //TODO: Später nicht mehr ohne token!
-
+                        
+                        var playerNum = _udpServer.Players.Count - 2;
+                        
+                        var playerData = new PlayerData(playerNum, username, Color.gray);
+                        
+                        SendPlayerNum(networkingPlayer, playerNum);
+                        
+                        MainThreadManager.Run(() => PlayerJoined?.Invoke(playerData));
+            
                         break;
                     case BUTTON_DOWN:
-
-                        var playerNum = frame.StreamData.GetBasicType<int>();
+            
+                        playerNum = frame.StreamData.GetBasicType<int>();
                         var button = frame.StreamData.GetBasicType<int>();
-
+            
                         ButtonDownReceived?.Invoke(playerNum, button);
-
+            
                         break;
-
+            
                     case BUTTON_UP:
-
+            
                         playerNum = frame.StreamData.GetBasicType<int>();
                         button = frame.StreamData.GetBasicType<int>();
-
+            
                         ButtonUpReceived?.Invoke(playerNum, button);
-
+            
                         break;
                     case SURRENDER:
-
+            
                         playerNum = _udpServer.Players.IndexOf(networkingPlayer) - 1;
-
+            
                         SurrenderReceived?.Invoke(playerNum);
-
+            
                         break;
                     case REVANCHE:
-
+            
                         var isRevanche = frame.StreamData.GetBasicType<bool>();
-
+            
                         if (!isRevanche) break;
-
+            
                         playerNum = _udpServer.Players.IndexOf(networkingPlayer) - 1;
-
+            
                         RevancheReceived?.Invoke(playerNum, isRevanche);
-
+            
                         break;
                     default:
                         break;
                 }
             });
-        }
-
-        #endregion
-
-        #region WebRequests
-
-        static async void GetUserData(string username, string token, NetworkingPlayer player)
-        {
-            var url = $"https://api.blobnet.de/api/user/{username}?token={token}";
-
-            using var client = new HttpClient();
-            var response = await client.GetAsync(url);
-
-            if (response != null)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                var dic = SimpleJSON.JSON.Parse(json);
-
-                var color = new Color(dic["color_r"], dic["color_g"], dic["color_b"]);
-                MainThreadManager.Run(() => PlayerJoined?.Invoke(username, dic["elo"], color, player));
-            }
-            else
-            {
-                _udpServer.BanPlayer(player.NetworkId, 1);
-                return;
-            }
         }
 
         #endregion

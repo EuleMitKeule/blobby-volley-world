@@ -33,13 +33,13 @@ namespace Blobby.Game.States
 
         public void OnButtonLocalPlay()
         {
-            MatchHandler.Ai = false;
+            MatchHandler.IsAi = false;
             MatchHandler.SetState(MatchHandler.ClientGameLocalState);
         }
 
         public void OnButtonLocalPlayAi()
         {
-            MatchHandler.Ai = true;
+            MatchHandler.IsAi = true;
             MatchHandler.SetState(MatchHandler.ClientGameLocalState);
         }
 

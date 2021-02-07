@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Blobby.Game.States
 {
@@ -79,7 +80,7 @@ namespace Blobby.Game.States
 
             MainThreadManager.Run(() =>
             {
-                if (!(MatchHandler.Match is ClientMatch clientMatch)) return;
+                if (!(MatchHandler.Match is ClientMatchComponent clientMatch)) return;
 
                 GameObject targetPlayer;
 
@@ -113,7 +114,7 @@ namespace Blobby.Game.States
 
         public void OnRematchReceived()
         {
-            if (!(MatchHandler.Match is ClientMatch clientMatch)) return;
+            if (!(MatchHandler.Match is ClientMatchComponent clientMatch)) return;
 
             // clientMatch.Ball?.Dispose();
 
@@ -129,10 +130,17 @@ namespace Blobby.Game.States
 
         public void OnBlackoutOver()
         {
-            ClientConnection.Connect();
+            MainThreadManager.Run(() =>
+            {
+                ClientConnection.Connect();
 
-            // MatchHandler.Match?.Dispose();
-            MatchHandler.Match = new ClientMatch(MatchHandler.ServerData);
+                // MatchHandler.Match?.Dispose();
+                var clientMatchObj = Object.Instantiate(PrefabHelper.ClientMatch);
+                var clientMatchComponent = clientMatchObj.GetComponent<ClientMatchComponent>();
+                clientMatchComponent.MatchData = MatchHandler.ServerData.MatchData;
+
+                MatchHandler.Match = clientMatchComponent;
+            });
         }
 
         public void OnWhiteoutOver() { }

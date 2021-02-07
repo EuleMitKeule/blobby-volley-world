@@ -33,7 +33,6 @@ namespace Blobby.Game
 
             MainThreadManager.Run(() =>
             {
-                Time.timeScale = MatchData.TimeScale;
                 MapHelper.ChangeMap(MatchData.Map);
 
                 if (!_isAiGame)
@@ -65,14 +64,13 @@ namespace Blobby.Game
                     }
                 }
 
-                var ballObject = Instantiate(PrefabHelper.Ball, transform);
+                var ballObject = Instantiate(IsBomb ? PrefabHelper.Bomb : PrefabHelper.Ball, transform);
                 BallComponent = ballObject.GetComponent<BallComponent>();
 
                 _matchScore = new MatchScore(this, Players[0].PlayerData, Players[1].PlayerData);
 
                 SubscribeEventHandler();
                 SubscribeBallEvents();
-                SubscribeTimerEvents();
             });
         }
 
@@ -86,6 +84,8 @@ namespace Blobby.Game
 
                 if (MatchData.JumpMode != JumpMode.NoJump) SetState(ReadyState);
                 else AutoDropTimer.Start();
+
+                Time.timeScale = MatchData.TimeScale;
             });
         }
 

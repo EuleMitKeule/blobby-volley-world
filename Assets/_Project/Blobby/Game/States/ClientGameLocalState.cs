@@ -114,8 +114,9 @@ namespace Blobby.Game.States
 
         public void OnBlackoutOver()
         {
+            var prefab = MatchHandler.IsAi ? PrefabHelper.AiMatch : PrefabHelper.LocalMatch;
             MatchHandler.MatchData = MatchHandler.LocalMatchData;
-            var matchObject = Object.Instantiate(PrefabHelper.LocalMatch);
+            var matchObject = Object.Instantiate(prefab);
             MatchHandler.Match = matchObject.GetComponent<IMatch>();
 
             if (!(MatchHandler.Match is LocalMatchComponent localMatch)) return;

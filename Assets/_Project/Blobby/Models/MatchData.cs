@@ -16,15 +16,6 @@ namespace Blobby.Models
 
         public float HitTreshold { get { return 0.175f; } }
 
-        public int WinningScore 
-        { 
-            get 
-            {
-                if (GameMode == GameMode.Blitz) return 2;
-                else return 16;
-            } 
-        }
-
         public int PlayerCount
         {
             get

@@ -23,7 +23,7 @@ namespace Blobby.Game
 
         public static ServerData ServerData { get; set; }
 
-        public static bool Ai { get; set; }
+        public static bool IsAi { get; set; }
 
         public static SlideEffect SlideEffect { get; private set; }
         public static BlackoutEffect BlackoutEffect { get; private set; }

@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blobby.Models;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Blobby.Game.States
 {
@@ -14,7 +16,20 @@ namespace Blobby.Game.States
     {
         public void EnterState()
         {
+            Debug.Log("Waiting state");
+            MainThreadManager.Run(() =>
+            {
+                var matchObj = Object.Instantiate(PrefabHelper.OnlineMatch);
+                var matchComponent = matchObj.GetComponent<OnlineMatchComponent>();
+                var matchData = ServerHandler.ServerData.MatchData;
 
+                Time.timeScale = matchData.TimeScale;
+                ServerConnection.SendMap(matchData.Map);
+                
+                ServerHandler.MatchComponent = matchComponent;
+                ServerHandler.MatchComponent.MatchData = matchData;
+                ServerHandler.SubscribeMatchEvents();
+            });
         }
 
         public void ExitState()
@@ -27,18 +42,13 @@ namespace Blobby.Game.States
             Application.Quit();
         }
 
-        public void OnPlayerJoined(string username, int elo, Color color, NetworkingPlayer networkingPlayer)
+        public void OnPlayerJoined(PlayerData playerData)
         {
-            Debug.Log($"Player \"{username}\" joined");
+            Debug.Log($"Player \"{playerData.Name}\" joined");
 
             MainThreadManager.Run(() =>
             {
-                ServerHandler.MatchComponent?.OnPlayerJoined(username, elo, color, networkingPlayer);
-
-                if (ServerHandler.MatchComponent.Players.Count >= ServerHandler.MatchComponent.MatchData.PlayerCount)
-                {
-                    OnAllPlayersJoined();
-                }
+                ServerHandler.MatchComponent.OnPlayerJoined(playerData);
             });
         }
 
@@ -48,14 +58,6 @@ namespace Blobby.Game.States
 
             ServerConnection.StopAccepting();
             ServerConnection.Unlist();
-        }
-
-        void OnAllPlayersJoined()
-        {
-            Debug.Log("all Players joined");
-
-            ServerHandler.MatchComponent?.StartMatch();
-            ServerHandler.SetState(ServerHandler.RunningState);
         }
 
         public void OnMatchOver(Side winner)

@@ -9,7 +9,7 @@ namespace Blobby.Game.Entities
 {
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(PlayerGraphicsComponent))]
-    public class PlayerComponent : MonoBehaviour, IPlayerAnimProvider
+    public class PlayerComponent : MonoBehaviour, IPlayerGraphicsProvider
     {
         GameObject MatchObject => transform.parent.gameObject;
         protected MatchComponent MatchComponent { get; private set; }
@@ -189,10 +189,12 @@ namespace Blobby.Game.Entities
         public Side EnemySide => OwnSide.Other();
         bool IsOnLeftTeam => PlayerData.Side == Side.Left;
         public bool IsSwitched => IsOnLeftTeam ? MatchComponent.LeftSwitched : MatchComponent.RightSwitched;
-        int BlobNum => IsSwitched ? TeamBlobNum : DefaultBlobNum;
+        public int BlobNum => IsSwitched ? TeamBlobNum : DefaultBlobNum;
         public int DefaultBlobNum => PlayerData.PlayerNum;
-        int TeamBlobNum => (PlayerData.PlayerNum + 2) % 4;
+        public int TeamBlobNum => (PlayerData.PlayerNum + 2) % 4;
         public virtual bool IsInvisible => false;
+
+        public event Action<int, bool> AlphaChanged;
 
         #endregion
 
@@ -208,7 +210,7 @@ namespace Blobby.Game.Entities
             SubscribeEventHandler();
         }
 
-        void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             Velocity -= DeltaGravity;
             Velocity = MoveVelocity;
@@ -242,11 +244,17 @@ namespace Blobby.Game.Entities
             transform.position = Position;
         }
 
-        void OnDestroy()
+        void OnPlayerDataChanged(PlayerData playerData)
+        {
+            Position = SpawnPoint;
+        }
+
+        protected virtual void OnDestroy()
         {
             MatchComponent.Ready -= OnReady;
             MatchComponent.Stop -= OnStop;
             MatchComponent.Over -= OnOver;
+            MatchComponent.Alpha -= OnAlpha;
         }
 
         #region Match Methods
@@ -254,6 +262,9 @@ namespace Blobby.Game.Entities
         protected virtual void OnReady(Side side)
         {
         }
+
+        protected virtual void OnAlpha(int playerNum, bool isTransparent) =>
+            AlphaChanged?.Invoke(playerNum, isTransparent);
 
         protected virtual void OnStop()
         {
@@ -281,9 +292,12 @@ namespace Blobby.Game.Entities
 
         void SubscribeEventHandler()
         {
+            PlayerDataChanged += OnPlayerDataChanged;
+            
             MatchComponent.Ready += OnReady;
             MatchComponent.Stop += OnStop;
             MatchComponent.Over += OnOver;
+            MatchComponent.Alpha += OnAlpha;
         }
     }
 }

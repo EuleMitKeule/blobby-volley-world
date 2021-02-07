@@ -55,8 +55,8 @@ namespace Blobby.Game.States
 
             _matchComponent.InvokeScore(winner);
 
-            if (_matchComponent.ScoreLeft >= MatchComponent.WIN_SCORE) _matchComponent.InvokeOver(Side.Left);
-            else if (_matchComponent.ScoreRight >= MatchComponent.WIN_SCORE) _matchComponent.InvokeOver(Side.Right);
+            if (_matchComponent.ScoreLeft >= _matchComponent.WinningScore) _matchComponent.InvokeOver(Side.Left);
+            else if (_matchComponent.ScoreRight >= _matchComponent.WinningScore) _matchComponent.InvokeOver(Side.Right);
             else
             {
                 _matchComponent.ResetBallTimer?.Start();

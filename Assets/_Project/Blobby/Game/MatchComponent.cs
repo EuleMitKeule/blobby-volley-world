@@ -14,11 +14,9 @@ namespace Blobby.Game
 {
     public abstract class MatchComponent : MonoBehaviour
     {
-        public const int WIN_SCORE = 16;
+        public virtual MatchData MatchData { get; set; }
 
-        public virtual MatchData MatchData => null;
-
-        public BallComponent BallComponent { get; protected set; }
+        public BallComponent BallComponent { get; set; }
         public List<PlayerComponent> Players { get; protected set; } = new List<PlayerComponent>();
 
         public MatchTimer MatchTimer { get; protected set; }
@@ -40,8 +38,12 @@ namespace Blobby.Game
         public Vector2[] SpawnPoints => MatchData.SpawnPoints;
         public float[] LeftLimits => MatchData.LeftLimits;
         public float[] RightLimits => MatchData.RightLimits;
+        public int WinningScore => IsBlitz ? 2 : 16;
         public PlayerMode PlayerMode => MatchData.PlayerMode;
         public bool IsSingle => MatchData.PlayerCount == 2;
+        public GameMode GameMode => MatchData.GameMode;
+        public bool IsBomb => GameMode == GameMode.Bomb;
+        public bool IsBlitz => GameMode == GameMode.Blitz;
         public JumpMode JumpMode => MatchData.JumpMode;
         public bool IsPogo => MatchData.JumpMode == JumpMode.Pogo;
         public bool IsJumpOverNet => MatchData.JumpOverNet;
@@ -75,8 +77,9 @@ namespace Blobby.Game
             RunningTennisState = new MatchRunningTennisState(this);
             StoppedState = new MatchStoppedState(this);
             OverState = new MatchOverState(this);
-
+            
             SetState(InitState);
+            SubscribeTimerEvents();
         }
 
         public void SetState(IMatchState newState)
@@ -142,14 +145,12 @@ namespace Blobby.Game
 
             if (Players.Count != 4) return;
 
-            for (var i = 0; i < 4; i++)
+            HitCounts[playerComponent.DefaultBlobNum % 2 + 4]++;
+
+            for (int i = 0; i < Players.Count; i++)
             {
-                Alpha?.Invoke(i, false);
+                InvokeAlpha(i, HitCounts[i] != 0);
             }
-
-            HitCounts[playerComponent.PlayerData.PlayerNum % 2 + 4]++;
-
-            Alpha?.Invoke(playerComponent.PlayerData.PlayerNum, true);
         }
 
         protected virtual async Task OnResetBallTimerStopped()
@@ -197,7 +198,7 @@ namespace Blobby.Game
         protected virtual void OnOver(Side winner, int scoreLeft, int scoreRight, int time)
         {
             SetState(OverState);
-            BallComponent?.SetState(BallComponent.Stopped);
+            BallComponent.SetState(BallComponent.Stopped);
         }
 
         protected virtual void OnAlpha(int playerNum, bool value) { }
@@ -227,7 +228,7 @@ namespace Blobby.Game
             Over += OnOver;
         }
 
-        protected void SubscribeBallEvents()
+        public void SubscribeBallEvents()
         {
             BallComponent.PlayerHit += OnPlayer;
             BallComponent.GroundHit += OnGround;
@@ -245,9 +246,9 @@ namespace Blobby.Game
             AutoDropTimer.AutoDropTimerStopped += OnAutoDropTimerStopped;
         }
 
-        void OnDestroy()
+        protected virtual void OnDestroy()
         {
-            Destroy(BallComponent.gameObject);
+            if (BallComponent) Destroy(BallComponent.gameObject);
             foreach (var player in Players) Destroy(player.gameObject);
         }
 

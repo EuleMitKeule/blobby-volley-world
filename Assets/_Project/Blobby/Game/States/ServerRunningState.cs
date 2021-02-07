@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blobby.Models;
 using UnityEngine;
 
 namespace Blobby.Game.States
@@ -27,7 +28,7 @@ namespace Blobby.Game.States
             Application.Quit(); //TODO restart?
         }
 
-        public void OnPlayerJoined(string username, int elo, Color color, NetworkingPlayer networkingPlayer)
+        public void OnPlayerJoined(PlayerData playerData)
         {
 
         }
