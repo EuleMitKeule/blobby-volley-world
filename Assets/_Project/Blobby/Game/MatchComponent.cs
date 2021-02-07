@@ -143,11 +143,11 @@ namespace Blobby.Game
 
             HitCounts[playerComponent.PlayerData.PlayerNum]++;
 
-            if (Players.Count != 4) return;
+            if (IsSingle) return;
 
             HitCounts[playerComponent.DefaultBlobNum % 2 + 4]++;
 
-            for (int i = 0; i < Players.Count; i++)
+            for (var i = 0; i < Players.Count; i++)
             {
                 InvokeAlpha(i, HitCounts[i] != 0);
             }

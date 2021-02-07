@@ -97,7 +97,7 @@ namespace Blobby.Game
                     if (MatchData.PlayerCount == 4) InvokeAlpha(i, false);
                 }
 
-                if (MatchData.PlayerCount == 4) InvokeAlpha(2, true);
+                if (!IsSingle) InvokeAlpha(2, true);
 
                 LeftSwitched = false;
                 RightSwitched = false;
@@ -195,13 +195,9 @@ namespace Blobby.Game
             SoundHelper.PlayAudio(SoundHelper.SoundClip.Whistle);
         }
 
-        protected override void OnOver(Side winner, int scoreLeft, int scoreRight, int time)
+        protected override void OnDestroy()
         {
-            base.OnOver(winner, scoreLeft, scoreRight, time);
-        }
-
-        void OnDestroy()
-        {
+            base.OnDestroy();
             MatchStopped?.Invoke();
         }
     }

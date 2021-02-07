@@ -122,6 +122,8 @@ namespace Blobby.UserInterface
             PopulateSettings();
         }
 
+        static void OnSliderVolumeChanged(float value) => SettingsData.Volume = value;
+
         static void OnLogin(UserData userData)
         {
             if (ClientConnection.UserData.Color != SettingsData.Colors[0])
@@ -152,6 +154,8 @@ namespace Blobby.UserInterface
             sliderHue.GetComponent<Slider>().value = h;
             sliderHue.GetComponentsInChildren<Image>()[1].color = SettingsData.Colors[SelectedPlayerNum];
             buttonPlayer.GetComponent<Image>().color = SettingsData.Colors[SelectedPlayerNum];
+
+            AudioListener.volume = SettingsData.Volume;
         }
 
         static void Update()
@@ -183,6 +187,7 @@ namespace Blobby.UserInterface
             ButtonPlayer.Clicked += OnButtonPlayer;
             SliderHue.ValueChanged += OnSliderHueChanged;
             LoginHelper.Login += OnLogin;
+            SliderVolume.ValueChanged += OnSliderVolumeChanged;
         }
 
         static void UnsubscribeEventHandler()

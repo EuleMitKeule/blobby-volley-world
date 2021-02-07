@@ -16,9 +16,12 @@ namespace Blobby.Game.States
             //set other sides hit count to 0
             _matchComponent.SetHitCounts(playerComponent.EnemySide, 0);
 
-            for (int i = 0; i < _matchComponent.Players.Count; i++)
+            if (!_matchComponent.IsSingle)
             {
-                _matchComponent.InvokeAlpha(i, _matchComponent.HitCounts[i] != 0);
+                for (var i = 0; i < _matchComponent.Players.Count; i++)
+                {
+                    _matchComponent.InvokeAlpha(i, _matchComponent.HitCounts[i] != 0);
+                }
             }
 
             //check if hit can count again

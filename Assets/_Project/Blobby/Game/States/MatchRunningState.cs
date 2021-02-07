@@ -18,9 +18,12 @@ namespace Blobby.Game.States
             //set other players hit count to 0
             if (_matchComponent.Players.Count == 4) _matchComponent.HitCounts[playerComponent.TeamBlobNum] = 0;
 
-            for (int i = 0; i < _matchComponent.Players.Count; i++)
+            if (!_matchComponent.IsSingle)
             {
-                _matchComponent.InvokeAlpha(i, _matchComponent.HitCounts[i] != 0);
+                for (int i = 0; i < _matchComponent.Players.Count; i++)
+                {
+                    _matchComponent.InvokeAlpha(i, _matchComponent.HitCounts[i] != 0);
+                }
             }
 
             //check if hit can count again

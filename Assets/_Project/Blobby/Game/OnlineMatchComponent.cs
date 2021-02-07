@@ -63,7 +63,7 @@ namespace Blobby.Game
                     if (MatchData.PlayerCount == 4) InvokeAlpha(i, false);
                 }
             
-                if (MatchData.PlayerCount == 4) InvokeAlpha(2, true);
+                if (!IsSingle) InvokeAlpha(2, true);
             
                 LeftSwitched = false;
                 RightSwitched = false;

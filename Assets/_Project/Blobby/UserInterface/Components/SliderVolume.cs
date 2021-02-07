@@ -1,18 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-public class SliderVolume : MonoBehaviour
+namespace Blobby.UserInterface.Components
 {
-    // Start is called before the first frame update
-    void Start()
+    public class SliderVolume : MonoBehaviour
     {
-        
-    }
+        public static event Action<float> ValueChanged;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public void OnValueChanged(float value) => ValueChanged?.Invoke(value);
     }
 }
