@@ -22,8 +22,7 @@ namespace Blobby.Game
         public event Action<int, int, Side> ScoreChanged;
         public event Action<int> TimeChanged;
         public event Action MatchStopped;
-
-        public bool Switched { get { return false; } }
+        public bool Switched => false;
 
         MatchScore _matchScore;
 
@@ -37,7 +36,7 @@ namespace Blobby.Game
 
                 if (!_isAiGame)
                 {
-                    for (int i = 0; i < MatchData.PlayerCount; i++)
+                    for (var i = 0; i < MatchData.PlayerCount; i++)
                     {
                         var playerData = new PlayerData(i, "", PanelSettings.SettingsData.Colors[i]);
                         var playerObject = Instantiate(PrefabHelper.LocalPlayer, transform);
