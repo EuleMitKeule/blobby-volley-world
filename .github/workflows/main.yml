@@ -27,6 +27,7 @@ jobs:
       
       # enables caching for faster build process 
       - name: Caching
+        uses: actions/cache@v1.1.0
         with:
           path: Library
           key: Library
@@ -41,7 +42,8 @@ jobs:
           targetPlatform: StandaloneWindows64
           
       # output artifact (later itch.io)
-      - uses: actions/upload-artifact@v1
+      - name: Outputting
+        uses: actions/upload-artifact@v1
         with:
           name: Build
           path: build
