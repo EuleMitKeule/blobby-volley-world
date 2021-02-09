@@ -3,15 +3,16 @@
 name: License
 
 on: [push]
+
 jobs:
   activation:
-    name: Request manual activation file 🔑
+    name: Request manual activation file
     runs-on: ubuntu-latest
     steps:
     # Request manual activation file
     - name: Requesting manual activation file
       id: getManualLicenseFile
-      uses: game-ci/unity-builder@v2.0-alpha-6
+      uses: game-ci/unity-request-activation-file@v2.0-alpha-1
       with:
         unityVersion: 2020.2.2f1
     
