@@ -166,15 +166,17 @@ namespace Blobby.UserInterface
             Color.RGBToHSV(SettingsData.Colors[SelectedPlayerNum], out float h, out float _, out float _);
             sliderHue.GetComponent<Slider>().value = h;
             sliderHue.GetComponentsInChildren<Image>()[1].color = SettingsData.Colors[SelectedPlayerNum];
-            buttonPlayer.GetComponent<Image>().color = SettingsData.Colors[SelectedPlayerNum];
-
-            var sliderVolume = GameObject.Find("slider_volume").GetComponent<Slider>();
-            sliderVolume.value = SettingsData.Volume;
-            AudioListener.volume = SettingsData.Volume;
+            buttonPlayer.GetComponentsInChildren<Image>()[1].color = SettingsData.Colors[SelectedPlayerNum];
 
             var toggleWindowed = GameObject.Find("toggle_windowed").GetComponent<Toggle>();
             toggleWindowed.SetIsOnWithoutNotify(SettingsData.Windowed);
             Screen.fullScreenMode = SettingsData.Windowed ? FullScreenMode.Windowed : FullScreenMode.FullScreenWindow;
+
+            var sliderVolume = GameObject.Find("slider_volume").GetComponent<Slider>();
+            sliderVolume.value = SettingsData.Volume;
+            var labelVolume = GameObject.Find("label_volume").GetComponent<TextMeshProUGUI>();
+            labelVolume.text = $"{(int)(SettingsData.Volume * 100)}%";
+            AudioListener.volume = SettingsData.Volume;
         }
 
         static void Update()

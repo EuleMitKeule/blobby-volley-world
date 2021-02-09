@@ -3,17 +3,20 @@ using Blobby.Game;
 using SimpleJSON;
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Blobby.Networking
 {
     public static class LoginHelper
     {
         static string _rootUrl = "https://api.blobnet.de/api/";
-
+        static string Token { get; set; }
+        
         #region Events
 
         public static event Action<UserData> Login;
@@ -34,6 +37,10 @@ namespace Blobby.Networking
         {
             if (ServerHandler.IsServer) return;
 
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+
+            Token = new string(Enumerable.Range(1, 16).Select(_ => chars[Random.Range(0, chars.Length)]).ToArray());
+            
             var userData = IoHelper.LoadUserData();
             Task.Run(() => LoginRequest(userData.name, userData.password));
 
@@ -160,40 +167,40 @@ namespace Blobby.Networking
             else MainThreadManager.Run(() => RegisterFailed?.Invoke());
         }
 
-        public static async Task OnlineRequest(string username, string token)
+        public static async Task OnlineRequest()
         {
-            var url = _rootUrl + $"user/{username}/checkin-online?token={token}";
+            var url = $"https://online.blobnet.de/online";
 
             using var client = new HttpClient();
-            var content = new StringContent("", Encoding.UTF8);
+            var content = new StringContent($"{{\"token\":\"{Token}\"}}", Encoding.UTF8, "application/json");
             await client.PostAsync(url, content);
         }
 
-        public static async Task QueueRequest(string username, string token)
+        public static async Task QueueRequest()
         {
-            string url = _rootUrl + $"user/{username}/checkin-queue?token={token}";
+            string url = $"https://online.blobnet.de/queue";
 
             using var client = new HttpClient();
-            var content = new StringContent("", Encoding.UTF8);
+            var content = new StringContent($"{{\"token\":\"{Token}\"}}", Encoding.UTF8, "application/json");
             await client.PostAsync(url, content);
         }
 
         public static async Task PlayerRequest()
         {
-            var url = _rootUrl + $"players";
+            var url = $"https://online.blobnet.de/info";
 
             using var client = new HttpClient();
             var response = await client.GetAsync(url);
             if (response != null)
             {
-                //var json = await response.Content.ReadAsStringAsync();
+                var json = await response.Content.ReadAsStringAsync();
 
-                //var node = JSON.Parse(json);
+                var node = JSON.Parse(json);
 
-                //var playersOnline = int.Parse(node["online"]);
-                //var playersQueue = int.Parse(node["queue"]);
+                var playersOnline = int.Parse(node["online"]);
+                var playersQueue = int.Parse(node["queue"]);
 
-                //QueueInfoChanged?.Invoke(playersOnline, playersQueue);
+                QueueInfoChanged?.Invoke(playersOnline, playersQueue);
 
             }
         }

@@ -12,29 +12,35 @@ namespace Blobby.UserInterface
     {
         public static void Populate(string[] usernames, int[] scores, int time, Side winner)
         {
-            var labelOverScoreLeft = GameObject.Find("label_over_score_left");
-            var labelOverScoreRight = GameObject.Find("label_over_score_right");
+            var labelOverScoreLeft = GameObject.Find("label_over_score_left").GetComponent<TextMeshProUGUI>();
+            var labelOverScoreRight = GameObject.Find("label_over_score_right").GetComponent<TextMeshProUGUI>();
 
-            var labelOverNameLeft = GameObject.Find("label_over_name_left");
-            var labelOverNameLeftOther = GameObject.Find("label_over_name_left_other");
-            var labelOverNameRight = GameObject.Find("label_over_name_right");
-            var labelOverNameRightOther = GameObject.Find("label_over_name_right_other");
+            var labelOverNameLeft = GameObject.Find("label_over_name_left").GetComponent<TextMeshProUGUI>();
+            var labelOverNameLeftOther = GameObject.Find("label_over_name_left_other").GetComponent<TextMeshProUGUI>();
+            var labelOverNameRight = GameObject.Find("label_over_name_right").GetComponent<TextMeshProUGUI>();
+            var labelOverNameRightOther = GameObject.Find("label_over_name_right_other").GetComponent<TextMeshProUGUI>();
 
-            var labelOverTime = GameObject.Find("label_over_time");
+            var labelOverNames = new[]
+                {labelOverNameLeft, labelOverNameLeftOther, labelOverNameRight, labelOverNameRightOther};
 
-            labelOverScoreLeft.GetComponent<TextMeshProUGUI>().text = scores[0].ToString();
-            labelOverScoreRight.GetComponent<TextMeshProUGUI>().text = scores[1].ToString();
+            var labelOverTimeLeft = GameObject.Find("label_over_time_left").GetComponent<TextMeshProUGUI>();
+            var labelOverTimeRight = GameObject.Find("label_over_time_right").GetComponent<TextMeshProUGUI>();
 
-            if (usernames != null && usernames.Length > 0)
+            labelOverScoreLeft.text = scores[0].ToString();
+            labelOverScoreRight.text = scores[1].ToString();
+
+            foreach (var label in labelOverNames)
             {
-                labelOverNameLeft.GetComponent<TextMeshProUGUI>().text = usernames[0];
-                if (usernames.Length > 1)
-                {
-                    labelOverNameRight.GetComponent<TextMeshProUGUI>().text = usernames[1];
-                }
+                label.text = "";
+            }
+            
+            for (int i = 0; i < usernames.Length; i++)
+            {
+                labelOverNames[i].text = usernames[i];
             }
 
-            labelOverTime.GetComponent<TextMeshProUGUI>().text = time.ToString();
+            labelOverTimeLeft.text = (time / 10 / 60).ToString("00");
+            labelOverTimeRight.text = ((time / 10) % 60).ToString("00");
 
             if (usernames.Length == 4)
             {

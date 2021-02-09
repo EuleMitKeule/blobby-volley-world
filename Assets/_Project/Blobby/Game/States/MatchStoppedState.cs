@@ -55,8 +55,7 @@ namespace Blobby.Game.States
 
             _matchComponent.InvokeScore(winner);
 
-            if (_matchComponent.ScoreLeft >= _matchComponent.WinningScore) _matchComponent.InvokeOver(Side.Left);
-            else if (_matchComponent.ScoreRight >= _matchComponent.WinningScore) _matchComponent.InvokeOver(Side.Right);
+            if (_matchComponent.IsMatchWon) _matchComponent.InvokeOver(_matchComponent.WinningSide);
             else
             {
                 _matchComponent.ResetBallTimer?.Start();
@@ -64,29 +63,14 @@ namespace Blobby.Game.States
             }
         }
 
-        public void ExitState()
-        {
+        public void ExitState() { }
 
-        }
+        public void OnBombTimerStopped() { }
 
-        public void OnBombTimerStopped() 
-        {
+        public void OnGround() { }
 
-        }
+        public void OnPlayer(PlayerComponent playerComponent) { }
 
-        public void OnGround()
-        {
-
-        }
-
-        public void OnPlayer(PlayerComponent playerComponent)
-        {
-
-        }
-
-        public void OnSideChanged(Side newSide)
-        {
-
-        }
+        public void OnSideChanged(Side newSide) { }
     }
 }

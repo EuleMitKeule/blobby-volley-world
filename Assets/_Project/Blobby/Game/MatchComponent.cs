@@ -26,6 +26,13 @@ namespace Blobby.Game
 
         public int ScoreLeft { get; protected set; }
         public int ScoreRight { get; protected set; }
+        public bool IsMatchWon => HasLeftWon || HasRightWon;
+        public Side WinningSide => HasLeftWon ? Side.Left : HasRightWon ? Side.Right : Side.None;
+        bool HasLeftWon => HasLeftReachedWinningScore && IsWinPossible;
+        bool HasRightWon => HasRightReachedWinningScore && IsWinPossible;
+        bool HasLeftReachedWinningScore => ScoreLeft >= WinningScore;
+        bool HasRightReachedWinningScore => ScoreRight >= WinningScore;
+        bool IsWinPossible => Mathf.Abs(ScoreLeft - ScoreRight) >= 2;
 
         public bool LeftSwitched { get; set; }
         public bool RightSwitched { get; set; }

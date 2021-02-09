@@ -234,8 +234,8 @@ namespace Blobby.Networking
         {
             while (!_infoQueueTokenSource.IsCancellationRequested)
             {
-                if (UserData != null) await LoginHelper.OnlineRequest(UserData.name, UserData.token);
-                if (_matchQueueTokenSource == null || !_matchQueueTokenSource.IsCancellationRequested) await LoginHelper.QueueRequest(UserData.name, UserData.token);
+                await LoginHelper.OnlineRequest();
+                if (_matchQueueTokenSource == null || !_matchQueueTokenSource.IsCancellationRequested) await LoginHelper.QueueRequest();
 
                 await LoginHelper.PlayerRequest();
                 try
