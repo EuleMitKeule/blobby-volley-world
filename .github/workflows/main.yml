@@ -41,9 +41,19 @@ jobs:
           unityVersion: 2020.2.2f1
           targetPlatform: StandaloneWindows64
           
-      # output artifact (later itch.io)
+      # output artifact
       - name: Outputting
         uses: actions/upload-artifact@v1
         with:
           name: Build
           path: build
+      
+      # upload build to itch.io
+      - name: Uploading
+        uses: josephbmanley/butler-publish-itchio-action@master
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+          CHANNEL: windows
+          ITCH_GAME: blobby-volley-world
+          ITCH_USER: EuleMitKeule
+          PACKAGE: build/windows
