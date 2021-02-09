@@ -42,11 +42,11 @@ jobs:
           targetPlatform: StandaloneWindows64
           
       # output artifact
-      - name: Outputting
-        uses: actions/upload-artifact@v1
-        with:
-          name: Build
-          path: build
+      #- name: Outputting
+      #  uses: actions/upload-artifact@v1
+      #  with:
+      #    name: Build
+      #    path: build
       
       # upload build to itch.io
       - name: Uploading
@@ -56,4 +56,4 @@ jobs:
           CHANNEL: windows
           ITCH_GAME: blobby-volley-world
           ITCH_USER: EuleMitKeule
-          PACKAGE: build/windows
+          PACKAGE: build
