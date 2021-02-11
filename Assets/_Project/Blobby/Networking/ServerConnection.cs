@@ -262,14 +262,20 @@ namespace Blobby.Networking
                     case CLIENT_HANDSHAKE:
             
             
-                        string username = frame.StreamData.GetBasicType<string>();
-                        string token = frame.StreamData.GetBasicType<string>();
+                        var username = frame.StreamData.GetBasicType<string>();
+                        var token = frame.StreamData.GetBasicType<string>();
+                        var colorR = frame.StreamData.GetBasicType<float>();
+                        var colorG = frame.StreamData.GetBasicType<float>();
+                        var colorB = frame.StreamData.GetBasicType<float>();
+                        var color = new Color(colorR, colorG, colorB);
+                        
                         
                         var playerNum = _udpServer.Players.Count - 2;
                         
-                        var playerData = new PlayerData(playerNum, username, Color.gray);
+                        var playerData = new PlayerData(playerNum, username, color);
                         
                         SendPlayerNum(networkingPlayer, playerNum);
+                        SendInfo(networkingPlayer, playerNum, username, color);
                         
                         MainThreadManager.Run(() => PlayerJoined?.Invoke(playerData));
             

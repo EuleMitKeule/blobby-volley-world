@@ -55,8 +55,11 @@ namespace Blobby.Game
                 else if (behavior is PlayerBehavior playerBehavior)
                 {
                     var clientPlayer = playerBehavior.gameObject;
+                    var playerNetworkComponent = clientPlayer.GetComponent<PlayerNetworkComponent>();
+                        
                     clientPlayer.transform.SetParent(transform);
-                    clientPlayer.GetComponent<PlayerNetworkComponent>().ClientMatchComponent = this;
+                    playerNetworkComponent.ClientMatchComponent = this;
+                    playerNetworkComponent.PlayerData = PlayerDataList[Players.Count];
 
                     Players.Add(clientPlayer);
                 }
@@ -73,11 +76,11 @@ namespace Blobby.Game
 
         void OnInfoReceived(int playerNum, string username, Color color)
         {
-            // var playerData = new PlayerData(playerNum, username, color);
-            // PlayerDataList.Add(playerData);
-            //
-            // if (playerNum == 0) _matchScore.SetLeftPlayerData(playerData);
-            // else if (playerNum == 1) _matchScore.SetRightPlayerData(playerData);
+            var playerData = new PlayerData(playerNum, username, color);
+            PlayerDataList.Add(playerData);
+            
+            if (playerNum == 0) _matchScore.SetLeftPlayerData(playerData);
+            else if (playerNum == 1) _matchScore.SetRightPlayerData(playerData);
         }
 
         void OnScoreReceived(int scoreLeft, int scoreRight, Side lastWinner)
