@@ -1,7 +1,7 @@
 using System.IO;
 using UnityEditor;
 
-namespace BlobbyEditor
+namespace Editor
 {
     public static class Build
     {
