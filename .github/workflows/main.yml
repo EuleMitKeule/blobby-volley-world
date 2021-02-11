@@ -43,10 +43,9 @@ jobs:
       - name: Building
         uses: game-ci/unity-builder@v2.0-alpha-6
         with:
-          projectPath: ''
-          buildMethod: 'UnityBuilderAction.Builder.BuildClient'
           unityVersion: 2020.2.2f1
           targetPlatform: StandaloneWindows64
+          # buildMethod: 'UnityBuilderAction.Builder.BuildClient'
           
       # output artifact
       #- name: Outputting
