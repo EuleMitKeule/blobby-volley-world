@@ -17,7 +17,7 @@ env:
 jobs:
   build:
     name: Build Blobby Volley Client
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       # checks out repo to $GITHUB_WORKSPACE
       - name: Checking out
@@ -29,13 +29,13 @@ jobs:
       #  with:
       #    path: Library
       #    key: Library- uses: actions/cache@v1.1.0
-      #- uses: actions/cache@v2.1.4
-      #  with:
-      #    path: Library
-      #    key: Library-blobby-volley-client-StandaloneWindows64
-      #    restore-keys: |
-      #      Library-blobby-volley-client-
-      #      Library-
+      - uses: actions/cache@v2.1.4
+        with:
+          path: Library
+          key: Library-blobby-volley-client-StandaloneWindows64
+          restore-keys: |
+            Library-blobby-volley-client-
+            Library-
       
       # runs Unity test
       
