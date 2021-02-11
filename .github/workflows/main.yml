@@ -37,7 +37,7 @@ jobs:
         uses: game-ci/unity-builder@v2.0-alpha-6
         with:
           unityVersion: 2020.2.2f1
-          targetPlatform: StandaloneWindows64
+          #targetPlatform: StandaloneWindows64
           buildMethod: 'Blobby.Build.BuildClient'
           
       # output artifact
