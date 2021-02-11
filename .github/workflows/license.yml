@@ -2,7 +2,8 @@
 
 name: License
 
-on: [push]
+on: 
+  workflow_dispatch:
 
 jobs:
   activation:
