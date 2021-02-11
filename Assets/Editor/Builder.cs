@@ -7,8 +7,8 @@ using UnityBuilderAction.Versioning;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 
-// namespace UnityBuilderAction
-// {
+namespace UnityBuilderAction
+{
   static class Builder
   {
     public static void BuildClient()
@@ -76,4 +76,4 @@ using UnityEditor.Build.Reporting;
     //         BuildOptions.EnableHeadlessMode);
     // }
   }
-// }
+}
