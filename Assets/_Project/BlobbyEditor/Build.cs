@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace BlobbyEditor
 {
-    public static class Build
+    public class Build
     {
         [MenuItem("Build/Build Client")]
         public static void BuildClient()
