@@ -38,7 +38,7 @@ jobs:
         with:
           unityVersion: 2020.2.2f1
           #targetPlatform: StandaloneWindows64
-          buildMethod: 'Blobby.Build.BuildClient'
+          buildMethod: 'BlobbyEditor.Build.BuildClient'
           
       # output artifact
       #- name: Outputting
