@@ -22,6 +22,8 @@ jobs:
       # checks out repo to $GITHUB_WORKSPACE
       - name: Checking out
         uses: actions/checkout@v2
+        with:
+          lfs: true
       
       # enables caching for faster build process 
       #- name: Caching
