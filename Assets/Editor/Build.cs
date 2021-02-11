@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace Editor
 {
-    public class Build
+    public static class Build
     {
         [MenuItem("Build/Build Client")]
         public static void BuildClient()
