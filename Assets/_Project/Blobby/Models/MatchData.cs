@@ -16,15 +16,6 @@ namespace Blobby.Models
 
         public float HitTreshold { get { return 0.175f; } }
 
-        public int WinningScore 
-        { 
-            get 
-            {
-                if (GameMode == GameMode.Blitz) return 2;
-                else return 16;
-            } 
-        }
-
         public int PlayerCount
         {
             get
@@ -51,14 +42,6 @@ namespace Blobby.Models
                         new Vector2(8, Ground)
                     };
                 }
-            }
-        }
-
-        public Vector2[] BallSpawnPoints
-        {
-            get
-            {
-                return new Vector2[] { new Vector2(-10, -1), new Vector2(10, -1) };
             }
         }
 
@@ -200,11 +183,5 @@ namespace Blobby.Models
                 return new float[] { -1.75f, 1.75f };
             }
         }
-
-        public float ArrowHeight { get { return 10.5f; } }
-
-        public float ArrowLimit { get { return 10.85f; } }
-
-        public float GroundVelocityTreshold { get { return 3.5f; } }
     }
 }

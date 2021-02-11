@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using BeardedManStudios;
+using UnityEngine;
 
 namespace Blobby.Game
 {
@@ -31,10 +32,22 @@ namespace Blobby.Game
         public static bool IsAcute(this Vector2 vector, Vector2 other) => vector.Dot(other) > 0f;
         
         public static float Squared(this Vector2 vector) => vector.Dot(vector);
+        
+        public static float Distance(this Vector2 from, Vector2 to) => from.To(to).magnitude;
+
+        public static float HorizontalDistance(this Vector2 from, Vector2 to) => Mathf.Abs(from.x - to.x);
+
+        public static float HorizontalDistance(this Vector2 from, float to) => Mathf.Abs(from.x - to);
+        
+        public static float VerticalDistance(this Vector2 from, Vector2 to) => Mathf.Abs(from.y - to.y);
+
+        public static float VerticalDistance(this Vector2 from, float to) => Mathf.Abs(from.y - to);
     }
     
     public static class FloatExtensions
     {
         public static float Squared(this float value) => value * value;
+
+        public static Quaternion ToQuaternion(this float zValue) => Quaternion.Euler(0f, 0f, zValue);
     }
 }

@@ -23,7 +23,7 @@ namespace Blobby.Networking
 
         public static event Action ServerStartSuccess;
         public static event Action ServerStartFailed;
-        public static event Action<string, int, Color, NetworkingPlayer> PlayerJoined;
+        public static event Action<PlayerData> PlayerJoined;
         public static event Action AllPlayersJoined;
         public static event Action<int> PlayerDisconnected;
         public static event Action AllPlayersDisconnected;
@@ -63,8 +63,6 @@ namespace Blobby.Networking
 
         public static void Start()
         {
-            Debug.Log("START   Server");
-
             try
             {
                 _udpServer = new UDPServer(_matchData.PlayerCount + 1);
@@ -87,8 +85,6 @@ namespace Blobby.Networking
 
         public static void Stop()
         {
-            Debug.Log("STOP   Server shutting down");
-
             _udpServer.bindSuccessful -= OnBindSuccessful;
             _udpServer.bindFailure -= OnBindFailed;
             _udpServer.playerAccepted -= OnPlayerAccepted;
@@ -114,7 +110,6 @@ namespace Blobby.Networking
 
         public static void List()
         {
-            Debug.Log("Was anderes");
             var serverId = "Blobby Volley World";
             var serverName = _serverData.Name;
             var type = _serverData.Token != "" ? "official" : "custom";
@@ -126,10 +121,7 @@ namespace Blobby.Networking
             var masterServerData = NetworkManager.Instance.MasterServerRegisterData(_udpServer, serverId, serverName, type, mode, comment, useElo, eloRequired);
             NetworkManager.Instance.Initialize(_udpServer, _serverData.MasterServerHost, _serverData.MasterServerPort, masterServerData);
 
-            Debug.Log($"Listed Server on MasterServer ({_serverData.MasterServerHost}:{_serverData.MasterServerPort})");
-
             NetworkObject.Flush(_udpServer);
-            Debug.Log(_serverData.Port);
 
         }
 
@@ -139,7 +131,6 @@ namespace Blobby.Networking
             {
                 NetworkManager.Instance.MasterServerNetworker.Disconnect(false);
             }
-            else Debug.Log("clever, Lennard!\nWärst du damals bloß nicht über die römische Mauer gesprungen!");
         }
 
         public static void StopAccepting()
@@ -161,8 +152,6 @@ namespace Blobby.Networking
 
         public static void SendSound(SoundHelper.SoundClip sound)
         {
-            Debug.Log($"SendSound({sound})");
-
             _udpServer.Send(Receivers.Others, null, SOUND, true, (int)sound);
         }
 
@@ -178,15 +167,11 @@ namespace Blobby.Networking
 
         public static void SendScore(int scoreLeft, int scoreRight, Side lastWinner)
         {
-            Debug.Log($"SendScore({scoreLeft}, {scoreRight}, {lastWinner})");
-
             _udpServer.Send(Receivers.Others, null, SCORE, true, scoreLeft, scoreRight, (int)lastWinner);
         }
 
         public static void SendTime(int time)
         {
-            Debug.Log($"SendTime({time})");
-
             _udpServer.Send(Receivers.Others, null, TIME, true, time);
         }
 
@@ -245,7 +230,7 @@ namespace Blobby.Networking
         {
             player.PingInterval = 2000;
             player.TimeoutMilliseconds = 15000;
-
+            
             if (_udpServer.Players.Count - 1 >= _serverData.MatchData.PlayerCount)
             {
                 AllPlayersJoined?.Invoke();
@@ -254,7 +239,7 @@ namespace Blobby.Networking
 
         static void OnPlayerRejected(NetworkingPlayer player, NetWorker sender)
         {
-            Debug.Log("rejected");
+
         }
 
         static void OnPlayerDisconnected(NetworkingPlayer player, NetWorker sender)
@@ -275,80 +260,59 @@ namespace Blobby.Networking
                 switch (frame.GroupId)
                 {
                     case CLIENT_HANDSHAKE:
-
-                        Debug.Log("handshake received");
+            
+            
                         string username = frame.StreamData.GetBasicType<string>();
                         string token = frame.StreamData.GetBasicType<string>();
-
-                        //if (token != "") GetUserData(username, token, networkingPlayer);
-                        MainThreadManager.Run(() => PlayerJoined?.Invoke(username, 0, Color.gray, networkingPlayer)); //TODO: Später nicht mehr ohne token!
-
+                        
+                        var playerNum = _udpServer.Players.Count - 2;
+                        
+                        var playerData = new PlayerData(playerNum, username, Color.gray);
+                        
+                        SendPlayerNum(networkingPlayer, playerNum);
+                        
+                        MainThreadManager.Run(() => PlayerJoined?.Invoke(playerData));
+            
                         break;
                     case BUTTON_DOWN:
-
-                        var playerNum = frame.StreamData.GetBasicType<int>();
+            
+                        playerNum = frame.StreamData.GetBasicType<int>();
                         var button = frame.StreamData.GetBasicType<int>();
-
+            
                         ButtonDownReceived?.Invoke(playerNum, button);
-
+            
                         break;
-
+            
                     case BUTTON_UP:
-
+            
                         playerNum = frame.StreamData.GetBasicType<int>();
                         button = frame.StreamData.GetBasicType<int>();
-
+            
                         ButtonUpReceived?.Invoke(playerNum, button);
-
+            
                         break;
                     case SURRENDER:
-
+            
                         playerNum = _udpServer.Players.IndexOf(networkingPlayer) - 1;
-
+            
                         SurrenderReceived?.Invoke(playerNum);
-
+            
                         break;
                     case REVANCHE:
-
+            
                         var isRevanche = frame.StreamData.GetBasicType<bool>();
-
+            
                         if (!isRevanche) break;
-
+            
                         playerNum = _udpServer.Players.IndexOf(networkingPlayer) - 1;
-
+            
                         RevancheReceived?.Invoke(playerNum, isRevanche);
-
+            
                         break;
                     default:
                         break;
                 }
             });
-        }
-
-        #endregion
-
-        #region WebRequests
-
-        static async void GetUserData(string username, string token, NetworkingPlayer player)
-        {
-            var url = $"https://api.blobnet.de/api/user/{username}?token={token}";
-
-            using var client = new HttpClient();
-            var response = await client.GetAsync(url);
-
-            if (response != null)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                var dic = SimpleJSON.JSON.Parse(json);
-
-                var color = new Color(dic["color_r"], dic["color_g"], dic["color_b"]);
-                MainThreadManager.Run(() => PlayerJoined?.Invoke(username, dic["elo"], color, player));
-            }
-            else
-            {
-                _udpServer.BanPlayer(player.NetworkId, 1);
-                return;
-            }
         }
 
         #endregion

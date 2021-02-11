@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Blobby.Game.States
 {
@@ -31,13 +33,13 @@ namespace Blobby.Game.States
 
         public void OnButtonLocalPlay()
         {
-            MatchHandler.Ai = false;
+            MatchHandler.IsAi = false;
             MatchHandler.SetState(MatchHandler.ClientGameLocalState);
         }
 
         public void OnButtonLocalPlayAi()
         {
-            MatchHandler.Ai = true;
+            MatchHandler.IsAi = true;
             MatchHandler.SetState(MatchHandler.ClientGameLocalState);
         }
 
@@ -70,7 +72,7 @@ namespace Blobby.Game.States
 
         public void OnMatchStopped()
         {
-            Debug.Log("match stopped");
+
         }
 
         public void OnSlideOver() { }
@@ -83,7 +85,10 @@ namespace Blobby.Game.States
             {
                 MenuHelper.SetPanelPause(false);
 
-                MatchHandler.Match?.Dispose();
+                if (MatchHandler.Match is MatchComponent matchComponent)
+                {
+                    UnityEngine.Object.Destroy(matchComponent.gameObject);
+                }
 
                 MatchHandler.ZoomEffect?.ZoomOut();
             });

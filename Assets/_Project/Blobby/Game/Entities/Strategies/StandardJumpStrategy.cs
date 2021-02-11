@@ -1,37 +1,36 @@
-﻿using UnityEngine;
+﻿using Blobby.Game.Entities.Strategies;
+using UnityEngine;
 
 namespace Blobby.Game.Entities
 {
     public class StandardJumpStrategy : IJumpStrategy
     {
-        Player _player;
-        Match _match;
+        PlayerComponent _playerComponent;
 
-        public StandardJumpStrategy(Player player, Match match)
+        public StandardJumpStrategy(PlayerComponent playerComponent)
         {
-            _player = player;
-            _match = match;
+            _playerComponent = playerComponent;
         }
 
         public void OnJumpDown()
         {
-            _player.KeyPressed[0] = true;
+            _playerComponent.KeyPressed[0] = true;
         }
 
         public void OnJumpUp()
         {
-            _player.KeyPressed[0] = false;
+            _playerComponent.KeyPressed[0] = false;
         }
 
         public void OnJump()
         {
-            _player.IsGrounded = false;
-            _player.Velocity = new Vector2(_player.Velocity.x, _match.PhysicsSettings.playerJumpVelocity);
+            _playerComponent.IsGrounded = false;
+            _playerComponent.Velocity = new Vector2(_playerComponent.Velocity.x, PlayerComponent.JUMP_VELOCITY);
         }
 
         public void OnJumpHold()
         {
-            _player.Velocity += Vector2.up * Time.fixedDeltaTime * _match.PhysicsSettings.playerJumpDrift;
+            _playerComponent.Velocity += Vector2.up * Time.fixedDeltaTime * PlayerComponent.JUMP_DRIFT;
         }
     }
 }

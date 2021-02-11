@@ -1,11 +1,6 @@
-﻿using BeardedManStudios.Forge.Networking;
-using Blobby.Networking;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Blobby.Networking;
 using System.Threading.Tasks;
-using UnityEngine;
+using Blobby.Models;
 
 namespace Blobby.Game.States
 {
@@ -27,7 +22,7 @@ namespace Blobby.Game.States
             ServerHandler.Start();
         }
 
-        public void OnPlayerJoined(string username, int elo, Color color, NetworkingPlayer networkingPlayer)
+        public void OnPlayerJoined(PlayerData playerData)
         {
 
         }

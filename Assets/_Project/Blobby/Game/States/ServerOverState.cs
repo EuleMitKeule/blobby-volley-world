@@ -1,12 +1,9 @@
-﻿using BeardedManStudios.Forge.Networking;
-using BeardedManStudios.Forge.Networking.Unity;
+﻿using BeardedManStudios.Forge.Networking.Unity;
 using Blobby.Networking;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blobby.Models;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Blobby.Game.States
 {
@@ -14,13 +11,11 @@ namespace Blobby.Game.States
     {
         public void EnterState()
         {
-            ServerHandler.Match.InvokeOver(ServerHandler.Winner);
-
-            Debug.Log($"Match is over; {ServerHandler.Winner} side won!");
+            ServerHandler.MatchComponent.InvokeOver(ServerHandler.Winner);
 
             ServerConnection.StopAccepting();
             ServerConnection.Unlist();
-            ServerConnection.SendOver(ServerHandler.Winner, ServerHandler.Match.ScoreLeft, ServerHandler.Match.ScoreRight, ServerHandler.Match.MatchTimer.MatchTime);
+            ServerConnection.SendOver(ServerHandler.Winner, ServerHandler.MatchComponent.ScoreLeft, ServerHandler.MatchComponent.ScoreRight, ServerHandler.MatchComponent.MatchTimer.MatchTime);
 
             ServerHandler.RevancheWanted = new bool[ServerHandler.ServerData.MatchData.PlayerCount];
 
@@ -37,7 +32,7 @@ namespace Blobby.Game.States
             Application.Quit();
         }
 
-        public void OnPlayerJoined(string username, int elo, Color color, NetworkingPlayer networkingPlayer)
+        public void OnPlayerJoined(PlayerData playerData)
         {
 
         }
@@ -68,7 +63,7 @@ namespace Blobby.Game.States
 
             MainThreadManager.Run(() =>
             {
-                ServerHandler.Match?.Dispose();
+                if (ServerHandler.MatchComponent) Object.Destroy(ServerHandler.MatchComponent.gameObject);
             });
         }
 
@@ -76,20 +71,15 @@ namespace Blobby.Game.States
         {
             ServerHandler.RevancheWanted[playerNum] = isRevanche;
 
-            if (isRevanche) Debug.Log($"Player {playerNum} wants a revanche!");
-            else Debug.Log($"Player {playerNum} does not want a revanche");
-
             if (ServerHandler.RevancheWanted.All(val => val))
             {
-                Debug.Log("Revanche!");
-
                 ServerHandler.ServerCloseTimer?.Stop();
 
                 ServerConnection.SendRematch();
 
                 MainThreadManager.Run(() =>
                 {
-                    ServerHandler.Match?.Restart();
+                    if (ServerHandler.MatchComponent) ServerHandler.MatchComponent.Restart();
                 });
 
                 ServerHandler.SetState(ServerHandler.RunningState);
@@ -98,11 +88,9 @@ namespace Blobby.Game.States
 
         public void OnServerCloseTimerStopped()
         {
-            Debug.Log("Server close timer stopped");
-
             MainThreadManager.Run(() =>
             {
-                ServerHandler.Match?.Dispose();
+                if (ServerHandler.MatchComponent) Object.Destroy(ServerHandler.MatchComponent.gameObject);
             });
         }
 

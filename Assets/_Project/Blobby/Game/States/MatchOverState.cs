@@ -5,18 +5,18 @@ namespace Blobby.Game.States
 {
     public class MatchOverState : IMatchState
     {
-        Match _match;
+        MatchComponent _matchComponent;
 
-        public MatchOverState(Match match)
+        public MatchOverState(MatchComponent matchComponent)
         {
-            _match = match;
+            _matchComponent = matchComponent;
         }
 
         public void EnterState()
         {
-            _match.MatchTimer?.Stop();
-            _match.BombTimer?.Stop();
-            _match.ResetBallTimer?.Stop();
+            _matchComponent.MatchTimer?.Stop();
+            _matchComponent.BombTimer?.Stop();
+            _matchComponent.ResetBallTimer?.Stop();
         }
 
         public void ExitState()
@@ -34,7 +34,7 @@ namespace Blobby.Game.States
 
         }
 
-        public void OnPlayer(Player player)
+        public void OnPlayer(PlayerComponent playerComponent)
         {
 
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blobby.Models;
 using UnityEngine;
 
 namespace Blobby.Game.States
@@ -16,7 +17,7 @@ namespace Blobby.Game.States
 
         void OnServerDisconnected();
 
-        void OnPlayerJoined(string username, int elo, Color color, NetworkingPlayer networkingPlayer);
+        void OnPlayerJoined(PlayerData playerData);
 
         void OnAllPlayersConnected();
 

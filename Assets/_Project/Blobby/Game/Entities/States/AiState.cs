@@ -9,13 +9,13 @@ namespace Blobby.Game.Entities.States
 {
     public abstract class AiState
     {
-        protected AiPlayer _aiPlayer;
-        protected Match _match;
+        protected AiPlayerComponent AiPlayerComponent;
+        protected MatchComponent MatchComponent;
 
-        public AiState(AiPlayer aiPlayer, Match match)
+        public AiState(AiPlayerComponent aiPlayerComponent, MatchComponent matchComponent)
         {
-            _aiPlayer = aiPlayer;
-            _match = match;
+            AiPlayerComponent = aiPlayerComponent;
+            MatchComponent = matchComponent;
         }
 
         public virtual void FixedUpdate()
@@ -25,30 +25,30 @@ namespace Blobby.Game.Entities.States
 
         public virtual void EnterState()
         {
-            _match.Ball.SideChanged += OnBallSideChanged;
+            MatchComponent.BallComponent.SideChanged += OnBallSideChanged;
         }
 
         public virtual void ExitState()
         {
-            _match.Ball.SideChanged -= OnBallSideChanged;
+            MatchComponent.BallComponent.SideChanged -= OnBallSideChanged;
         }
 
         protected virtual void OnBallSideChanged(Side side)
         {
-            if (side == _aiPlayer.PlayerData.Side)
+            if (side == AiPlayerComponent.PlayerData.Side)
             {
-                if (_aiPlayer.PlayerData.PlayerNum > 1)
+                if (AiPlayerComponent.PlayerData.PlayerNum > 1)
                 {
-                    if (!_aiPlayer.IsTransparent[_aiPlayer.PlayerData.PlayerNum] && !_aiPlayer.IsTransparent[(_aiPlayer.PlayerData.PlayerNum + 2) % 4])
+                    if (!AiPlayerComponent.IsTransparent[AiPlayerComponent.PlayerData.PlayerNum] && !AiPlayerComponent.IsTransparent[(AiPlayerComponent.PlayerData.PlayerNum + 2) % 4])
                     {
-                        _aiPlayer.SetState(_aiPlayer.Defensive);
+                        AiPlayerComponent.SetState(AiPlayerComponent.Defensive);
                         return;
                     }
-                    else _aiPlayer.SetState(_aiPlayer.Offensive);
+                    else AiPlayerComponent.SetState(AiPlayerComponent.Offensive);
                 }
-                else _aiPlayer.SetState(_aiPlayer.Offensive);
+                else AiPlayerComponent.SetState(AiPlayerComponent.Offensive);
             }
-            else _aiPlayer.SetState(_aiPlayer.Defensive);
+            else AiPlayerComponent.SetState(AiPlayerComponent.Defensive);
         }
     }
 }

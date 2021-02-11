@@ -54,7 +54,7 @@ namespace Blobby.UserInterface
             sliderHueImage.preserveAspect = false;
         }
 
-        private static void OnButtonSettingsSave()
+        static void OnButtonSettingsSave()
         {
             IoHelper.SaveSettingsData(SettingsData);
             if (ClientConnection.UserData != null)
@@ -68,6 +68,8 @@ namespace Blobby.UserInterface
                     Task.Run(() => LoginHelper.PostColor(ClientConnection.UserData));
                 }
             }
+
+            PopulateSettings();
         }
 
         static void OnButtonSettings()
@@ -79,6 +81,7 @@ namespace Blobby.UserInterface
         {
             SettingsData = IoHelper.LoadSettingsData();
             SettingsData ??= new SettingsData();
+            PopulateSettings();
         }
 
         static void OnButtonSideLeft()
@@ -122,6 +125,18 @@ namespace Blobby.UserInterface
             PopulateSettings();
         }
 
+        static void OnToggleWindowed()
+        {
+            SettingsData.Windowed = !SettingsData.Windowed;
+            PopulateSettings();
+        }
+
+        static void OnSliderVolumeChanged(float value)
+        {
+            SettingsData.Volume = value;
+            PopulateSettings();
+        }
+
         static void OnLogin(UserData userData)
         {
             if (ClientConnection.UserData.Color != SettingsData.Colors[0])
@@ -151,7 +166,17 @@ namespace Blobby.UserInterface
             Color.RGBToHSV(SettingsData.Colors[SelectedPlayerNum], out float h, out float _, out float _);
             sliderHue.GetComponent<Slider>().value = h;
             sliderHue.GetComponentsInChildren<Image>()[1].color = SettingsData.Colors[SelectedPlayerNum];
-            buttonPlayer.GetComponent<Image>().color = SettingsData.Colors[SelectedPlayerNum];
+            buttonPlayer.GetComponentsInChildren<Image>()[1].color = SettingsData.Colors[SelectedPlayerNum];
+
+            var toggleWindowed = GameObject.Find("toggle_windowed").GetComponent<Toggle>();
+            toggleWindowed.SetIsOnWithoutNotify(SettingsData.Windowed);
+            Screen.fullScreenMode = SettingsData.Windowed ? FullScreenMode.Windowed : FullScreenMode.FullScreenWindow;
+
+            var sliderVolume = GameObject.Find("slider_volume").GetComponent<Slider>();
+            sliderVolume.value = SettingsData.Volume;
+            var labelVolume = GameObject.Find("label_volume").GetComponent<TextMeshProUGUI>();
+            labelVolume.text = $"{(int)(SettingsData.Volume * 100)}%";
+            AudioListener.volume = SettingsData.Volume;
         }
 
         static void Update()
@@ -183,6 +208,8 @@ namespace Blobby.UserInterface
             ButtonPlayer.Clicked += OnButtonPlayer;
             SliderHue.ValueChanged += OnSliderHueChanged;
             LoginHelper.Login += OnLogin;
+            SliderVolume.ValueChanged += OnSliderVolumeChanged;
+            ToggleWindowed.Toggled += OnToggleWindowed;
         }
 
         static void UnsubscribeEventHandler()
@@ -198,6 +225,8 @@ namespace Blobby.UserInterface
             ButtonPlayer.Clicked -= OnButtonPlayer;
             SliderHue.ValueChanged -= OnSliderHueChanged;
             LoginHelper.Login -= OnLogin;
+            SliderVolume.ValueChanged -= OnSliderVolumeChanged;
+            ToggleWindowed.Toggled -= OnToggleWindowed;
         }
     }
 }

@@ -3,24 +3,22 @@ using BeardedManStudios.Forge.Networking.Unity;
 using Blobby.Game.Physics;
 using Blobby.Models;
 using UnityEngine;
-using static Blobby.Game.Entities.Ball;
+using static Blobby.Game.Entities.BallComponent;
 
 namespace Blobby.Game.Entities
 {
     public class BallRunningState : IBallState
     {
-        Ball _ball;
-        Match _match;
-        MatchData _matchData;
+        BallComponent _ballComponent;
 
-        public BallRunningState(Ball ball, Match match, MatchData matchData) => (_ball, _match, _matchData) = (ball, match, matchData);
+        public BallRunningState(BallComponent ballComponent) => _ballComponent = ballComponent;
 
         public void EnterState()
         {
             MainThreadManager.Run(() =>
             {
-                _ball.BallObj.layer = 6;
-                _ball.Gravity = _match.PhysicsSettings.ballGravity;
+                _ballComponent.gameObject.layer = 6;
+                _ballComponent.Gravity = BallComponent.GRAVITY;
             });
         }
 
@@ -31,56 +29,39 @@ namespace Blobby.Game.Entities
 
         public void FixedUpdate()
         {
-            // var involuntaryHappened = _ball.HandleInvoluntaryCollision(); //nicht im stopped
-            //
-            // var voluntaryPlayerHappened = false;
-            // var voluntaryWallHappened = false;
-            // var voluntaryNetHappened = false;
-            // if (!involuntaryHappened)
-            // {
-            //     voluntaryPlayerHappened = _ball.HandleVoluntaryPlayerCollision(); //nicht im stopped
-            //     voluntaryWallHappened = _ball.HandleVoluntaryWallCollision();
-            //     voluntaryNetHappened = _ball.HandleVoluntaryNetCollision();
-            // }
-            //
-            // var voluntaries = new bool[] {voluntaryPlayerHappened, voluntaryNetHappened, voluntaryWallHappened };
-            //
-            // if (!involuntaryHappened && voluntaries.All(val => !val))
-            // {
-            //     _ball.Position += Time.fixedDeltaTime * _ball.Velocity;    
-            // }
-
-            _ball.HandleMapCollision();
+            _ballComponent.HandleMapCollision();
         }
 
-        public void OnPlayerHit(Player player, Vector2 centroid, Vector2 normal)
+        public void OnPlayerHit(PlayerComponent playerComponent, Vector2 centroid, Vector2 normal)
         {
-            _ball.Position = centroid;
-            _ball.Velocity = normal * Ball.BALL_SHOT_VELOCITY;
+            _ballComponent.Position = centroid;
+            _ballComponent.Velocity = normal * SHOT_VELOCITY;
 
-            _ball.InvokePlayerHit(player);
+            _ballComponent.InvokePlayerHit(playerComponent);
         }
 
-        public void OnWallHit()
+        public void OnCollision(RaycastHit2D result)
         {
-            
-        }
-        public void OnNetHit()
-        {
-            
-        }
-
-        public void OnGroundHit()
-        {
-            _ball.InvokeGroundHit();
-            _ball.SetState(_ball.Stopped);
+            if (result.collider == PhysicsWorld.GroundCollider)
+            {
+                _ballComponent.InvokeGroundHit();
+                _ballComponent.SetState(_ballComponent.Stopped);
+            }
+            else if (result.collider == PhysicsWorld.NetEdgeCollider)
+            {
+                _ballComponent.InvokeNetHit();
+            }
+            else
+            {
+                _ballComponent.InvokeWallHit();
+            }
         }
 
         public void OnBombTimerStopped()
         {
             MainThreadManager.Run(() =>
             {
-                _ball.SetState(_ball.Stopped);
+                _ballComponent.SetState(_ballComponent.Stopped);
             });
         }
     }

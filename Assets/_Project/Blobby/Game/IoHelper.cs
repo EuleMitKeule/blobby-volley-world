@@ -88,11 +88,7 @@ namespace Blobby.Game
                 var json = File.ReadAllText(path);
                 return JsonUtility.FromJson<ServerData>(json);
             }
-            else
-            {
-                Debug.Log("serverData.json was not found");
-                return null;
-            }
+            return null;
         }
 
         public static void SaveServerData(ServerData serverData)

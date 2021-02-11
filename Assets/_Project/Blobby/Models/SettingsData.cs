@@ -22,5 +22,9 @@ namespace Blobby.Models
             Color.green,
             Color.yellow
         };
+
+        public float Volume = 1f;
+
+        public bool Windowed;
     }
 }

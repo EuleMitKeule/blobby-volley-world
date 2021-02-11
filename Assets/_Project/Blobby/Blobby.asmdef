@@ -2,10 +2,10 @@
     "name": "Blobby",
     "rootNamespace": "",
     "references": [
-        "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:15fc0a57446b3144c949da3e2b9737a9",
+        "GUID:0a7daa40f9e646f45b717e8be288afdd",
         "GUID:5e05b6dc4dc531440a8b480a3687c6c9",
-        "GUID:0a7daa40f9e646f45b717e8be288afdd"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

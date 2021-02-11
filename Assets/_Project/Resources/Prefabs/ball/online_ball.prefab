@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6249117596139102933}
   - component: {fileID: 6213857067189048486}
-  - component: {fileID: 5541161906937104626}
   - component: {fileID: 4024316625844801397}
+  - component: {fileID: 3644242133981255611}
+  - component: {fileID: 5123541343248984897}
   m_Layer: 6
   m_Name: online_ball
   m_TagString: Ball
@@ -86,18 +87,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &5541161906937104626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2747410351367573495}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1f431b6d3df74549b7f5faded2d9f83, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!58 &4024316625844801397
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -114,6 +103,30 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 1.31
+--- !u!114 &3644242133981255611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2747410351367573495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56df9b24b9d14434b882514e416c1040, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5123541343248984897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2747410351367573495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dfd56b31dd54ac6b8615b9aa028f6c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3090316126077261480
 GameObject:
   m_ObjectHideFlags: 0

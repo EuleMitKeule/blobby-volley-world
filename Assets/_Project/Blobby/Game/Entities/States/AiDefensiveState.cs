@@ -8,7 +8,7 @@ namespace Blobby.Game.Entities.States
 {
     public class AiDefensiveState : AiState
     {
-        public AiDefensiveState(AiPlayer aiPlayer, Match match) : base(aiPlayer, match)
+        public AiDefensiveState(AiPlayerComponent aiPlayerComponent, MatchComponent matchComponent) : base(aiPlayerComponent, matchComponent)
         {
             
         }
@@ -17,23 +17,23 @@ namespace Blobby.Game.Entities.States
         {
             base.FixedUpdate();
 
-            if (_aiPlayer.Position.x < _aiPlayer.AiData.DefensivePositionX - _aiPlayer.AiData.Threshold)
+            if (AiPlayerComponent.Position.x < AiPlayerComponent.AiData.DefensivePositionX - AiPlayerComponent.AiData.Threshold)
             {
-                _aiPlayer.KeyPressed[0] = false;
-                _aiPlayer.KeyPressed[1] = false;
-                _aiPlayer.KeyPressed[2] = true;
+                AiPlayerComponent.KeyPressed[0] = false;
+                AiPlayerComponent.KeyPressed[1] = false;
+                AiPlayerComponent.KeyPressed[2] = true;
             }
-            else if (_aiPlayer.Position.x > _aiPlayer.AiData.DefensivePositionX + _aiPlayer.AiData.Threshold)
+            else if (AiPlayerComponent.Position.x > AiPlayerComponent.AiData.DefensivePositionX + AiPlayerComponent.AiData.Threshold)
             {
-                _aiPlayer.KeyPressed[0] = false;
-                _aiPlayer.KeyPressed[1] = true;
-                _aiPlayer.KeyPressed[2] = false;
+                AiPlayerComponent.KeyPressed[0] = false;
+                AiPlayerComponent.KeyPressed[1] = true;
+                AiPlayerComponent.KeyPressed[2] = false;
             }
             else
             {
-                _aiPlayer.KeyPressed[0] = false;
-                _aiPlayer.KeyPressed[1] = false;
-                _aiPlayer.KeyPressed[2] = false;
+                AiPlayerComponent.KeyPressed[0] = false;
+                AiPlayerComponent.KeyPressed[1] = false;
+                AiPlayerComponent.KeyPressed[2] = false;
             }
         }
     }

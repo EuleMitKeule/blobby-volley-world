@@ -1,21 +1,17 @@
-﻿using UnityEngine;
+﻿using Blobby.Game.Entities.Strategies;
+using UnityEngine;
 
 namespace Blobby.Game.Entities
 {
     public class PogoJumpStrategy : IJumpStrategy
     {
-        Player _player;
-        Match _match;
+        PlayerComponent PlayerComponent { get; set; }
 
-        public PogoJumpStrategy(Player player, Match match)
-        {
-            _player = player;
-            _match = match;
-        }
+        public PogoJumpStrategy(PlayerComponent playerComponent) => PlayerComponent = playerComponent;
 
         public void OnJumpDown()
         {
-            _player.KeyPressed[0] = true;
+            PlayerComponent.KeyPressed[0] = true;
         }
 
         public void OnJumpUp()
@@ -25,13 +21,13 @@ namespace Blobby.Game.Entities
 
         public void OnJump()
         {
-            _player.IsGrounded = false;
-            _player.Velocity = new Vector2(_player.Velocity.x, _match.PhysicsSettings.playerJumpVelocity);
+            PlayerComponent.IsGrounded = false;
+            PlayerComponent.Velocity = new Vector2(PlayerComponent.Velocity.x, PlayerComponent.JUMP_VELOCITY);
         }
 
         public void OnJumpHold()
         {
-            _player.Velocity += Vector2.up * Time.fixedDeltaTime * _match.PhysicsSettings.playerJumpDrift;
+            PlayerComponent.Velocity += Vector2.up * Time.fixedDeltaTime * PlayerComponent.JUMP_DRIFT;
         }
     }
 }

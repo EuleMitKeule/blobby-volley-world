@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Blobby.Game.States
 {
@@ -38,11 +39,11 @@ namespace Blobby.Game.States
         {
             MainThreadManager.Run(() =>
             {
-                if (!(MatchHandler.Match is LocalMatch localMatch)) return;
+                if (!(MatchHandler.Match is LocalMatchComponent localMatch)) return;
 
                 MatchHandler.ZoomEffect?.ZoomOut();
 
-                localMatch?.Restart();
+                localMatch.Restart();
             });
         }
 
@@ -53,7 +54,7 @@ namespace Blobby.Game.States
             MenuHelper.SetPanelPause(false);
             Time.timeScale = MatchHandler.MatchData.TimeScale;
 
-            if (!(MatchHandler.Match is LocalMatch localMatch)) return;
+            if (!(MatchHandler.Match is LocalMatchComponent localMatch)) return;
             localMatch.InvokeOver(Side.Right);
             SoundHelper.PlayAudio(SoundHelper.SoundClip.Whistle);
         }
@@ -87,7 +88,7 @@ namespace Blobby.Game.States
         {
             MainThreadManager.Run(() =>
             {
-                if (!(MatchHandler.Match is LocalMatch localMatch)) return;
+                if (!(MatchHandler.Match is LocalMatchComponent localMatch)) return;
 
                 var revancheButton = GameObject.Find("button_over_revanche").GetComponent<Button>();
                 revancheButton.interactable = true;
@@ -95,9 +96,9 @@ namespace Blobby.Game.States
                 MenuHelper.SetPanelPause(false);
 
                 //MatchHandler.ZoomEffect?.Dispose();
-                MatchHandler.ZoomEffect?.ZoomIn(localMatch.Players[winner == Side.Left ? 0 : 1].PlayerObj.transform);
+                MatchHandler.ZoomEffect?.ZoomIn(localMatch.Players[winner == Side.Left ? 0 : 1].transform);
 
-                var usernames = (from i in Enumerable.Range(0, 4) select $"Blob_{i}").ToArray();
+                var usernames = (from i in Enumerable.Range(0, 4) select "").ToArray();
                 PanelOver.Populate(usernames, new int[] { localMatch.ScoreLeft, localMatch.ScoreRight }, localMatch.MatchTimer.MatchTime, winner);
             });
         }
@@ -113,10 +114,12 @@ namespace Blobby.Game.States
 
         public void OnBlackoutOver()
         {
+            var prefab = MatchHandler.IsAi ? PrefabHelper.AiMatch : PrefabHelper.LocalMatch;
             MatchHandler.MatchData = MatchHandler.LocalMatchData;
-            MatchHandler.Match = new LocalMatch(MatchHandler.LocalMatchData, MatchHandler.Ai);
+            var matchObject = Object.Instantiate(prefab);
+            MatchHandler.Match = matchObject.GetComponent<IMatch>();
 
-            if (!(MatchHandler.Match is LocalMatch localMatch)) return;
+            if (!(MatchHandler.Match is LocalMatchComponent localMatch)) return;
 
             localMatch.Over += MatchHandler.OnMatchOver; 
 
@@ -127,9 +130,9 @@ namespace Blobby.Game.States
         {
             MainThreadManager.Run(() =>
             {
-                if (!(MatchHandler.Match is LocalMatch localMatch)) return;
+                if (!(MatchHandler.Match is LocalMatchComponent localMatch)) return;
 
-                localMatch.Start();
+                localMatch.StartMatch();
             });
         }
 

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blobby.Models;
 using UnityEngine;
 
 namespace Blobby.Game.States
@@ -27,7 +28,7 @@ namespace Blobby.Game.States
             Application.Quit(); //TODO restart?
         }
 
-        public void OnPlayerJoined(string username, int elo, Color color, NetworkingPlayer networkingPlayer)
+        public void OnPlayerJoined(PlayerData playerData)
         {
 
         }
@@ -48,8 +49,6 @@ namespace Blobby.Game.States
         {
             var winner = playerNum % 2 == 0 ? Side.Right : Side.Left;
 
-            Debug.Log($"Received surrender, winner: {winner}");
-
             ServerConnection.SendSound(SoundHelper.SoundClip.Whistle);
 
             ServerHandler.Winner = winner;
@@ -59,8 +58,6 @@ namespace Blobby.Game.States
         public void OnPlayerDisconnected(int playerNum)
         {
             var winner = playerNum % 2 == 0 ? Side.Left : Side.Right;
-
-            Debug.Log($"Received surrender, winner: {winner}");
 
             ServerHandler.Winner = winner;
             ServerHandler.SetState(ServerHandler.OverState);

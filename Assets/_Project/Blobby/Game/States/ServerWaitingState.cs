@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Blobby.Models;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Blobby.Game.States
 {
@@ -14,7 +16,19 @@ namespace Blobby.Game.States
     {
         public void EnterState()
         {
+            MainThreadManager.Run(() =>
+            {
+                var matchObj = Object.Instantiate(PrefabHelper.OnlineMatch);
+                var matchComponent = matchObj.GetComponent<OnlineMatchComponent>();
+                var matchData = ServerHandler.ServerData.MatchData;
 
+                Time.timeScale = matchData.TimeScale;
+                ServerConnection.SendMap(matchData.Map);
+                
+                ServerHandler.MatchComponent = matchComponent;
+                ServerHandler.MatchComponent.MatchData = matchData;
+                ServerHandler.SubscribeMatchEvents();
+            });
         }
 
         public void ExitState()
@@ -27,35 +41,18 @@ namespace Blobby.Game.States
             Application.Quit();
         }
 
-        public void OnPlayerJoined(string username, int elo, Color color, NetworkingPlayer networkingPlayer)
+        public void OnPlayerJoined(PlayerData playerData)
         {
-            Debug.Log($"Player \"{username}\" joined");
-
             MainThreadManager.Run(() =>
             {
-                ServerHandler.Match?.OnPlayerJoined(username, elo, color, networkingPlayer);
-
-                if (ServerHandler.Match.Players.Count >= ServerHandler.Match.MatchData.PlayerCount)
-                {
-                    OnAllPlayersJoined();
-                }
+                ServerHandler.MatchComponent.OnPlayerJoined(playerData);
             });
         }
 
         public void OnAllPlayersConnected()
         {
-            Debug.Log("all Players connected");
-
             ServerConnection.StopAccepting();
             ServerConnection.Unlist();
-        }
-
-        void OnAllPlayersJoined()
-        {
-            Debug.Log("all Players joined");
-
-            ServerHandler.Match?.Start();
-            ServerHandler.SetState(ServerHandler.RunningState);
         }
 
         public void OnMatchOver(Side winner)
@@ -67,8 +64,6 @@ namespace Blobby.Game.States
         {
             var winner = Side.None;
 
-            Debug.Log($"Received surrender, winner: {winner}");
-
             ServerHandler.Winner = winner;
             ServerHandler.SetState(ServerHandler.OverState);
         }
@@ -76,8 +71,6 @@ namespace Blobby.Game.States
         public void OnPlayerDisconnected(int playernum)
         {
             var winner = Side.None;
-
-            Debug.Log($"Received surrender, winner: {winner}");
 
             ServerHandler.Winner = winner;
             ServerHandler.SetState(ServerHandler.OverState);

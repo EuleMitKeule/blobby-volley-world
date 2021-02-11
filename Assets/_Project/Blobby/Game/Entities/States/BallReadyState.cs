@@ -4,38 +4,37 @@ using Blobby.Game.Entities;
 using Blobby.Game.Physics;
 using Blobby.Models;
 using UnityEngine;
-using static Blobby.Game.Entities.Ball;
+using static Blobby.Game.Entities.BallComponent;
 
 namespace Blobby.Game.Entities
 {
     public class BallReadyState : IBallState
     {
-        Ball _ball;
-        Match _match;
-        MatchData _matchData;
+        BallComponent _ballComponent;
+        MatchComponent _matchComponent;
 
-        public BallReadyState(Ball ball, Match match, MatchData matchData) => (_ball, _match, _matchData) = (ball, match, matchData);
+        public BallReadyState(BallComponent ballComponent, MatchComponent matchComponent) => (_ballComponent, _matchComponent) = (ballComponent, matchComponent);
 
         public void EnterState()
         {
             MainThreadManager.Run(() =>
             {
-                _ball.BallObj.layer = 6;
+                _ballComponent.gameObject.layer = 6;
 
-                var ballPos = _match.LastWinner == Side.Left ||
-                              _match.LastWinner == Side.None
-                    ? _matchData.BallSpawnPoints[0]
-                    : _matchData.BallSpawnPoints[1];
+                var ballPos = _matchComponent.LastWinner == Side.Left ||
+                              _matchComponent.LastWinner == Side.None
+                    ? _ballComponent.SpawnPoints[0]
+                    : _ballComponent.SpawnPoints[1];
 
-                _ball.Position = ballPos;
-                _ball.BallObj.transform.position = ballPos;
-                _ball.Velocity = Vector2.zero;
-                _ball.Rotation = 0f;
-                _ball.AngularVelocity = 0f;
-                _ball.Gravity = 0f;
-                _ball.Side = _match.LastWinner;
+                _ballComponent.Position = ballPos;
+                _ballComponent.transform.position = ballPos;
+                _ballComponent.Velocity = Vector2.zero;
+                _ballComponent.Rotation = 0f;
+                _ballComponent.AngularVelocity = 0f;
+                _ballComponent.Gravity = 0f;
+                _ballComponent.Side = _matchComponent.LastWinner;
 
-                _ball.InvokeSideChanged(_ball.Side);
+                _ballComponent.InvokeSideChanged(_ballComponent.Side);
             });
         }
 
@@ -46,48 +45,18 @@ namespace Blobby.Game.Entities
 
         public void FixedUpdate()
         {
-            // var involuntaryHappened = _ball.HandleInvoluntaryCollision(); //nicht im stopped
-            //
-            // var voluntaryPlayerHappened = false;
-            // var voluntaryWallHappened = false;
-            // var voluntaryNetHappened = false;
-            // if (!involuntaryHappened)
-            // {
-            //     voluntaryPlayerHappened = _ball.HandleVoluntaryPlayerCollision(); //nicht im stopped
-            //     voluntaryWallHappened = _ball.HandleVoluntaryWallCollision();
-            //     voluntaryNetHappened = _ball.HandleVoluntaryNetCollision();
-            // }
-            //
-            // var voluntaries = new bool[] {voluntaryPlayerHappened, voluntaryNetHappened, voluntaryWallHappened };
-            //
-            // if (involuntaryHappened || voluntaries.Any(val => val))
-            // {
-            //     _ball.SetState(_ball.Running);
-            // }
-
-            //_ball.HandleMapCollision();
         }
 
-        public void OnPlayerHit(Player player, Vector2 centroid, Vector2 normal)
+        public void OnPlayerHit(PlayerComponent playerComponent, Vector2 centroid, Vector2 normal)
         {
-            _ball.Position = centroid;
-            _ball.Velocity = normal * Ball.BALL_SHOT_VELOCITY;
+            _ballComponent.Position = centroid;
+            _ballComponent.Velocity = normal * SHOT_VELOCITY;
 
-            _ball.InvokePlayerHit(player);
-            _ball.SetState(_ball.Running);
+            _ballComponent.InvokePlayerHit(playerComponent);
+            _ballComponent.SetState(_ballComponent.Running);
         }
 
-        public void OnWallHit()
-        {
-            
-        }
-
-        public void OnNetHit()
-        {
-            
-        }
-
-        public void OnGroundHit()
+        public void OnCollision(RaycastHit2D result)
         {
 
         }
