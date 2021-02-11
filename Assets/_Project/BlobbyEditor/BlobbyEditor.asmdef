@@ -1,5 +1,5 @@
 {
-    "name": "Editor",
+    "name": "BlobbyEditor",
     "rootNamespace": "",
     "references": [
         "GUID:2d558170f77412643b4945e1ecb6f6ab"
