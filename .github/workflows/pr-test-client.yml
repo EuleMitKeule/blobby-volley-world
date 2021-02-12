@@ -1,7 +1,7 @@
-name: deploy-client
+name: pr-test-client
 
 on:
-  pull-request:
+  pull_request:
     branches: [ master ]
 
   workflow_dispatch:
