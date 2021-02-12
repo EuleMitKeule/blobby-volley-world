@@ -42,6 +42,7 @@ jobs:
 
       - name: Storing results
         run: |
+          mkdir -p ../test-results/client/
           mv ./deploy-client-test-results/* ../test-results/client/
 
   build:
@@ -83,5 +84,5 @@ jobs:
 
       - name: Storing build
         run: |
-          mkdir ../builds/client/windows/${{ steps.myBuildStep.outputs.buildVersion }}
+          mkdir -p ../builds/client/windows/${{ steps.myBuildStep.outputs.buildVersion }}/
           mv ./deploy-client-builds/StandaloneWindows64/* ../builds/client/windows/${{ steps.myBuildStep.outputs.buildVersion }}/
