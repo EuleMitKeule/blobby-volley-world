@@ -98,6 +98,6 @@ jobs:
       - name: Cleanup
         run: |
           rm -r ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/
-          mkdir -p ../build/server/windows/${{ steps.build.outputs.buildVersion }}/
+          mkdir -p ../build/client/windows/${{ steps.build.outputs.buildVersion }}/
           mv ../builds/client/windows/${{ steps.build.outputs.buildVersion }}.zip ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/${{ steps.build.outputs.buildVersion }}.zip
           rm -r ../test-results/client/temp/

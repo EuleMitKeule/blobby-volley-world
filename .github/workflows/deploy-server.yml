@@ -89,6 +89,6 @@ jobs:
       - name: Cleanup
         run: |
           rm -r ../builds/server/linux/${{ steps.build.outputs.buildVersion }}/
-          mkdir -p ../build/server/linux/${{ steps.build.outputs.buildVersion }}/
+          mkdir -p ../builds/server/linux/${{ steps.build.outputs.buildVersion }}/
           mv ../builds/server/linux/${{ steps.build.outputs.buildVersion }}.zip ../builds/server/linux/${{ steps.build.outputs.buildVersion }}/${{ steps.build.outputs.buildVersion }}.zip
           rm -r ../test-results/server/temp/
