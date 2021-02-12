@@ -78,9 +78,9 @@ jobs:
           CHANNEL: blobby-volley-world-windows
           ITCH_GAME: blobby-volley-world
           ITCH_USER: EuleMitKeule
-          PACKAGE: ./deploy-client-builds/blobby-volley-world-windows/
+          PACKAGE: ./deploy-client-builds/StandaloneWindows64/
 
       - name: Storing build
         run: |
-          mkdir ../builds/client/${{ steps.myBuildStep.outputs.buildVersion }}/
-          mv ./deploy-client-builds/* ../builds/client/${{ steps.myBuildStep.outputs.buildVersion }}/
+          mkdir ../builds/client/windows${{ steps.myBuildStep.outputs.buildVersion }}
+          mv ./deploy-client-builds/StandaloneWindows64/* ../builds/client/windows/${{ steps.myBuildStep.outputs.buildVersion }}/
