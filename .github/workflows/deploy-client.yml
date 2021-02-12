@@ -16,7 +16,7 @@ jobs:
     steps:
 
       - name: Checking out
-        uses: actions/checkout@v2.1.4
+        uses: actions/checkout@v2
         with:
           lfs: true
 
@@ -55,7 +55,7 @@ jobs:
         with:
           targetPlatform: StandaloneWindows64
           buildsPath: ./ci/deploy-client/build/
-          buildMethod: "BlobbyEditor.Builder.BuildClient"
+          buildMethod: "Editor.Builder.BuildClient"
       
       - name: Uploading to itch.io
         uses: josephbmanley/butler-publish-itchio-action@master

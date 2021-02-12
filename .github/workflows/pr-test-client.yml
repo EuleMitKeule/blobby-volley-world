@@ -55,4 +55,4 @@ jobs:
         with:
           targetPlatform: StandaloneWindows64
           buildsPath: ./ci/pr-test-client/build/
-          buildMethod: "BlobbyEditor.Builder.BuildClient"
+          buildMethod: "Editor.Builder.BuildClient"
