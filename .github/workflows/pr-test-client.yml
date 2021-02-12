@@ -16,7 +16,7 @@ jobs:
     steps:
 
       - name: Checking out
-        uses: actions/checkout@v2.1.4
+        uses: actions/checkout@v2
         with:
           lfs: true
 
