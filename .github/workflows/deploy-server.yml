@@ -24,9 +24,9 @@ jobs:
         uses: actions/cache@v2.1.4
         with:
           path: Library
-          key: Library-blobby-volley-client-StandaloneWindows64
+          key: Library-blobby-volley-world-StandaloneLinux64
           restore-keys: |
-            Library-blobby-volley-client-
+            Library-blobby-volley-world-
             Library-
 
       - name: Running unit tests
@@ -54,9 +54,9 @@ jobs:
         uses: actions/cache@v2.1.4
         with:
           path: Library
-          key: Library-blobby-volley-client-StandaloneWindows64
+          key: Library-blobby-volley-world-StandaloneLinux64
           restore-keys: |
-            Library-blobby-volley-client-
+            Library-blobby-volley-world-
             Library-
       
       - name: Building server
@@ -64,5 +64,5 @@ jobs:
         with:
           targetPlatform: StandaloneLinux64
           buildsPath: ./deploy-server-builds/
-          buildMethod: "Editor.Builder.BuildServer"
+          buildMethod: "Editor.Builder.BuildServerLinux"
           buildName: blobby-volley-world-server-linux
