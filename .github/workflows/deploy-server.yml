@@ -73,6 +73,7 @@ jobs:
       - name: Storing build
         run: |
           mkdir -p ../builds/server/linux/${{ steps.build.outputs.buildVersion }}/
+          mkdir -p ../test-results/server/${{ steps.build.outputs.buildVersion }}/
           mv ./deploy-server-builds/StandaloneLinux64/* ../builds/server/linux/${{ steps.build.outputs.buildVersion }}/
 
       - name: Moving test-results

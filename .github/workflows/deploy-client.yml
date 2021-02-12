@@ -82,6 +82,7 @@ jobs:
       - name: Storing build
         run: |
           mkdir -p ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/
+          mkdir -p ../test-results/client/${{ steps.build.outputs.buildVersion }}/
           mv ./deploy-client-builds/StandaloneWindows64/* ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/
 
       - name: Moving test-results
