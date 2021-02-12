@@ -41,6 +41,8 @@ jobs:
     
       - name: Checking out
         uses: actions/checkout@v2
+        with:
+          lfs: true
       
       - uses: actions/cache@v2.1.4
         with:
