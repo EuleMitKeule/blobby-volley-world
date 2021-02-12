@@ -59,9 +59,9 @@ jobs:
         with:
           path: Library
           key: Library-blobby-volley-world-StandaloneWindows64
-          restore-keys: |
-            Library-blobby-volley-world-
-            Library-
+          # restore-keys: |
+          #   Library-blobby-volley-world-
+          #   Library-
       
       - name: Building client
         uses: game-ci/unity-builder@v2.0-alpha-6
@@ -82,4 +82,5 @@ jobs:
 
       - name: Storing build
         run: |
-          mv ./deploy-client-builds/* ../builds/client/
+          mkdir ../builds/client/${{ steps.myBuildStep.outputs.buildVersion }}/
+          mv ./deploy-client-builds/* ../builds/client/${{ steps.myBuildStep.outputs.buildVersion }}/
