@@ -25,19 +25,24 @@ jobs:
         with:
           path: Library
           key: Library-blobby-volley-world-StandaloneWindows64
-          restore-keys: |
-            Library-blobby-volley-world-
-            Library-
+          # restore-keys: |
+          #   Library-blobby-volley-world-
+          #   Library-
 
       - name: Running unit tests
         uses: game-ci/unity-test-runner@v2.0-alpha-2
         with:
           artifactsPath: ./deploy-client-test-results/
 
-      - uses: actions/upload-artifact@v2
+      - name: Uploading results
+        uses: actions/upload-artifact@v2
         with:
           name: test-results
           path: ./deploy-client-test-results/
+
+      - name: Storing results
+        run: |
+          mv ./deploy-client-test-results/* ../test-results/client/
 
   build:
     name: Building
@@ -74,3 +79,7 @@ jobs:
           ITCH_GAME: blobby-volley-world
           ITCH_USER: EuleMitKeule
           PACKAGE: ./deploy-client-builds/blobby-volley-world-windows/
+
+      - name: Storing build
+        run: |
+          mv ./deploy-client-builds/* ../builds/client/
