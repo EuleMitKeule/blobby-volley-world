@@ -36,6 +36,7 @@ jobs:
 
   build:
     name: Building
+    needs: test
     runs-on: self-hosted
     steps:
     
