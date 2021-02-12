@@ -69,7 +69,8 @@ jobs:
           targetPlatform: StandaloneWindows64
           buildsPath: ./deploy-client-builds/
           buildMethod: "Editor.Builder.BuildClient"
-          buildName: "blobby-volley-world-windows"
+          buildName: "blobby-volley-world"
+          versioning: Semantic
       
       - name: Uploading to itch.io
         uses: josephbmanley/butler-publish-itchio-action@master
@@ -82,5 +83,5 @@ jobs:
 
       - name: Storing build
         run: |
-          mkdir ../builds/client/windows${{ steps.myBuildStep.outputs.buildVersion }}
+          mkdir ../builds/client/windows/${{ steps.myBuildStep.outputs.buildVersion }}
           mv ./deploy-client-builds/StandaloneWindows64/* ../builds/client/windows/${{ steps.myBuildStep.outputs.buildVersion }}/
