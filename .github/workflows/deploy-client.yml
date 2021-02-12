@@ -67,6 +67,7 @@ jobs:
       
       - name: Building
         uses: game-ci/unity-builder@v2.0-alpha-6
+        id: build
         with:
           targetPlatform: StandaloneWindows64
           buildsPath: ./deploy-client-builds/
@@ -85,15 +86,15 @@ jobs:
 
       - name: Storing build
         run: |
-          mkdir -p ../builds/client/windows/${{ steps.Building.outputs.buildVersion }}/
-          mv ./deploy-client-builds/StandaloneWindows64/* ../builds/client/windows/${{ steps.Building.outputs.buildVersion }}/
+          mkdir -p ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/
+          mv ./deploy-client-builds/StandaloneWindows64/* ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/
 
       - name: Zipping build
         uses: papeloto/action-zip@v1
         with:
-          files: ../builds/client/windows/${{ steps.Building.outputs.buildVersion }}/
-          dest: ../builds/client/windows/${{ steps.Building.outputs.buildVersion }}.zip
+          files: ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/
+          dest: ../builds/client/windows/${{ steps.build.outputs.buildVersion }}.zip
 
       - name: Cleanup
         run: |
-          rm -r ../builds/client/windows/${{ steps.Building.outputs.buildVersion }}/
+          rm -r ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/
