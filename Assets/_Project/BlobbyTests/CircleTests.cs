@@ -108,5 +108,11 @@ namespace BlobbyTests
             Assert.Null(pointA);
             Assert.Null(pointB);
         }
+
+        [Test]
+        public void ShouldAlwaysFail()
+        {
+            Assert.True(false);
+        }
     }
 }
