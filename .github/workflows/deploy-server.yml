@@ -1,4 +1,4 @@
-name: pr-test-server
+name: deploy-server
 
 on:
   push:
