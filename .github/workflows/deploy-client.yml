@@ -19,6 +19,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
+          fetch-depth: 0
 
       - name: Caching Library
         uses: actions/cache@v2.1.4
@@ -64,7 +65,7 @@ jobs:
           #   Library-blobby-volley-world-
           #   Library-
       
-      - name: Building client
+      - name: Building
         uses: game-ci/unity-builder@v2.0-alpha-6
         with:
           targetPlatform: StandaloneWindows64
@@ -84,5 +85,15 @@ jobs:
 
       - name: Storing build
         run: |
-          mkdir -p ../builds/client/windows/${{ steps.myBuildStep.outputs.buildVersion }}/
-          mv ./deploy-client-builds/StandaloneWindows64/* ../builds/client/windows/${{ steps.myBuildStep.outputs.buildVersion }}/
+          mkdir -p ../builds/client/windows/${{ steps.Building.outputs.buildVersion }}/
+          mv ./deploy-client-builds/StandaloneWindows64/* ../builds/client/windows/${{ steps.Building.outputs.buildVersion }}/
+
+      - name: Zipping build
+        uses: papeloto/action-zip@v1
+        with:
+          files: ../builds/client/windows/${{ steps.Building.outputs.buildVersion }}/
+          dest: ../builds/client/windows/${{ steps.Building.outputs.buildVersion }}.zip
+
+      - name: Cleanup
+        run: |
+          rm -r ../builds/client/windows/${{ steps.Building.outputs.buildVersion }}/
