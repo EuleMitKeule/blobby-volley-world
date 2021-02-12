@@ -32,7 +32,7 @@ jobs:
       - name: Running unit tests
         uses: game-ci/unity-test-runner@v2.0-alpha-2
         with:
-          artifacts-path: ./ci/deploy-client/test-results/
+          artifactsPath: ./ci/deploy-client/test-results/
 
   build:
     name: Building
@@ -63,7 +63,7 @@ jobs:
         uses: josephbmanley/butler-publish-itchio-action@master
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
-          CHANNEL: windows
+          CHANNEL: blobby-volley-world-windows
           ITCH_GAME: blobby-volley-world
           ITCH_USER: EuleMitKeule
-          PACKAGE: build
+          PACKAGE: ci/deploy-client/build/StandaloneWindows64/

@@ -32,7 +32,7 @@ jobs:
       - name: Running unit tests
         uses: game-ci/unity-test-runner@v2.0-alpha-2
         with:
-          artifacts-path: ./ci/pr-test-client/test-results/
+          artifactsPath: ./ci/pr-test-client/test-results/
 
   build:
     name: Building
