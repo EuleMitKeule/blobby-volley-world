@@ -32,12 +32,12 @@ jobs:
       - name: Running unit tests
         uses: game-ci/unity-test-runner@v2.0-alpha-2
         with:
-          artifactsPath: ./pr-test-results/
+          artifactsPath: ./pr-test-client-results/
 
       - uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: ./pr-test-results/
+          path: ./pr-test-client-results/
 
   build:
     name: Building
@@ -62,5 +62,6 @@ jobs:
         uses: game-ci/unity-builder@v2.0-alpha-6
         with:
           targetPlatform: StandaloneWindows64
-          buildsPath: ./pr-builds/
+          buildsPath: ./pr-test-client-builds/
           buildMethod: "Editor.Builder.BuildClient"
+          buildName: blobby-volley-world-windows
