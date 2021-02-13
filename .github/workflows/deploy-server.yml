@@ -82,10 +82,9 @@ jobs:
 
       - name: Building Docker Image
         run: |
-          echo "Building Docker Image"
-          echo "Listing files" 
           ls ./deploy-server-builds/StandaloneLinux64/
           cp ./serverData.json ./deploy-server-builds/StandaloneLinux64/serverData.json
+          echo "###BUILD DIRECTORY###"
           docker build -t blobby-volley-world-server .
 
       - name: Deploying Docker Container
@@ -106,3 +105,4 @@ jobs:
           mkdir -p ../builds/server/linux/${{ steps.build.outputs.buildVersion }}/
           mv ../builds/server/linux/${{ steps.build.outputs.buildVersion }}.zip ../builds/server/linux/${{ steps.build.outputs.buildVersion }}/${{ steps.build.outputs.buildVersion }}.zip
           rm -r ../test-results/server/temp/
+          docker rmi $(docker images -qa -f 'dangling=true')
