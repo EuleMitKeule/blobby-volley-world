@@ -18,9 +18,24 @@ namespace Blobby.Game.Entities
     {
         Animator Animator { get; set; }
         IPlayerGraphicsProvider PlayerGraphicsProvider { get; set; }
-        PlayerData PlayerData { get; set; }
+
+        PlayerData _playerData;
+        PlayerData PlayerData
+        {
+            get {return _playerData;}
+            set
+            {
+                _playerData = value;
+                Apply();
+            }
+        }
 
         Vector2 TransformPosition => transform.position;
+        
+        SpriteRenderer SpriteRenderer { get; set; }
+        SpriteRenderer[] SpriteRenderers => GetComponentsInChildren<SpriteRenderer>();
+        TextMeshProUGUI NameLabel { get; set; }
+        Transform ShadowTransform => transform.GetChild(0);
 
         CircleCollider2D[] Colliders => GetComponents<CircleCollider2D>();
         CircleCollider2D LowerCollider { get; set; }
@@ -39,10 +54,12 @@ namespace Blobby.Game.Entities
         void Awake()
         {
             Animator = GetComponent<Animator>();
+            SpriteRenderer = GetComponent<SpriteRenderer>();
             LowerCollider = Colliders[1];
+            NameLabel = GetComponentInChildren<TextMeshProUGUI>();
 
             PlayerGraphicsProvider = GetComponent<IPlayerGraphicsProvider>();
-            PlayerGraphicsProvider.PlayerDataChanged += OnPlayerDataChanged;
+            PlayerGraphicsProvider.PlayerDataChanged += (playerData) => { PlayerData = playerData; };
             PlayerGraphicsProvider.AlphaChanged += OnAlpha;
         }
 
@@ -55,10 +72,20 @@ namespace Blobby.Game.Entities
             SetNameLabelPos();
         }
 
-        void OnPlayerDataChanged(PlayerData playerData)
+        void SetupSortingLayers()
         {
-            PlayerData = playerData;
-            MainThreadManager.Run(Apply);
+            var num = (PlayerData.PlayerNum + 2) % 4;
+
+            for (var i = 0; i < SpriteRenderers.Length; i++)
+            {
+                var spriteRenderer = SpriteRenderers[i];
+                if (i == 1)
+                {
+                    spriteRenderer.sortingOrder = 0;
+                    continue;
+                }
+                spriteRenderer.sortingOrder += num * SpriteRenderers.Length;
+            }
         }
 
         void OnAlpha(int playerNum, bool isTransparent)
@@ -67,64 +94,50 @@ namespace Blobby.Game.Entities
             {
                 if (playerNum != PlayerData.PlayerNum) return;
 
-                var sr = GetComponent<SpriteRenderer>();
-                sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, isTransparent ? 0.5f : 1f);
+                var curColor = SpriteRenderer.color;
+                SpriteRenderer.color = new Color(curColor.r, curColor.g, curColor.b, isTransparent ? 0.5f : 1f);
             });
         }
 
         void SetNameLabelPos()
         {
             var position = transform.position;
-            var nameLabel = GetComponentInChildren<TextMeshProUGUI>();
-            nameLabel.transform.position = new Vector2(position.x, NAME_LABEL_OFFSET);
+            NameLabel.transform.position = new Vector2(position.x, NAME_LABEL_OFFSET);
         }
 
         void SetShadow()
         {
             var position = transform.position;
-            var shadowX = position.x + Mathf.Abs(position.y - PhysicsWorld.Ground) * SHADOW_MOD + SHADOW_X;
-            var shadowY = PhysicsWorld.Ground - BottomOffset + SHADOW_Y + Mathf.Abs(position.y - PhysicsWorld.Ground - BottomOffset) * SHADOW_MOD;
-            transform.GetChild(0).position = new Vector2(shadowX, shadowY);
-            transform.GetChild(0).rotation = Quaternion.identity;
+            var shadowX = position.x + Mathf.Abs(position.y - PhysicsWorld.Ground) * SHADOW_MOD;
+            var shadowY = PhysicsWorld.Ground - BottomOffset + Mathf.Abs(position.y - PhysicsWorld.Ground - BottomOffset) * SHADOW_MOD;
+            ShadowTransform.position = new Vector2(shadowX, shadowY);
+            //transform.GetChild(0).rotation = Quaternion.identity;
         }
 
         void Apply()
         {
-            SetInvisible(PlayerGraphicsProvider.IsInvisible);
-
-            if (PlayerData.PlayerNum == 2) OnAlpha(2, true);
-
-            var spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
-            var num = (PlayerData.PlayerNum + 2) % 4;
-
-            for (var i = 0; i < spriteRenderers.Length; i++)
+            MainThreadManager.Run(() =>
             {
-                var spriteRenderer = spriteRenderers[i];
-                if (i == 1)
-                {
-                    spriteRenderer.sortingOrder = 0;
-                    continue;
-                }
-                spriteRenderer.sortingOrder += num * spriteRenderers.Length;
+                SetInvisible(PlayerGraphicsProvider.IsInvisible);
 
-            }
+                if (PlayerData.PlayerNum == 2) OnAlpha(2, true);
 
-            GetComponentInChildren<SpriteRenderer>().color = PlayerData.Color;
+                SpriteRenderer.color = PlayerData.Color;
 
-            if (GetComponentInChildren<TextMeshProUGUI>())
-                GetComponentInChildren<TextMeshProUGUI>().text = PlayerData.Name;
+                if (NameLabel)
+                    NameLabel.text = PlayerData.Name;
+
+                SetupSortingLayers();
+            });
         }
 
         void SetInvisible(bool value)
         {
             MainThreadManager.Run(() =>
             {
-                var spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+                foreach (var spriteRenderer in SpriteRenderers) spriteRenderer.enabled = !value;
 
-                foreach (var spriteRenderer in spriteRenderers) spriteRenderer.enabled = !value;
-
-                var nameLabel = GetComponentInChildren<TextMeshProUGUI>();
-                nameLabel.enabled = !value;
+                NameLabel.enabled = !value;
             });
         }
     }
