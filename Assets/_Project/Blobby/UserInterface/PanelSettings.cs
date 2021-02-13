@@ -52,6 +52,10 @@ namespace Blobby.UserInterface
 
             sliderHueImage.sprite = hueSprite;
             sliderHueImage.preserveAspect = false;
+            
+            //BETA
+            PopulateSettings();
+            MenuHelper.SetColor(SettingsData.Colors[0]);
         }
 
         static void OnButtonSettingsSave()
@@ -70,6 +74,8 @@ namespace Blobby.UserInterface
             }
 
             PopulateSettings();
+            
+            MenuHelper.SetColor(SettingsData.Colors[0]); //BETA
         }
 
         static void OnButtonSettings()
@@ -145,6 +151,16 @@ namespace Blobby.UserInterface
             }
         }
 
+        static void OnInputUsernameChanged(string username) //BETA
+        {
+            SettingsData.Username = username;
+        }
+
+        static void OnInputUsernameEndEdit() //BETA
+        {
+            IoHelper.SaveSettingsData(SettingsData);
+        }
+
         static void PopulateSettings()
         {
             var buttonSideLeft = GameObject.Find("button_side_left");
@@ -177,6 +193,10 @@ namespace Blobby.UserInterface
             var labelVolume = GameObject.Find("label_volume").GetComponent<TextMeshProUGUI>();
             labelVolume.text = $"{(int)(SettingsData.Volume * 100)}%";
             AudioListener.volume = SettingsData.Volume;
+
+            //BETA
+            var inputUsername = GameObject.Find("input_username").GetComponent<TMP_InputField>();
+            inputUsername.text = SettingsData.Username;
         }
 
         static void Update()
@@ -210,6 +230,8 @@ namespace Blobby.UserInterface
             LoginHelper.Login += OnLogin;
             SliderVolume.ValueChanged += OnSliderVolumeChanged;
             ToggleWindowed.Toggled += OnToggleWindowed;
+            InputUsername.Changed += OnInputUsernameChanged; //BETA
+            InputUsername.EndEdit += OnInputUsernameEndEdit; //BETA
         }
 
         static void UnsubscribeEventHandler()
@@ -227,6 +249,8 @@ namespace Blobby.UserInterface
             LoginHelper.Login -= OnLogin;
             SliderVolume.ValueChanged -= OnSliderVolumeChanged;
             ToggleWindowed.Toggled -= OnToggleWindowed;
+            InputUsername.Changed -= OnInputUsernameChanged; //BETA
+            InputUsername.EndEdit -= OnInputUsernameEndEdit; //BETA
         }
     }
 }

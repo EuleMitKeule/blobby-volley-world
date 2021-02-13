@@ -70,6 +70,7 @@ namespace Blobby.UserInterface
 
         static void OnLogin(UserData userData)
         {
+            return; //BETA
             GameObject panelOffline = GameObject.Find("panel_offline");
 
             for (int i = 0; i < panelOffline.transform.childCount; i++)

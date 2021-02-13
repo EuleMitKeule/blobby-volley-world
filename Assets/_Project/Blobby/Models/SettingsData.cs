@@ -26,5 +26,7 @@ namespace Blobby.Models
         public float Volume = 1f;
 
         public bool Windowed;
+
+        public string Username;
     }
 }

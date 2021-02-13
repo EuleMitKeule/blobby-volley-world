@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BeardedManStudios.Forge.Networking;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -96,10 +97,14 @@ namespace Blobby.Game.States
 
                 var usernames = (from playerData in clientMatch.PlayerDataList select playerData.Name).ToArray();
 
-                PanelOver.Populate(usernames, new int[] { scoreLeft, scoreRight }, time, winner);
+                var color = targetPlayer.GetComponent<PlayerNetworkComponent>().PlayerData.Color;
+
+                PanelOver.Populate(usernames, new int[] { scoreLeft, scoreRight }, time, winner, color);
 
                 MenuHelper.SetPanelPause(false);
 
+                
+                
                 //MatchHandler.ZoomEffect?.Dispose();
                 MatchHandler.ZoomEffect?.ZoomIn(targetPlayerObj.transform);
             });
