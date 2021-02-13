@@ -30,7 +30,8 @@ namespace Blobby
                 Host = server.Address,
                 Port = server.Port,
                 PlayerCount = server.PlayerCount,
-                Name = server.Name
+                Name = server.Name,
+                IsRanked = server.Type == "official"
             };
 
             var matchData = new MatchData();
