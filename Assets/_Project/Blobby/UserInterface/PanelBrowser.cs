@@ -13,6 +13,7 @@ using BeardedManStudios.Forge.Networking.Unity;
 using Blobby.Models;
 using Blobby.Components;
 using Blobby.Game;
+using Blobby.Game.States;
 
 namespace Blobby.UserInterface
 {
@@ -97,6 +98,7 @@ namespace Blobby.UserInterface
 
             foreach (var server in serverList)
             {
+                if (server.IsRanked) continue;
                 var prefab = Resources.Load<GameObject>("Prefabs/UI/button_server");
                 var serverButton = GameObject.Instantiate(prefab, panelServer.transform);
                 serverButton.GetComponent<Button>().onClick.AddListener(() => OnButtonServer(serverButton, server));

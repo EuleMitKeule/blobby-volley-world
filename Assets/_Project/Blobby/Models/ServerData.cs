@@ -17,6 +17,8 @@ namespace Blobby.Models
         public ushort MasterServerPort;
 
         public MatchData MatchData { get; set; }
+        
+        public bool IsRanked { get; set; }
 
         public int PlayerCount { get; set; }
 
