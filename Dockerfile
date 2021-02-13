@@ -9,7 +9,5 @@ apt-get install -y libglu1 xvfb libxcursor1
 COPY ./deploy-server-builds/StandaloneLinux64/ /root/blobby-volley-world-server/
 COPY ./entrypoint.sh /entrypoint.sh
 
-RUN ["ls", "/root/blobby-volley-world-server/"]
-
 WORKDIR /root/blobby-volley-world-server
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
