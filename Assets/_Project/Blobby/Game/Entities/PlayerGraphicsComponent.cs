@@ -10,6 +10,7 @@ using Blobby.Game.Physics;
 using Blobby.Networking;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Blobby.Game.Entities
 {
@@ -108,10 +109,10 @@ namespace Blobby.Game.Entities
         void SetShadow()
         {
             var position = transform.position;
-            var shadowX = position.x + Mathf.Abs(position.y - PhysicsWorld.Ground) * SHADOW_MOD;
-            var shadowY = PhysicsWorld.Ground - BottomOffset + Mathf.Abs(position.y - PhysicsWorld.Ground - BottomOffset) * SHADOW_MOD;
+            var groundY = PhysicsWorld.Ground + (SpriteRenderer.bounds.min.y - TransformPosition.y - BottomOffset);
+            var shadowX = position.x + Mathf.Abs(position.y + BottomOffset - groundY) * SHADOW_MOD;
+            var shadowY = groundY + Mathf.Abs(position.y + BottomOffset - groundY) * SHADOW_MOD;
             ShadowTransform.position = new Vector2(shadowX, shadowY);
-            //transform.GetChild(0).rotation = Quaternion.identity;
         }
 
         void Apply()
