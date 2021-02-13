@@ -73,15 +73,17 @@ jobs:
       - name: Storing build
         run: |
           mkdir -p ../builds/server/linux/${{ steps.build.outputs.buildVersion }}/
-          mkdir -p ../test-results/server/${{ steps.build.outputs.buildVersion }}/
-          cp ./deploy-server-builds/StandaloneLinux64/* ../builds/server/linux/${{ steps.build.outputs.buildVersion }}/
+          cp -r ./deploy-server-builds/StandaloneLinux64/ ../builds/server/linux/${{ steps.build.outputs.buildVersion }}/
 
       - name: Storing test-results
         run: |
+          mkdir -p ../test-results/server/${{ steps.build.outputs.buildVersion }}/
           mv ../test-results/server/temp/* ../test-results/server/${{ steps.build.outputs.buildVersion }}/
 
       - name: Building Docker Image
         run: |
+          echo "Building Docker Image"
+          echo "Listing files" 
           ls ./deploy-server-builds/StandaloneLinux64/
           cp ./serverData.json ./deploy-server-builds/StandaloneLinux64/serverData.json
           docker build -t blobby-volley-world-server .
