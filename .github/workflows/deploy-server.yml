@@ -95,7 +95,7 @@ jobs:
 
       - name: Building Docker Image
         run: |
-          cp ./serverData.json ./deploy-server-builds/serverData.json
+          cp ./serverData.json ./deploy-server-builds/StandaloneLinux64/serverData.json
           docker build -t blobby-volley-world-server .
 
       - name: Deploying Docker Container
