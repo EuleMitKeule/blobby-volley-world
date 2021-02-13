@@ -92,3 +92,13 @@ jobs:
           mkdir -p ../builds/server/linux/${{ steps.build.outputs.buildVersion }}/
           mv ../builds/server/linux/${{ steps.build.outputs.buildVersion }}.zip ../builds/server/linux/${{ steps.build.outputs.buildVersion }}/${{ steps.build.outputs.buildVersion }}.zip
           rm -r ../test-results/server/temp/
+
+      - name: Building Docker Image
+        run: |
+          cp ./serverData.json ./deploy-server-builds/serverData.json
+          docker build -t blobby-volley-world-server .
+
+      - name: Deploying Docker Container
+        run: |
+          docker stop blobby-volley-world-server-1 || true && docker rm blobby-volley-world-server-1 || true
+          sudo docker run -d --name blobby-volley-world-server-1 -p 1337:1337/udp blobby-volley-world-server
