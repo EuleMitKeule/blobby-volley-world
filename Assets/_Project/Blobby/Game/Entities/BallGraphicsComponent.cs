@@ -18,11 +18,11 @@ namespace Blobby.Game.Entities
         Vector2 ArrowPosition => 
             new Vector2(transform.position.x, ARROW_HEIGHT);
         bool IsAboveArrowLimit => transform.position.y > ARROW_LIMIT;
-        float DistanceToGround => TransformPosition.VerticalDistance(PhysicsWorld.Ground);
+        float DistanceToGround => TransformPosition.VerticalDistance(PhysicsWorld.Ground) - Radius;
         Vector2 ShadowPosition => new Vector2
         (
             TransformPosition.x + DistanceToGround * SHADOW_MODIFIER,
-            PhysicsWorld.Ground - Radius + DistanceToGround * SHADOW_MODIFIER
+            PhysicsWorld.Ground + DistanceToGround * SHADOW_MODIFIER
         );
         
         const float ARROW_HEIGHT = 10.5f;

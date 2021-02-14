@@ -89,6 +89,10 @@ namespace Blobby.Game.States
                 {
                     UnityEngine.Object.Destroy(matchComponent.gameObject);
                 }
+                else if (MatchHandler.Match is ClientMatchComponent clientMatchComponent)
+                {
+                    UnityEngine.Object.Destroy(clientMatchComponent.gameObject);
+                }
 
                 MatchHandler.ZoomEffect?.ZoomOut();
             });

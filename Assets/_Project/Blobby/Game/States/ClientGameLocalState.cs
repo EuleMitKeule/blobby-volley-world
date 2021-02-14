@@ -98,8 +98,9 @@ namespace Blobby.Game.States
                 //MatchHandler.ZoomEffect?.Dispose();
                 MatchHandler.ZoomEffect?.ZoomIn(localMatch.Players[winner == Side.Left ? 0 : 1].transform);
 
-                var usernames = (from i in Enumerable.Range(0, 4) select "").ToArray();
-                PanelOver.Populate(usernames, new int[] { localMatch.ScoreLeft, localMatch.ScoreRight }, localMatch.MatchTimer.MatchTime, winner);
+                var usernames = (from i in Enumerable.Range(0, 2) select "").ToArray();
+                PanelOver.Populate(usernames, new int[] { localMatch.ScoreLeft, localMatch.ScoreRight },
+                    localMatch.MatchTimer.MatchTime, winner, PanelSettings.SettingsData.Colors[0]);
             });
         }
 

@@ -34,7 +34,7 @@ namespace Blobby.UserInterface
             ButtonQuit.Clicked += OnButtonQuit;
         }
 
-        static void SetColor(Color color)
+        public static void SetColor(Color color)
         {
             bool colored = color != Color.grey;
 
@@ -51,6 +51,7 @@ namespace Blobby.UserInterface
 
         static void OnLogin(UserData userData)
         {
+            return; //BETA
             var sprite = Resources.Load<Sprite>("Graphics/UI/canvas_menu/panel_menu/button_globe/button_globe_online");
             GameObject.Find("button_globe").GetComponent<Image>().sprite = sprite;
             GameObject.Find("button_globe").GetComponent<Animator>().SetBool("offline", false);
@@ -66,6 +67,7 @@ namespace Blobby.UserInterface
 
         static void OnLogout()
         {
+            return; //BETA
             GameObject.Find("button_ranked").GetComponentInChildren<Button>().interactable = false;
             GameObject.Find("button_ranked").GetComponentInChildren<EventTrigger>().enabled = false;
             GameObject.Find("button_browser").GetComponentInChildren<Button>().interactable = false;
