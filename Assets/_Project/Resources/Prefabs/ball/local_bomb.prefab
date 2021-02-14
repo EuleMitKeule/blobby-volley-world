@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 4631669078464913006}
   - component: {fileID: 6386409543597649593}
   m_Layer: 22
-  m_Name: bomb
+  m_Name: local_bomb
   m_TagString: Ball
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -217,7 +217,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: -0.01}
   serializedVersion: 2
-  m_Radius: 1.5
+  m_Radius: 1.179
 --- !u!114 &6386409543597649593
 MonoBehaviour:
   m_ObjectHideFlags: 0
