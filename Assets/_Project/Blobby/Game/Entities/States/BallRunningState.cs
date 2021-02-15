@@ -17,6 +17,8 @@ namespace Blobby.Game.Entities
         {
             MainThreadManager.Run(() =>
             {
+                _ballComponent.AngularVelocity = 500f;
+                
                 _ballComponent.gameObject.layer = 6;
                 _ballComponent.Gravity = BallComponent.GRAVITY;
             });
