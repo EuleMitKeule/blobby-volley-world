@@ -151,14 +151,13 @@ namespace Blobby.UserInterface
             }
         }
 
-        static void OnInputUsernameChanged(string username) //BETA
+        static void OnInputUsernameEndEdit(string username) //BETA
         {
             SettingsData.Username = username;
-        }
-
-        static void OnInputUsernameEndEdit() //BETA
-        {
             IoHelper.SaveSettingsData(SettingsData);
+            
+            var buttonRanked = GameObject.Find("button_ranked").GetComponent<Button>();
+            buttonRanked.interactable = SettingsData.Username != "";
         }
 
         static void PopulateSettings()
@@ -197,6 +196,8 @@ namespace Blobby.UserInterface
             //BETA
             var inputUsername = GameObject.Find("input_username").GetComponent<TMP_InputField>();
             inputUsername.text = SettingsData.Username;
+            var buttonRanked = GameObject.Find("button_ranked").GetComponent<Button>();
+            buttonRanked.interactable = SettingsData.Username != "";
         }
 
         static void Update()
@@ -230,7 +231,6 @@ namespace Blobby.UserInterface
             LoginHelper.Login += OnLogin;
             SliderVolume.ValueChanged += OnSliderVolumeChanged;
             ToggleWindowed.Toggled += OnToggleWindowed;
-            InputUsername.Changed += OnInputUsernameChanged; //BETA
             InputUsername.EndEdit += OnInputUsernameEndEdit; //BETA
         }
 
@@ -249,7 +249,6 @@ namespace Blobby.UserInterface
             LoginHelper.Login -= OnLogin;
             SliderVolume.ValueChanged -= OnSliderVolumeChanged;
             ToggleWindowed.Toggled -= OnToggleWindowed;
-            InputUsername.Changed -= OnInputUsernameChanged; //BETA
             InputUsername.EndEdit -= OnInputUsernameEndEdit; //BETA
         }
     }
