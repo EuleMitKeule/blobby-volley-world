@@ -20,15 +20,17 @@ namespace Blobby.Components
         public void SetHover(bool value)
         {
             var button = GetComponent<Button>();
+            var interactable = !button || button.interactable;
             
-            _animator.SetBool("hover", button.interactable && value);
+            _animator.SetBool("hover", interactable && value);
         }
 
         public void SetClick(bool value)
         {
             var button = GetComponent<Button>();
+            var interactable = !button || button.interactable;
             
-            _animator.SetBool("click", button.interactable && value);
+            _animator.SetBool("click", interactable && value);
         }
 
         public void SetRegister(bool value)

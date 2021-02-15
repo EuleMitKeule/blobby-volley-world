@@ -4,7 +4,9 @@ using Blobby.Models;
 using Blobby.Networking;
 using Blobby.UserInterface.Components;
 using System;
+using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
+using ICSharpCode.NRefactory.Ast;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -57,6 +59,8 @@ namespace Blobby.UserInterface
             PopulateSettings();
             MenuHelper.SetColor(SettingsData.Colors[0]);
         }
+        
+        #region UI EventHandler
 
         static void OnButtonSettingsSave()
         {
@@ -104,17 +108,41 @@ namespace Blobby.UserInterface
 
         static void OnButtonControl(Control control)
         {
-            UnsubscribeEventHandler();
+            UnsubscribeControlHandler();
+
+            var buttonControl = control switch
+            {
+                Control.Up => GameObject.Find("button_controls_up"),
+                Control.Left => GameObject.Find("button_controls_left"),
+                Control.Right => GameObject.Find("button_controls_right"),
+                _ => throw new ArgumentOutOfRangeException(nameof(control), control, null)
+            };
+
+            var keyPressedSprite =
+                Resources.Load<Sprite>("Graphics/UI/NEW STUFF/settings controls/buttons/button_settings_key_pressed");
+            buttonControl.GetComponent<Image>().sprite = keyPressedSprite;
 
             _curControl = control;
 
             TimeComponent.UpdateTicked += Update;
         }
 
-        static void OnKeyInput(KeyCode keyCode)
+        static void OnKeyInput(KeyCode key)
         {
-            SettingsData.Controls[SelectedPlayerNum].SetControl(_curControl, keyCode);
-            SubscribeEventHandler();
+            var buttonControl = _curControl switch
+            {
+                Control.Up => GameObject.Find("button_controls_up"),
+                Control.Left => GameObject.Find("button_controls_left"),
+                Control.Right => GameObject.Find("button_controls_right"),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            var keySprite =
+                Resources.Load<Sprite>("Graphics/UI/NEW STUFF/settings controls/buttons/button_settings_key");
+            buttonControl.GetComponent<Image>().sprite = keySprite;
+            
+            SettingsData.Controls[SelectedPlayerNum].SetControl(_curControl, key);
+            SubscribeControlHandler();
             PopulateSettings();
         }
 
@@ -159,6 +187,8 @@ namespace Blobby.UserInterface
             var buttonRanked = GameObject.Find("button_ranked").GetComponent<Button>();
             buttonRanked.interactable = SettingsData.Username != "";
         }
+        
+        #endregion
 
         static void PopulateSettings()
         {
@@ -167,12 +197,12 @@ namespace Blobby.UserInterface
             buttonSideLeft.GetComponent<Image>().color = new Color(0f, 0f, 0f, SettingsData.Side == Side.Left ? 0.35f : 0.1f);
             buttonSideRight.GetComponent<Image>().color = new Color(0f, 0f, 0f, SettingsData.Side == Side.Right ? 0.35f : 0.1f);
 
-            var buttonControlsUp = GameObject.Find("button_controls_up");
-            var buttonControlsLeft = GameObject.Find("button_controls_left");
-            var buttonControlsRight = GameObject.Find("button_controls_right");
-            buttonControlsUp.GetComponentInChildren<TextMeshProUGUI>().text = SettingsData.Controls[SelectedPlayerNum].Keys[0].ToString();
-            buttonControlsLeft.GetComponentInChildren<TextMeshProUGUI>().text = SettingsData.Controls[SelectedPlayerNum].Keys[1].ToString();
-            buttonControlsRight.GetComponentInChildren<TextMeshProUGUI>().text = SettingsData.Controls[SelectedPlayerNum].Keys[2].ToString();
+            var buttonControlsUp = GameObject.Find("button_controls_up").GetComponentInChildren<TextMeshProUGUI>();
+            var buttonControlsLeft = GameObject.Find("button_controls_left").GetComponentInChildren<TextMeshProUGUI>();
+            var buttonControlsRight = GameObject.Find("button_controls_right").GetComponentInChildren<TextMeshProUGUI>();
+            buttonControlsUp.text = BlobbyKey.KeyToName[SettingsData.Controls[SelectedPlayerNum].Keys[0]];
+            buttonControlsLeft.text = BlobbyKey.KeyToName[SettingsData.Controls[SelectedPlayerNum].Keys[1]];
+            buttonControlsRight.text = BlobbyKey.KeyToName[SettingsData.Controls[SelectedPlayerNum].Keys[2]];
 
             var buttonPlayer = GameObject.Find("button_player");
             buttonPlayer.GetComponentInChildren<TextMeshProUGUI>().text = (SelectedPlayerNum + 1).ToString();
@@ -208,6 +238,31 @@ namespace Blobby.UserInterface
                 {
                     if (Input.GetKey(keyCode))
                     {
+                        var curKeyCode = SettingsData.Controls[SelectedPlayerNum].Keys[(int) _curControl];
+                        if (keyCode == KeyCode.Mouse0)
+                        {
+                            TimeComponent.UpdateTicked -= Update;
+                        
+                            OnKeyInput(curKeyCode);
+                        }
+                        
+                        if (!BlobbyKey.KeyToName.ContainsKey(keyCode)) continue;
+                        
+                        for (var i = 0; i < SettingsData.Controls.Length; i++)
+                        {
+                            var controlsData = SettingsData.Controls[i];
+                            
+                            for (var j = 0; j < controlsData.Keys.Length; j++)
+                            {
+                                var key = controlsData.Keys[j];
+                                
+                                if (keyCode == key)
+                                {
+                                    controlsData.Keys[j] = curKeyCode;
+                                }
+                            }
+                        }
+                        
                         TimeComponent.UpdateTicked -= Update;
 
                         OnKeyInput(keyCode);
@@ -250,6 +305,20 @@ namespace Blobby.UserInterface
             SliderVolume.ValueChanged -= OnSliderVolumeChanged;
             ToggleWindowed.Toggled -= OnToggleWindowed;
             InputUsername.EndEdit -= OnInputUsernameEndEdit; //BETA
+        }
+
+        static void SubscribeControlHandler()
+        {
+            ButtonControlsUp.Clicked += OnButtonControl;
+            ButtonControlsLeft.Clicked += OnButtonControl;
+            ButtonControlsRight.Clicked += OnButtonControl;
+        }
+
+        static void UnsubscribeControlHandler()
+        {
+            ButtonControlsUp.Clicked -= OnButtonControl;
+            ButtonControlsLeft.Clicked -= OnButtonControl;
+            ButtonControlsRight.Clicked -= OnButtonControl;
         }
     }
 }
