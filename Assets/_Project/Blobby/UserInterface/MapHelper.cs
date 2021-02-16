@@ -19,9 +19,9 @@ namespace Blobby.UserInterface
         public static TextMeshProUGUI LabelScoreLeft { get; private set; }
         public static TextMeshProUGUI LabelScoreRight { get; private set; }
 
-        public static Sprite IconGym = Resources.Load<Sprite>("Graphics/map/gym/map_gym");
-        public static Sprite IconBeach = Resources.Load<Sprite>("Graphics/map/beach/map_beach");
-        public static Sprite IconMoon = Resources.Load<Sprite>("Graphics/map/moon/map_moon");
+        public static Sprite IconGym = Resources.Load<Sprite>("Graphics/UI/general/map_placeholder");
+        public static Sprite IconBeach = Resources.Load<Sprite>("Graphics/UI/general/map_placeholder");
+        public static Sprite IconMoon = Resources.Load<Sprite>("Graphics/UI/general/map_placeholder");
 
         public static Sprite[] Icons = { IconGym, IconBeach, IconMoon };
 

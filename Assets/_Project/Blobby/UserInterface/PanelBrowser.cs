@@ -24,7 +24,7 @@ namespace Blobby.UserInterface
         public static Sprite[] GameModeIcons = { Resources.Load<Sprite>("Graphics/UI/icons/gamemode/icon_standard"),
                                                        Resources.Load<Sprite>("Graphics/UI/icons/gamemode/icon_bomb"),
                                                        Resources.Load<Sprite>("Graphics/UI/icons/gamemode/icon_tennis"),
-                                                       Resources.Load<Sprite>("Graphics/UI/icons/gamemode/icon_tennis")}; //TODO: blitz icon
+                                                       Resources.Load<Sprite>("Graphics/UI/icons/gamemode/icon_blitz")};
 
         public static Sprite[] PlayerModeIcons = { Resources.Load<Sprite>("Graphics/UI/icons/playermode/icon_single"),
                                                          Resources.Load<Sprite>("Graphics/UI/icons/playermode/icon_double"),
