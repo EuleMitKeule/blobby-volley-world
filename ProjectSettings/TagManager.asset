@@ -80,10 +80,7 @@ TagManager:
   - name: Menu
     uniqueID: 2631974009
     locked: 0
-  - name: Ball
-    uniqueID: 1696372863
-    locked: 0
-  - name: Player
+  - name: Entity
     uniqueID: 2759933117
     locked: 0
   - name: Foreground

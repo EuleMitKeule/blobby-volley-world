@@ -16,7 +16,7 @@ public class DropTool : MonoBehaviour
     [SerializeField] float StartY = 11f;
 
     [SerializeField]
-    float[,] _dropSpots = { { -3f, -13.85f, -12.3f }, { -3.5f, -11.5f, -9.4f },
+    float[,] _dropSpots = { { -3.25f, -13.85f, -12.3f }, { -3.5f, -11.5f, -9.4f },
                             { -3.25f, -11.3f, -9f }, { -3.7f, -8.7f, -6.66f } };
 
     [SerializeField] float _dropRate = 2f;

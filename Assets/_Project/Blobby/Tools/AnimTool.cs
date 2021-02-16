@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Blobby.Components
 {
@@ -18,12 +19,18 @@ namespace Blobby.Components
 
         public void SetHover(bool value)
         {
-            _animator.SetBool("hover", value);
+            var button = GetComponent<Button>();
+            var interactable = !button || button.interactable;
+            
+            _animator.SetBool("hover", interactable && value);
         }
 
         public void SetClick(bool value)
         {
-            _animator.SetBool("click", value);
+            var button = GetComponent<Button>();
+            var interactable = !button || button.interactable;
+            
+            _animator.SetBool("click", interactable && value);
         }
 
         public void SetRegister(bool value)

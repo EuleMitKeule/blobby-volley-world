@@ -59,8 +59,8 @@ namespace Blobby.Game.Entities
         bool IsCollidingWithPlayer => PlayerCollision.collider;
         bool CanCollideWithPlayer => State != Stopped;
 
-        Vector2 GroundNormal => new Vector2(Velocity.x * 0.5f, Velocity.y * -0.5f).normalized * 0.5f;
-        Vector2 GroundTennisNormal => new Vector2(Velocity.x, -0.95f * Velocity.y).normalized * 0.95f;
+        Vector2 GroundNormal => new Vector2(Velocity.x * 0.5f, Mathf.Abs(Velocity.y * 0.5f)).normalized * 0.5f;
+        Vector2 GroundTennisNormal => new Vector2(Velocity.x, Mathf.Abs(Velocity.y * 0.95f)).normalized * 0.95f;
 
         #endregion
 
@@ -118,6 +118,7 @@ namespace Blobby.Game.Entities
 
             transform.position = Position;
             transform.rotation = Rotation.ToQuaternion();
+            
         }
 
         public void SetState(IBallState newState)
