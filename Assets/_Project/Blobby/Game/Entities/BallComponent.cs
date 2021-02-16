@@ -36,6 +36,7 @@ namespace Blobby.Game.Entities
         public float Gravity { get; set; }
         public float Rotation { get; set; }
         public float AngularVelocity { get; set; }
+        public float AngularVelocityMultiplier = 25f;
 
         Vector2 DeltaVelocity => Vector2.up * (Time.fixedDeltaTime * Gravity);
         Vector2 DeltaPosition => Velocity * Time.fixedDeltaTime;
@@ -159,6 +160,7 @@ namespace Blobby.Game.Entities
 
             if (result.collider == PhysicsWorld.GroundCollider)
             {
+                AngularVelocity *= 0.5f;
                 return State == RunningTennis ? GroundTennisNormal : GroundNormal;
             }
 

@@ -51,16 +51,17 @@ namespace Blobby.Game.Entities
         CircleCollider2D[] Colliders => GetComponents<CircleCollider2D>();
         protected CircleCollider2D UpperCollider { get; set; }
         protected CircleCollider2D LowerCollider { get; set; }
-        float UpperRadius => UpperCollider.radius;
-        float LowerRadius => LowerCollider.radius;
+        protected EdgeCollider2D GroundCollider { get; set; }
+        public float UpperRadius => UpperCollider.radius;
+        public float LowerRadius => LowerCollider.radius;
         Vector2 UpperOffset => UpperCollider.offset;
         Vector2 LowerOffset => LowerCollider.offset;
-        Vector2 UpperCenter => TransformPosition + UpperOffset;
-        Vector2 LowerCenter => TransformPosition + LowerOffset;
+        public Vector2 UpperCenter => TransformPosition + UpperOffset;
+        public Vector2 LowerCenter => TransformPosition + LowerOffset;
         Vector2 Top => Position + UpperOffset + Vector2.up * UpperRadius;
         float TopOffset => UpperOffset.y + UpperRadius;
         Vector2 Bottom => Position + LowerOffset + Vector2.down * LowerRadius;
-        public float BottomOffset => LowerOffset.y - LowerRadius;
+        public float BottomOffset => GroundCollider.offset.y;
 
         #endregion
 
@@ -204,6 +205,7 @@ namespace Blobby.Game.Entities
 
             UpperCollider = Colliders[0];
             LowerCollider = Colliders[1];
+            GroundCollider = GetComponent<EdgeCollider2D>();
 
             JumpStrategy = JumpStrategyFactory.Create(this, MatchComponent.JumpMode);
 
