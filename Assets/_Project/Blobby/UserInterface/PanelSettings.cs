@@ -116,7 +116,7 @@ namespace Blobby.UserInterface
             };
 
             var keyPressedSprite =
-                Resources.Load<Sprite>("Graphics/UI/NEW STUFF/settings controls/buttons/button_settings_key_pressed");
+                Resources.Load<Sprite>("Graphics/UI/canvas_menu/panel_settings/buttons/button_settings_key_pressed");
             buttonControl.GetComponent<Image>().sprite = keyPressedSprite;
 
             _curControl = control;
@@ -135,7 +135,7 @@ namespace Blobby.UserInterface
             };
 
             var keySprite =
-                Resources.Load<Sprite>("Graphics/UI/NEW STUFF/settings controls/buttons/button_settings_key");
+                Resources.Load<Sprite>("Graphics/UI/canvas_menu/panel_settings/buttons/button_settings_key");
             buttonControl.GetComponent<Image>().sprite = keySprite;
             
             SettingsData.Controls[SelectedPlayerNum].SetControl(_curControl, key);
