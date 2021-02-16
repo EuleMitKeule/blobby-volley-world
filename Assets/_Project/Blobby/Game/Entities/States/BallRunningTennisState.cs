@@ -50,7 +50,7 @@ namespace Blobby.Game.Entities
         {
             if (result.collider == PhysicsWorld.GroundCollider)
             {
-
+                _ballComponent.InvokeGroundHit();
             }
             else if (result.collider == PhysicsWorld.NetEdgeCollider)
             {
