@@ -205,7 +205,7 @@ namespace Blobby.Game
         protected virtual void OnOver(Side winner, int scoreLeft, int scoreRight, int time)
         {
             SetState(OverState);
-            BallComponent.SetState(BallComponent.Stopped);
+            if (BallComponent) BallComponent.SetState(BallComponent.Stopped);
         }
 
         protected virtual void OnAlpha(int playerNum, bool value) { }

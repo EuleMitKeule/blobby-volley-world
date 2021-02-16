@@ -89,6 +89,8 @@ namespace Blobby.Game
 
         static void OnPlayerJoined(PlayerData playerData)
         {
+            Debug.Log($"Player \"{playerData.Name}\" joined");
+            
             _state.OnPlayerJoined(playerData);
         }
 

@@ -26,7 +26,7 @@ namespace Blobby.Game.States
 
         public void OnButtonRanked()
         {
-            if (ClientConnection.UserData == null) return;
+            //if (ClientConnection.UserData == null) return;
             
             ClientConnection.ToggleMatchQueue();
         }

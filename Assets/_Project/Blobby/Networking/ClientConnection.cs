@@ -257,12 +257,22 @@ namespace Blobby.Networking
 
         public static void SendButtonDown(int button, int playerNum)
         {
-            _client?.Send(Receivers.Server, ServerConnection.BUTTON_DOWN, true, playerNum, button);
+            try
+            {
+                if (_client == null || _client.Disposed) return;
+                _client.Send(Receivers.Server, ServerConnection.BUTTON_DOWN, true, playerNum, button);
+            }
+            catch (NullReferenceException) { }
         }
 
         public static void SendButtonUp(int button, int playerNum)
         {
-            _client?.Send(Receivers.Server, ServerConnection.BUTTON_UP, true, playerNum, button);
+            try
+            {
+                if (_client == null || _client.Disposed) return;
+                _client.Send(Receivers.Server, ServerConnection.BUTTON_UP, true, playerNum, button);
+            }
+            catch (NullReferenceException) { }
         }
 
         public static void SendSurrender()
@@ -286,7 +296,7 @@ namespace Blobby.Networking
             var color = PanelSettings.SettingsData.Colors[0];
             
             _client.Send(Receivers.Server, ServerConnection.CLIENT_HANDSHAKE, true, 
-                PanelSettings.SettingsData.Username, UserData.token, color.r, color.g, color.b); //BETA
+                PanelSettings.SettingsData.Username, color.r, color.g, color.b); //BETA
             
             // if (UserData != null)
             // {
