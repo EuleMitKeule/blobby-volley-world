@@ -151,6 +151,7 @@ GameObject:
   - component: {fileID: 6440855946970237818}
   - component: {fileID: 4166606147991815519}
   - component: {fileID: 7730207064817157078}
+  - component: {fileID: 4566431355323289894}
   m_Layer: 8
   m_Name: ai_player
   m_TagString: Player1
@@ -326,6 +327,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b716430025bab9f459af8ae093eb4947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!68 &4566431355323289894
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3118368123365186286}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -2.097}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -1.3, y: 0}
+  - {x: 1.3, y: 0}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
 --- !u!1 &3498744196372951978
 GameObject:
   m_ObjectHideFlags: 0
