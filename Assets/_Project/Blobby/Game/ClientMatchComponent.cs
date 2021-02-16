@@ -14,7 +14,7 @@ using Object = UnityEngine.Object;
 
 namespace Blobby.Game
 {
-    public class ClientMatchComponent : MonoBehaviour, IClientMatch, IDisposable
+    public class ClientMatchComponent : MonoBehaviour, IClientMatch
     {
         public int NetPlayerNum { get; private set; }
         public Side OwnSide { get { return NetPlayerNum % 2 == 0 ? Side.Left : Side.Right; } }
@@ -118,7 +118,7 @@ namespace Blobby.Game
             ClientConnection.ScoreReceived += OnScoreReceived;
         }
 
-        public void Dispose()
+        public void OnDestroy()
         {
             if (Ball) Object.Destroy(Ball);
             foreach (var player in Players.Where(player => player)) Object.Destroy(player);

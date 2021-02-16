@@ -260,10 +260,9 @@ namespace Blobby.Networking
                 switch (frame.GroupId)
                 {
                     case CLIENT_HANDSHAKE:
-            
-            
+
+
                         var username = frame.StreamData.GetBasicType<string>();
-                        var token = frame.StreamData.GetBasicType<string>();
                         var colorR = frame.StreamData.GetBasicType<float>();
                         var colorG = frame.StreamData.GetBasicType<float>();
                         var colorB = frame.StreamData.GetBasicType<float>();

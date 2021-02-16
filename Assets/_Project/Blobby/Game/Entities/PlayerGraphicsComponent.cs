@@ -49,14 +49,18 @@ namespace Blobby.Game.Entities
 
         void Awake()
         {
-            Animator = GetComponent<Animator>();
-            SpriteRenderer = GetComponent<SpriteRenderer>();
             NameLabel = GetComponentInChildren<TextMeshProUGUI>();
             GroundCollider = GetComponent<EdgeCollider2D>();
 
             PlayerGraphicsProvider = GetComponent<IPlayerGraphicsProvider>();
             PlayerGraphicsProvider.PlayerDataChanged += (playerData) => { PlayerData = playerData; };
             PlayerGraphicsProvider.AlphaChanged += OnAlpha;
+        }
+
+        void Start()
+        {
+            Animator = GetComponent<Animator>();
+            SpriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         void Update()
