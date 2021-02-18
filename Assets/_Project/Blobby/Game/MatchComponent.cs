@@ -174,14 +174,16 @@ namespace Blobby.Game
         async Task WaitForGrounded()
         {
             do
-            {
+            {    
                 if (MatchData.PlayerCount == 2)
                 {
-                    if (Players[CurrentWinner == Side.Left ? 0 : 1].IsGrounded) return;
+                    if (Players[CurrentWinner == Side.Left ? 0 : 1].Position.y < -3.5f) return;
                 }
                 else
                 {
-                    if (Players[CurrentWinner == Side.Left ? 0 : 1].IsGrounded && Players[CurrentWinner == Side.Left ? 2 : 3].IsGrounded) return;
+                    if (Players[CurrentWinner == Side.Left ? 0 : 1].Position.y < -3.5f
+                        && Players[CurrentWinner == Side.Left ? 0 : 1].Position.y < -3.5f) 
+                        return;
                 }
 
                 await Task.Delay(100);
