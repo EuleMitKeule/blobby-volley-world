@@ -52,6 +52,8 @@ namespace Blobby.Game.Entities
 
         CircleCollider2D Collider { get; set; }
         public float Radius => Collider.radius;
+        public Vector2 Top => Position + Vector2.up * Radius;
+        public Vector2 Bottom => Position + Vector2.down * Radius;
 
         RaycastHit2D MapCollision =>
             Physics2D.CircleCast(TransformPosition, Radius, Velocity, TraveledDistance, MAP_LAYERMASK);

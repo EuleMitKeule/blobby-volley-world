@@ -77,7 +77,7 @@ namespace Blobby.Game.Entities
             }
             else
             {
-                if (!IsTransparent[PlayerData.PlayerNum] && IsTransparent[(PlayerData.PlayerNum + 2) % 4]) SetState(Offensive);
+                if (!IsTransparent[PlayerData.PlayerNum]) SetState(Offensive); // && IsTransparent[(PlayerData.PlayerNum + 2) % 4]
                 else SetState(Defensive);
             }
         }

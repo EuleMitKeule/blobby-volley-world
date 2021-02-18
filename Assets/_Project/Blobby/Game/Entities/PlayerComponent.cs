@@ -58,9 +58,9 @@ namespace Blobby.Game.Entities
         Vector2 LowerOffset => LowerCollider.offset;
         public Vector2 UpperCenter => TransformPosition + UpperOffset;
         public Vector2 LowerCenter => TransformPosition + LowerOffset;
-        Vector2 Top => Position + UpperOffset + Vector2.up * UpperRadius;
-        float TopOffset => UpperOffset.y + UpperRadius;
-        Vector2 Bottom => Position + LowerOffset + Vector2.down * LowerRadius;
+        public Vector2 Top => Position + UpperOffset + Vector2.up * UpperRadius;
+        public float TopOffset => UpperOffset.y + UpperRadius;
+        public Vector2 Bottom => Position + LowerOffset + Vector2.down * LowerRadius;
         public float BottomOffset => GroundCollider.offset.y;
 
         #endregion
@@ -88,8 +88,8 @@ namespace Blobby.Game.Entities
         Vector2 ClampedNetPosition => new Vector2
         (
             Mathf.Clamp(Position.x,
-                IsOnLeftSide ? LeftLimit : PhysicsWorld.RightNetCollider.offset.x + LowerRadius,
-                IsOnLeftSide ? PhysicsWorld.LeftNetCollider.offset.x - LowerRadius : RightLimit),
+                IsOnLeftSide ? LeftLimit : IsOuterPlayer ? LeftLimit : PhysicsWorld.RightNetCollider.offset.x + LowerRadius,
+                IsOnLeftSide ? IsOuterPlayer ? RightLimit : PhysicsWorld.LeftNetCollider.offset.x - LowerRadius : RightLimit),
             Mathf.Clamp(Position.y, PhysicsWorld.Ground - BottomOffset, Position.y)
         );
         Vector2 ClampedVelocity => new Vector2
@@ -189,11 +189,12 @@ namespace Blobby.Game.Entities
         public Side OwnSide => DefaultBlobNum % 2 == 0 ? Side.Left : Side.Right;
         public Side EnemySide => OwnSide.Other();
         bool IsOnLeftTeam => PlayerData.Side == Side.Left;
-        public bool IsSwitched => IsOnLeftTeam ? MatchComponent.LeftSwitched : MatchComponent.RightSwitched;
+        public bool IsSwitched => IsOnLeftTeam ? MatchComponent.IsLeftSwitched : MatchComponent.IsRightSwitched;
         public int BlobNum => IsSwitched ? TeamBlobNum : DefaultBlobNum;
         public int DefaultBlobNum => PlayerData.PlayerNum;
         public int TeamBlobNum => (PlayerData.PlayerNum + 2) % 4;
         public virtual bool IsInvisible => false;
+        bool IsOuterPlayer => BlobNum < 2;
 
         public event Action<int, bool> AlphaChanged;
 
@@ -263,6 +264,9 @@ namespace Blobby.Game.Entities
 
         protected virtual void OnReady(Side side)
         {
+            if (!MatchComponent.IsJumpOverNet && !MatchComponent.IsDoubleFixed) return;
+
+            Position = SpawnPoint;
         }
 
         protected virtual void OnAlpha(int playerNum, bool isTransparent) =>
@@ -271,10 +275,6 @@ namespace Blobby.Game.Entities
         protected virtual void OnStop()
         {
             if (MatchComponent.IsPogo) KeyPressed[0] = false;
-
-            if (!MatchComponent.IsJumpOverNet) return;
-
-            Position = SpawnPoint;
         }
 
         protected virtual void OnOver(Side side, int scoreLeft, int scoreRight, int time) { }

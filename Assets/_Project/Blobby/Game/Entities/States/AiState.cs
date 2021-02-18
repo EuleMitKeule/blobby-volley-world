@@ -39,10 +39,9 @@ namespace Blobby.Game.Entities.States
             {
                 if (AiPlayerComponent.PlayerData.PlayerNum > 1)
                 {
-                    if (!AiPlayerComponent.IsTransparent[AiPlayerComponent.PlayerData.PlayerNum] && !AiPlayerComponent.IsTransparent[(AiPlayerComponent.PlayerData.PlayerNum + 2) % 4])
+                    if (!AiPlayerComponent.IsTransparent[AiPlayerComponent.PlayerData.PlayerNum])// && !AiPlayerComponent.IsTransparent[(AiPlayerComponent.PlayerData.PlayerNum + 2) % 4]
                     {
                         AiPlayerComponent.SetState(AiPlayerComponent.Defensive);
-                        return;
                     }
                     else AiPlayerComponent.SetState(AiPlayerComponent.Offensive);
                 }

@@ -211,7 +211,13 @@ namespace Blobby.Game
 
         static void ChangeGameMode(GameMode gameMode) => LocalMatchData.GameMode = gameMode;
 
-        static void ChangeJumpMode(JumpMode jumpMode) => LocalMatchData.JumpMode = jumpMode;
+        static void ChangeJumpMode(JumpMode jumpMode)
+        {
+            if (jumpMode == JumpMode.Spring)
+                GameObject.Find("button_local_play_ai").GetComponent<Button>().interactable = false;
+            else GameObject.Find("button_local_play_ai").GetComponent<Button>().interactable = true;
+            LocalMatchData.JumpMode = jumpMode;
+        }
 
         #endregion
 
