@@ -88,8 +88,8 @@ namespace Blobby.Game.Entities
         Vector2 ClampedNetPosition => new Vector2
         (
             Mathf.Clamp(Position.x,
-                IsOnLeftSide ? LeftLimit : PhysicsWorld.RightNetCollider.offset.x + LowerRadius,
-                IsOnLeftSide ? PhysicsWorld.LeftNetCollider.offset.x - LowerRadius : RightLimit),
+                IsOnLeftSide ? LeftLimit : IsOuterPlayer ? LeftLimit : PhysicsWorld.RightNetCollider.offset.x + LowerRadius,
+                IsOnLeftSide ? IsOuterPlayer ? RightLimit : PhysicsWorld.LeftNetCollider.offset.x - LowerRadius : RightLimit),
             Mathf.Clamp(Position.y, PhysicsWorld.Ground - BottomOffset, Position.y)
         );
         Vector2 ClampedVelocity => new Vector2
@@ -194,6 +194,7 @@ namespace Blobby.Game.Entities
         public int DefaultBlobNum => PlayerData.PlayerNum;
         public int TeamBlobNum => (PlayerData.PlayerNum + 2) % 4;
         public virtual bool IsInvisible => false;
+        bool IsOuterPlayer => BlobNum < 2;
 
         public event Action<int, bool> AlphaChanged;
 
