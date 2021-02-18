@@ -5,6 +5,7 @@ using Blobby.Game.Entities;
 using Blobby.Game.States;
 using Blobby.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blobby.Game.Timing;
@@ -163,32 +164,39 @@ namespace Blobby.Game
             }
         }
 
-        protected virtual async Task OnResetBallTimerStopped()
+        protected virtual Task OnResetBallTimerStopped()
         {
-            await WaitForGrounded();
-
-            SetState(ReadyState);
-            BallComponent.SetState(BallComponent.Ready);
+            MainThreadManager.Run(() => StartCoroutine(WaitForGrounded()));
+            return Task.CompletedTask;
         }
 
-        async Task WaitForGrounded()
+        IEnumerator WaitForGrounded()
         {
+            var ballSpawnPoint = BallComponent.SpawnPoints[CurrentWinner == Side.Left ? 0 : 1];
+            var player = Players[CurrentWinner == Side.Left ? 0 : 1];
+            var teamPlayer = IsSingle ? null : Players[CurrentWinner == Side.Left ? 2 : 3];
+            var wait = new WaitForSeconds(0.1f);
+            
             do
-            {    
-                if (MatchData.PlayerCount == 2)
+            {
+                if (IsSingle)
                 {
-                    if (Players[CurrentWinner == Side.Left ? 0 : 1].Position.y < -3.5f) return;
+                    if (player.Top.IsBelow(ballSpawnPoint.y - BallComponent.Radius)) break;
                 }
                 else
                 {
-                    if (Players[CurrentWinner == Side.Left ? 0 : 1].Position.y < -3.5f
-                        && Players[CurrentWinner == Side.Left ? 0 : 1].Position.y < -3.5f) 
-                        return;
+                    if (player.Top.IsBelow(ballSpawnPoint.y - BallComponent.Radius)
+                        && teamPlayer
+                        && teamPlayer.Top.IsBelow(ballSpawnPoint.y - BallComponent.Radius))
+                        break;
                 }
 
-                await Task.Delay(100);
+                yield return wait;
             }
             while (true);
+
+            SetState(ReadyState);
+            BallComponent.SetState(BallComponent.Ready);
         }
 
         void OnAutoDropTimerStopped()

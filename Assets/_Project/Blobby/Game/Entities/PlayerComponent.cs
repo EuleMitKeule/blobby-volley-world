@@ -58,9 +58,9 @@ namespace Blobby.Game.Entities
         Vector2 LowerOffset => LowerCollider.offset;
         public Vector2 UpperCenter => TransformPosition + UpperOffset;
         public Vector2 LowerCenter => TransformPosition + LowerOffset;
-        Vector2 Top => Position + UpperOffset + Vector2.up * UpperRadius;
-        float TopOffset => UpperOffset.y + UpperRadius;
-        Vector2 Bottom => Position + LowerOffset + Vector2.down * LowerRadius;
+        public Vector2 Top => Position + UpperOffset + Vector2.up * UpperRadius;
+        public float TopOffset => UpperOffset.y + UpperRadius;
+        public Vector2 Bottom => Position + LowerOffset + Vector2.down * LowerRadius;
         public float BottomOffset => GroundCollider.offset.y;
 
         #endregion
