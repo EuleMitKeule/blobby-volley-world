@@ -189,7 +189,7 @@ namespace Blobby.Game.Entities
         public Side OwnSide => DefaultBlobNum % 2 == 0 ? Side.Left : Side.Right;
         public Side EnemySide => OwnSide.Other();
         bool IsOnLeftTeam => PlayerData.Side == Side.Left;
-        public bool IsSwitched => IsOnLeftTeam ? MatchComponent.LeftSwitched : MatchComponent.RightSwitched;
+        public bool IsSwitched => IsOnLeftTeam ? MatchComponent.IsLeftSwitched : MatchComponent.IsRightSwitched;
         public int BlobNum => IsSwitched ? TeamBlobNum : DefaultBlobNum;
         public int DefaultBlobNum => PlayerData.PlayerNum;
         public int TeamBlobNum => (PlayerData.PlayerNum + 2) % 4;
@@ -264,6 +264,9 @@ namespace Blobby.Game.Entities
 
         protected virtual void OnReady(Side side)
         {
+            if (!MatchComponent.IsJumpOverNet && !MatchComponent.IsDoubleFixed) return;
+
+            Position = SpawnPoint;
         }
 
         protected virtual void OnAlpha(int playerNum, bool isTransparent) =>
@@ -272,10 +275,6 @@ namespace Blobby.Game.Entities
         protected virtual void OnStop()
         {
             if (MatchComponent.IsPogo) KeyPressed[0] = false;
-
-            if (!MatchComponent.IsJumpOverNet) return;
-
-            Position = SpawnPoint;
         }
 
         protected virtual void OnOver(Side side, int scoreLeft, int scoreRight, int time) { }

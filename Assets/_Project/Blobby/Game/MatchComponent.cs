@@ -34,13 +34,14 @@ namespace Blobby.Game
         bool HasRightReachedWinningScore => ScoreRight >= WinningScore;
         bool IsWinPossible => Mathf.Abs(ScoreLeft - ScoreRight) >= 2;
 
-        public bool LeftSwitched { get; set; }
-        public bool RightSwitched { get; set; }
+        public bool IsLeftSwitched { get; set; }
+        public bool IsRightSwitched { get; set; }
 
         public int[] HitCounts { get; set; } = { 0, 0, 1, 0, 0, 0 };
         public float LastHit { get; set; }
 
-        public Side LastWinner { get; protected set; } = Side.None;
+        public Side CurrentWinner { get; set; } = Side.None;
+        public Side LastWinner { get; set; } = Side.None;
 
         public Vector2[] SpawnPoints => MatchData.SpawnPoints;
         public float[] LeftLimits => MatchData.LeftLimits;
@@ -48,6 +49,8 @@ namespace Blobby.Game
         public int WinningScore => IsBlitz ? 2 : 16;
         public PlayerMode PlayerMode => MatchData.PlayerMode;
         public bool IsSingle => MatchData.PlayerCount == 2;
+        public bool IsDoubleFixed => MatchData.PlayerMode == PlayerMode.DoubleFixed;
+        
         public GameMode GameMode => MatchData.GameMode;
         public bool IsBomb => GameMode == GameMode.Bomb;
         public bool IsBlitz => GameMode == GameMode.Blitz;
@@ -141,7 +144,7 @@ namespace Blobby.Game
                 else ScoreRight++;
             }
 
-            LastWinner = winner;
+            CurrentWinner = winner;
         }
 
         protected virtual void OnPlayerCounted(PlayerComponent playerComponent)
@@ -174,11 +177,11 @@ namespace Blobby.Game
             {
                 if (MatchData.PlayerCount == 2)
                 {
-                    if (Players[LastWinner == Side.Left ? 0 : 1].IsGrounded) return;
+                    if (Players[CurrentWinner == Side.Left ? 0 : 1].IsGrounded) return;
                 }
                 else
                 {
-                    if (Players[LastWinner == Side.Left ? 0 : 1].IsGrounded && Players[LastWinner == Side.Left ? 2 : 3].IsGrounded) return;
+                    if (Players[CurrentWinner == Side.Left ? 0 : 1].IsGrounded && Players[CurrentWinner == Side.Left ? 2 : 3].IsGrounded) return;
                 }
 
                 await Task.Delay(100);
