@@ -33,8 +33,6 @@ namespace Blobby.Game.Entities
                 _ballComponent.AngularVelocity = 0f;
                 _ballComponent.Gravity = 0f;
                 _ballComponent.Side = _matchComponent.LastWinner;
-
-                _ballComponent.InvokeSideChanged(_ballComponent.Side);
             });
         }
 
