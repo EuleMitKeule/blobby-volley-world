@@ -79,6 +79,8 @@ namespace Blobby.Game
             ButtonLocalPlay.Clicked += OnButtonLocalPlay;
             ButtonLocalPlayAi.Clicked += OnButtonLocalPlayAi;
             ButtonRanked.Clicked += OnButtonRanked;
+            ButtonLocal.Clicked += OnButtonLocal;
+            ButtonSettings.Clicked += OnButtonSettings;
             ButtonMapLeft.Clicked += () => ChangeMap((Map)MathHelper.Mod((int)LocalMatchData.Map - 1, Enum.GetNames(typeof(Map)).Length - 1));
             ButtonMapRight.Clicked += () => ChangeMap((Map)MathHelper.Mod((int)LocalMatchData.Map + 1, Enum.GetNames(typeof(Map)).Length - 1));
             ToggleJumpOverNet.Toggled += ChangeJumpOverNet;
@@ -112,6 +114,16 @@ namespace Blobby.Game
         static void OnButtonRanked()
         {
             _clientState.OnButtonRanked();
+        }
+
+        static void OnButtonLocal()
+        {
+            ClientConnection.StopMatchQueue();
+        }
+
+        static void OnButtonSettings()
+        {
+            ClientConnection.StopMatchQueue();
         }
 
         static void OnButtonLocalPlay()
