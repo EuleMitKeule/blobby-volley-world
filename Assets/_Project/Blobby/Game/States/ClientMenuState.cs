@@ -95,6 +95,8 @@ namespace Blobby.Game.States
                 }
 
                 MatchHandler.ZoomEffect?.ZoomOut();
+
+                InputHelper.CursorVisible = true;
             });
         }
 

@@ -9,6 +9,8 @@ namespace Blobby
 
     public static class InputHelper
     {
+        public static bool CursorVisible { get; set; } 
+        
         static Action[,] _downCallbacks = new Action[4, 3];
         static Action[,] _upCallbacks = new Action[4, 3];
         static Action _escapeCallback;
@@ -24,6 +26,7 @@ namespace Blobby
 
             var cursorTex = Resources.Load<Texture2D>("Graphics/UI/cursor/cursor");
             Cursor.SetCursor(cursorTex, Vector2.zero, CursorMode.Auto);
+            CursorVisible = true;
         }
 
         public static void SetDownCallback(Action callback, int playerNum, int key) => _downCallbacks[playerNum, key] = callback;
@@ -63,6 +66,8 @@ namespace Blobby
             if (Input.GetKeyDown(KeyCode.Tab)) _tabCallback?.Invoke();
 
             if (Input.GetKeyDown(KeyCode.Return)) _enterCallback?.Invoke();
+
+            Cursor.visible = CursorVisible;
         }
     }
 }

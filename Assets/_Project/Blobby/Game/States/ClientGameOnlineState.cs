@@ -107,6 +107,8 @@ namespace Blobby.Game.States
                 
                 //MatchHandler.ZoomEffect?.Dispose();
                 MatchHandler.ZoomEffect?.ZoomIn(targetPlayerObj.transform);
+
+                InputHelper.CursorVisible = true;
             });
         }
 
@@ -117,6 +119,8 @@ namespace Blobby.Game.States
             //TODO Ball destroyen ??
 
             MatchHandler.ZoomEffect?.ZoomOut();
+
+            InputHelper.CursorVisible = false;
         }
 
         public void OnMatchStopped() { }
@@ -137,6 +141,8 @@ namespace Blobby.Game.States
                 clientMatchComponent.MatchData = MatchHandler.ServerData.MatchData;
 
                 MatchHandler.Match = clientMatchComponent;
+
+                InputHelper.CursorVisible = false;
             });
         }
 
