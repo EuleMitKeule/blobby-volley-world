@@ -60,8 +60,14 @@ namespace Blobby.UserInterface
                     var labelLeft = _match.Switched ? MapHelper.LabelScoreRight : MapHelper.LabelScoreLeft;
                     var labelRight = _match.Switched ? MapHelper.LabelScoreLeft : MapHelper.LabelScoreRight;
 
-                    labelLeft.text = $"{scoreLeft % 100:00}" + (lastWinner == Side.Left ? "!" : "");
-                    labelRight.text = (lastWinner == Side.Left ? "" : "!") + $"{scoreRight % 100:00}";
+                    labelLeft.text = $"{scoreLeft % 100:00}";
+                    labelRight.text = $"{scoreRight % 100:00}";
+                    
+                    var exclamationLeft = _match.Switched ? MapHelper.ExclamationRight : MapHelper.ExclamationLeft;
+                    var exclamationRight = _match.Switched ? MapHelper.ExclamationLeft : MapHelper.ExclamationRight;
+
+                    exclamationLeft.enabled = lastWinner == Side.Left;
+                    exclamationRight.enabled = lastWinner != Side.Left;
                 }
             });
         }
