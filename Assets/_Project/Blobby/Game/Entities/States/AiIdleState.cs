@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Blobby.Game.Entities.States
 {
@@ -24,7 +25,7 @@ namespace Blobby.Game.Entities.States
 
         public override void FixedUpdate()
         {
-
+            
         }
 
         protected override void OnBallSideChanged(Side side)

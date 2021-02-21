@@ -113,7 +113,7 @@ namespace Blobby.Game.Entities
 
             State.FixedUpdate();
 
-            if (HasSideChanged)
+            if (HasSideChanged && State == Running)
             {
                 Side = CurrentSide;
                 InvokeSideChanged(Side);

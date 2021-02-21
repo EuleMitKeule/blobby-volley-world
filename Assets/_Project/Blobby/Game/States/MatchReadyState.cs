@@ -22,12 +22,24 @@ namespace Blobby.Game.States
                     else _matchComponent.IsRightSwitched = !_matchComponent.IsRightSwitched;
                 }
 
-                int notGivingPlayerNum = _matchComponent.CurrentWinner == Side.Left ? (_matchComponent.IsLeftSwitched ? 0 : 2) : (_matchComponent.IsRightSwitched ? 1 : 3);
+                bool leftSideGiving = _matchComponent.CurrentWinner != Side.Right;
+                int notGivingPlayerNum = leftSideGiving ? (_matchComponent.IsLeftSwitched ? 0 : 2) : (_matchComponent.IsRightSwitched ? 1 : 3);
                 _matchComponent.HitCounts[notGivingPlayerNum] = 1;
-
-                for (int i = 0; i < 4; i++) _matchComponent.InvokeAlpha(i, false);
-
-                _matchComponent.InvokeAlpha(notGivingPlayerNum, true);
+                
+                if (leftSideGiving)
+                {
+                    _matchComponent.InvokeAlpha(0, _matchComponent.IsLeftSwitched);
+                    _matchComponent.InvokeAlpha(1, false);
+                    _matchComponent.InvokeAlpha(2, !_matchComponent.IsLeftSwitched);
+                    _matchComponent.InvokeAlpha(3, false);
+                }
+                else
+                {
+                    _matchComponent.InvokeAlpha(0, false);
+                    _matchComponent.InvokeAlpha(1, _matchComponent.IsRightSwitched);
+                    _matchComponent.InvokeAlpha(2, false);
+                    _matchComponent.InvokeAlpha(3, !_matchComponent.IsRightSwitched);
+                }
             }
 
             _matchComponent.LastWinner = _matchComponent.CurrentWinner;
