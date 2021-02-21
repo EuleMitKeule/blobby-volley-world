@@ -123,6 +123,8 @@ namespace Blobby.Game
 
                 SetState(ReadyState);
                 if (MatchData.JumpMode == JumpMode.NoJump) AutoDropTimer?.Start();
+                
+                InputHelper.CursorVisible = false;
             });
         }
 
