@@ -99,11 +99,12 @@ namespace Blobby.Game
 
                 if (!IsSingle) InvokeAlpha(2, true);
 
-                LeftSwitched = false;
-                RightSwitched = false;
+                IsLeftSwitched = false;
+                IsRightSwitched = false;
                 ScoreLeft = 0;
                 ScoreRight = 0;
                 HitCounts = new int[] { 0, 0, 1, 0, 0, 0 };
+                CurrentWinner = Side.None;
                 LastWinner = Side.None;
 
                 MatchTimer = new MatchTimer();
@@ -122,6 +123,8 @@ namespace Blobby.Game
 
                 SetState(ReadyState);
                 if (MatchData.JumpMode == JumpMode.NoJump) AutoDropTimer?.Start();
+                
+                InputHelper.CursorVisible = false;
             });
         }
 
@@ -185,7 +188,7 @@ namespace Blobby.Game
         {
             base.OnScore(winner);
 
-            ScoreChanged?.Invoke(ScoreLeft, ScoreRight, LastWinner);
+            ScoreChanged?.Invoke(ScoreLeft, ScoreRight, CurrentWinner);
         }
 
         protected override void OnStop()

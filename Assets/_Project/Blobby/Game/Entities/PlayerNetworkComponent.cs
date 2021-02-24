@@ -26,7 +26,9 @@ namespace Blobby.Game.Entities
 
         public bool IsGrounded => networkObject.isGrounded;
         public bool IsRunning => networkObject.isRunning;
-        public bool IsInvisible => false;
+
+        public bool IsInvisible => !IsServer && ClientMatchComponent.MatchData.PlayerMode == PlayerMode.Ghost &&
+                                   PlayerData.Side != ClientMatchComponent.OwnSide;
         bool IsSwitched => OwnSide != PanelSettings.SettingsData.Side;
         PlayerData _playerData;
 

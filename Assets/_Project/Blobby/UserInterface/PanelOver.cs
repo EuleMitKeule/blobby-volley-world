@@ -33,8 +33,8 @@ namespace Blobby.UserInterface
             
             if (usernames.Length <= 2)
             {
-                labelOverNameLeft.text = usernames[0];
-                labelOverNameRight.text = usernames[1];
+                if (usernames.Length >= 1) labelOverNameLeft.text = usernames[0];
+                if (usernames.Length >= 2) labelOverNameRight.text = usernames[1];
             }
             else
             {

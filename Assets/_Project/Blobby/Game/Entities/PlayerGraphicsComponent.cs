@@ -38,15 +38,10 @@ namespace Blobby.Game.Entities
         TextMeshProUGUI NameLabel { get; set; }
         Transform ShadowTransform => transform.GetChild(0);
 
-        CircleCollider2D[] Colliders => GetComponents<CircleCollider2D>();
-        CircleCollider2D LowerCollider { get; set; }
-        float LowerRadius => LowerCollider.radius;
-        Vector2 LowerOffset => LowerCollider.offset;
-        float BottomOffset => LowerOffset.y - LowerRadius;
+        EdgeCollider2D GroundCollider { get; set; }
+        float BottomOffset => GroundCollider.offset.y;
 
         const float NAME_LABEL_OFFSET = -9.3f;
-        const float SHADOW_X = 1.588f;
-        const float SHADOW_Y = -1.73f;
         const float SHADOW_MOD = 0.1f;
 
         static readonly int IsRunningAnim = Animator.StringToHash("isRunning");
@@ -54,14 +49,18 @@ namespace Blobby.Game.Entities
 
         void Awake()
         {
-            Animator = GetComponent<Animator>();
-            SpriteRenderer = GetComponent<SpriteRenderer>();
-            LowerCollider = Colliders[1];
             NameLabel = GetComponentInChildren<TextMeshProUGUI>();
+            GroundCollider = GetComponent<EdgeCollider2D>();
 
             PlayerGraphicsProvider = GetComponent<IPlayerGraphicsProvider>();
             PlayerGraphicsProvider.PlayerDataChanged += (playerData) => { PlayerData = playerData; };
             PlayerGraphicsProvider.AlphaChanged += OnAlpha;
+        }
+
+        void Start()
+        {
+            Animator = GetComponent<Animator>();
+            SpriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         void Update()

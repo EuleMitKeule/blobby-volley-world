@@ -27,6 +27,9 @@ namespace Blobby.Game
 
         public static Vector2 Perpendicular(this Vector2 vector) => new Vector2(vector.y, -vector.x);
         
+        public static Vector2 RotateClockwise(this Vector2 vector, Vector2 around) =>
+            new Vector2(vector.x * around.y - vector.y * around.x, vector.y * around.y + vector.x * around.x);
+        
         public static float Dot(this Vector2 vector, Vector2 other) => vector.x * other.x + vector.y * other.y;
         
         public static bool IsAcute(this Vector2 vector, Vector2 other) => vector.Dot(other) > 0f;

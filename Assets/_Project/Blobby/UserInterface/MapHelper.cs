@@ -18,10 +18,12 @@ namespace Blobby.UserInterface
         public static GameObject LightScoreRight { get; private set; }
         public static TextMeshProUGUI LabelScoreLeft { get; private set; }
         public static TextMeshProUGUI LabelScoreRight { get; private set; }
+        public static TextMeshProUGUI ExclamationLeft { get; private set; }
+        public static TextMeshProUGUI ExclamationRight { get; private set; }
 
-        public static Sprite IconGym = Resources.Load<Sprite>("Graphics/map/gym/map_gym");
-        public static Sprite IconBeach = Resources.Load<Sprite>("Graphics/map/beach/map_beach");
-        public static Sprite IconMoon = Resources.Load<Sprite>("Graphics/map/moon/map_moon");
+        public static Sprite IconGym = Resources.Load<Sprite>("Graphics/UI/general/map_placeholder");
+        public static Sprite IconBeach = Resources.Load<Sprite>("Graphics/UI/general/map_placeholder");
+        public static Sprite IconMoon = Resources.Load<Sprite>("Graphics/UI/general/map_placeholder");
 
         public static Sprite[] Icons = { IconGym, IconBeach, IconMoon };
 
@@ -55,20 +57,24 @@ namespace Blobby.UserInterface
             var labelTimeObj = wantedMapCanvas.transform.Find("label_time");
             var labelScoreLeftObj = wantedMapCanvas.transform.Find("label_score_left");
             var labelScoreRightObj = wantedMapCanvas.transform.Find("label_score_right");
+            var exclamationLeftObj = wantedMapCanvas.transform.Find("label_exclamation_left");
+            var exclamationRightObj = wantedMapCanvas.transform.Find("label_exclamation_right");
 
-            if (labelTimeObj != null) LabelTime = labelTimeObj.GetComponent<TextMeshProUGUI>();
-            if (labelScoreLeftObj != null) LabelScoreLeft = labelScoreLeftObj.GetComponent<TextMeshProUGUI>();
-            if (labelScoreRightObj != null) LabelScoreRight = labelScoreRightObj.GetComponent<TextMeshProUGUI>();
+            if (labelTimeObj) LabelTime = labelTimeObj.GetComponent<TextMeshProUGUI>();
+            if (labelScoreLeftObj) LabelScoreLeft = labelScoreLeftObj.GetComponent<TextMeshProUGUI>();
+            if (labelScoreRightObj) LabelScoreRight = labelScoreRightObj.GetComponent<TextMeshProUGUI>();
+            if (exclamationLeftObj) ExclamationLeft = exclamationLeftObj.GetComponent<TextMeshProUGUI>();
+            if (exclamationRightObj) ExclamationRight = exclamationRightObj.GetComponent<TextMeshProUGUI>();
 
             var panelScoreLeftObj = wantedMap.transform.Find("panel_score_left");
             var panelScoreRightObj = wantedMap.transform.Find("panel_score_right");
             var lightScoreLeftObj = wantedMap.transform.Find("light_score_left");
             var lightScoreRightObj = wantedMap.transform.Find("light_score_right");
 
-            if (panelScoreLeftObj != null) PanelScoreLeft = panelScoreLeftObj.gameObject;
-            if (panelScoreRightObj != null) PanelScoreRight = panelScoreRightObj.gameObject;
-            if (lightScoreLeftObj != null) LightScoreLeft = lightScoreLeftObj.gameObject;
-            if (lightScoreRightObj != null) LightScoreRight = lightScoreRightObj.gameObject;
+            if (panelScoreLeftObj) PanelScoreLeft = panelScoreLeftObj.gameObject;
+            if (panelScoreRightObj) PanelScoreRight = panelScoreRightObj.gameObject;
+            if (lightScoreLeftObj) LightScoreLeft = lightScoreLeftObj.gameObject;
+            if (lightScoreRightObj) LightScoreRight = lightScoreRightObj.gameObject;
 
             //enable wanted map canvas
             SetPanel(canvasMap.transform.GetChild((int)map).gameObject, true);

@@ -314,6 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5b1249090ab3ed45927b681a2f11595, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AngularVelocityMultiplier: 25
 --- !u!1 &3090316126077261480
 GameObject:
   m_ObjectHideFlags: 0

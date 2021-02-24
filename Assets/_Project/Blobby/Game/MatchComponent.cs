@@ -5,6 +5,7 @@ using Blobby.Game.Entities;
 using Blobby.Game.States;
 using Blobby.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blobby.Game.Timing;
@@ -34,13 +35,14 @@ namespace Blobby.Game
         bool HasRightReachedWinningScore => ScoreRight >= WinningScore;
         bool IsWinPossible => Mathf.Abs(ScoreLeft - ScoreRight) >= 2;
 
-        public bool LeftSwitched { get; set; }
-        public bool RightSwitched { get; set; }
+        public bool IsLeftSwitched { get; set; }
+        public bool IsRightSwitched { get; set; }
 
         public int[] HitCounts { get; set; } = { 0, 0, 1, 0, 0, 0 };
         public float LastHit { get; set; }
 
-        public Side LastWinner { get; protected set; } = Side.None;
+        public Side CurrentWinner { get; set; } = Side.None;
+        public Side LastWinner { get; set; } = Side.None;
 
         public Vector2[] SpawnPoints => MatchData.SpawnPoints;
         public float[] LeftLimits => MatchData.LeftLimits;
@@ -48,6 +50,8 @@ namespace Blobby.Game
         public int WinningScore => IsBlitz ? 2 : 16;
         public PlayerMode PlayerMode => MatchData.PlayerMode;
         public bool IsSingle => MatchData.PlayerCount == 2;
+        public bool IsDoubleFixed => MatchData.PlayerMode == PlayerMode.DoubleFixed;
+        
         public GameMode GameMode => MatchData.GameMode;
         public bool IsBomb => GameMode == GameMode.Bomb;
         public bool IsBlitz => GameMode == GameMode.Blitz;
@@ -141,7 +145,7 @@ namespace Blobby.Game
                 else ScoreRight++;
             }
 
-            LastWinner = winner;
+            CurrentWinner = winner;
         }
 
         protected virtual void OnPlayerCounted(PlayerComponent playerComponent)
@@ -160,30 +164,39 @@ namespace Blobby.Game
             }
         }
 
-        protected virtual async Task OnResetBallTimerStopped()
+        protected virtual Task OnResetBallTimerStopped()
         {
-            await WaitForGrounded();
-
-            SetState(ReadyState);
-            BallComponent.SetState(BallComponent.Ready);
+            MainThreadManager.Run(() => StartCoroutine(WaitForGrounded()));
+            return Task.CompletedTask;
         }
 
-        async Task WaitForGrounded()
+        IEnumerator WaitForGrounded()
         {
+            var ballSpawnPoint = BallComponent.SpawnPoints[CurrentWinner == Side.Left ? 0 : 1];
+            var player = Players[CurrentWinner == Side.Left ? 0 : 1];
+            var teamPlayer = IsSingle ? null : Players[CurrentWinner == Side.Left ? 2 : 3];
+            var wait = new WaitForSeconds(0.1f);
+            
             do
             {
-                if (MatchData.PlayerCount == 2)
+                if (IsSingle)
                 {
-                    if (Players[LastWinner == Side.Left ? 0 : 1].IsGrounded) return;
+                    if (player.Top.IsBelow(ballSpawnPoint.y - BallComponent.Radius)) break;
                 }
                 else
                 {
-                    if (Players[LastWinner == Side.Left ? 0 : 1].IsGrounded && Players[LastWinner == Side.Left ? 2 : 3].IsGrounded) return;
+                    if (player.Top.IsBelow(ballSpawnPoint.y - BallComponent.Radius)
+                        && teamPlayer
+                        && teamPlayer.Top.IsBelow(ballSpawnPoint.y - BallComponent.Radius))
+                        break;
                 }
 
-                await Task.Delay(100);
+                yield return wait;
             }
             while (true);
+
+            SetState(ReadyState);
+            BallComponent.SetState(BallComponent.Ready);
         }
 
         void OnAutoDropTimerStopped()
@@ -205,7 +218,7 @@ namespace Blobby.Game
         protected virtual void OnOver(Side winner, int scoreLeft, int scoreRight, int time)
         {
             SetState(OverState);
-            BallComponent.SetState(BallComponent.Stopped);
+            if (BallComponent) BallComponent.SetState(BallComponent.Stopped);
         }
 
         protected virtual void OnAlpha(int playerNum, bool value) { }

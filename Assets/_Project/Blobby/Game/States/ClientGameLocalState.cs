@@ -101,6 +101,8 @@ namespace Blobby.Game.States
                 var usernames = (from i in Enumerable.Range(0, 2) select "").ToArray();
                 PanelOver.Populate(usernames, new int[] { localMatch.ScoreLeft, localMatch.ScoreRight },
                     localMatch.MatchTimer.MatchTime, winner, PanelSettings.SettingsData.Colors[0]);
+
+                InputHelper.CursorVisible = true;
             });
         }
 
@@ -125,6 +127,8 @@ namespace Blobby.Game.States
             localMatch.Over += MatchHandler.OnMatchOver; 
 
             MatchHandler.SlideEffect?.Slide(Side.Right);
+
+            InputHelper.CursorVisible = false;
         }
 
         public void OnWhiteoutOver()

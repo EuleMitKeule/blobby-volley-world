@@ -13,6 +13,38 @@ namespace Blobby.Game.States
 
         public void EnterState()
         {
+            //double mode alpha and side switch
+            if (_matchComponent.Players.Count == 4)
+            {
+                if (_matchComponent.CurrentWinner != _matchComponent.LastWinner && _matchComponent.LastWinner != Side.None)
+                {
+                    if (_matchComponent.CurrentWinner == Side.Left) _matchComponent.IsLeftSwitched = !_matchComponent.IsLeftSwitched;
+                    else _matchComponent.IsRightSwitched = !_matchComponent.IsRightSwitched;
+                }
+
+                bool leftSideGiving = _matchComponent.CurrentWinner != Side.Right;
+                int notGivingPlayerNum = leftSideGiving ? (_matchComponent.IsLeftSwitched ? 0 : 2) : (_matchComponent.IsRightSwitched ? 1 : 3);
+                _matchComponent.HitCounts[notGivingPlayerNum] = 1;
+                
+                if (leftSideGiving)
+                {
+                    _matchComponent.InvokeAlpha(0, _matchComponent.IsLeftSwitched);
+                    _matchComponent.InvokeAlpha(1, false);
+                    _matchComponent.InvokeAlpha(2, !_matchComponent.IsLeftSwitched);
+                    _matchComponent.InvokeAlpha(3, false);
+                }
+                else
+                {
+                    _matchComponent.InvokeAlpha(0, false);
+                    _matchComponent.InvokeAlpha(1, _matchComponent.IsRightSwitched);
+                    _matchComponent.InvokeAlpha(2, false);
+                    _matchComponent.InvokeAlpha(3, !_matchComponent.IsRightSwitched);
+                }
+            }
+
+            _matchComponent.LastWinner = _matchComponent.CurrentWinner;
+            _matchComponent.CurrentWinner = Side.None;
+            
             _matchComponent.InvokeReady(_matchComponent.LastWinner);
         }
 

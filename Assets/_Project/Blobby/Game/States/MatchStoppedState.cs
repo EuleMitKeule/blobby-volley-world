@@ -36,23 +36,6 @@ namespace Blobby.Game.States
 
             _matchComponent.HitCounts = new int[6];
 
-            //double mode alpha and side switch
-            if (_matchComponent.Players.Count == 4)
-            {
-                if (winner != _matchComponent.LastWinner && _matchComponent.LastWinner != Side.None)
-                {
-                    if (winner == Side.Left) _matchComponent.LeftSwitched = !_matchComponent.LeftSwitched;
-                    else _matchComponent.RightSwitched = !_matchComponent.RightSwitched;
-                }
-
-                int notGivingPlayerNum = winner == Side.Left ? (_matchComponent.LeftSwitched ? 0 : 2) : (_matchComponent.RightSwitched ? 1 : 3);
-                _matchComponent.HitCounts[notGivingPlayerNum] = 1;
-
-                for (int i = 0; i < 4; i++) _matchComponent.InvokeAlpha(i, false);
-
-                _matchComponent.InvokeAlpha(notGivingPlayerNum, true);
-            }
-
             _matchComponent.InvokeScore(winner);
 
             if (_matchComponent.IsMatchWon) _matchComponent.InvokeOver(_matchComponent.WinningSide);

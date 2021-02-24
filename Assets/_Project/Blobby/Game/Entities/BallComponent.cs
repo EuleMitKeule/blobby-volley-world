@@ -36,6 +36,7 @@ namespace Blobby.Game.Entities
         public float Gravity { get; set; }
         public float Rotation { get; set; }
         public float AngularVelocity { get; set; }
+        public float AngularVelocityMultiplier = 25f;
 
         Vector2 DeltaVelocity => Vector2.up * (Time.fixedDeltaTime * Gravity);
         Vector2 DeltaPosition => Velocity * Time.fixedDeltaTime;
@@ -51,6 +52,8 @@ namespace Blobby.Game.Entities
 
         CircleCollider2D Collider { get; set; }
         public float Radius => Collider.radius;
+        public Vector2 Top => Position + Vector2.up * Radius;
+        public Vector2 Bottom => Position + Vector2.down * Radius;
 
         RaycastHit2D MapCollision =>
             Physics2D.CircleCast(TransformPosition, Radius, Velocity, TraveledDistance, MAP_LAYERMASK);
@@ -110,7 +113,7 @@ namespace Blobby.Game.Entities
 
             State.FixedUpdate();
 
-            if (HasSideChanged)
+            if (HasSideChanged && State == Running)
             {
                 Side = CurrentSide;
                 InvokeSideChanged(Side);
@@ -159,6 +162,7 @@ namespace Blobby.Game.Entities
 
             if (result.collider == PhysicsWorld.GroundCollider)
             {
+                AngularVelocity *= 0.5f;
                 return State == RunningTennis ? GroundTennisNormal : GroundNormal;
             }
 

@@ -33,8 +33,6 @@ namespace Blobby.Game.Entities
                 _ballComponent.AngularVelocity = 0f;
                 _ballComponent.Gravity = 0f;
                 _ballComponent.Side = _matchComponent.LastWinner;
-
-                _ballComponent.InvokeSideChanged(_ballComponent.Side);
             });
         }
 
@@ -49,6 +47,12 @@ namespace Blobby.Game.Entities
 
         public void OnPlayerHit(PlayerComponent playerComponent, Vector2 centroid, Vector2 normal)
         {
+            var oldBallFrictionVelocity = _ballComponent.Velocity.RotateClockwise(normal).x;
+            var newBallFrictionVelocity = (normal * SHOT_VELOCITY).RotateClockwise(normal).x;
+            var blobFrictionVelocity = playerComponent.Velocity.RotateClockwise(normal).x;
+
+            _ballComponent.AngularVelocity =
+                (newBallFrictionVelocity - oldBallFrictionVelocity + blobFrictionVelocity) * _ballComponent.AngularVelocityMultiplier / _ballComponent.Radius;    
             _ballComponent.Position = centroid;
             _ballComponent.Velocity = normal * SHOT_VELOCITY;
 

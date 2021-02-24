@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BeardedManStudios.Forge.Networking.Unity;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -119,6 +120,8 @@ namespace Blobby.UserInterface
             canvasGroup.alpha = visible ? 1 : 0;
             canvasGroup.interactable = visible;
             canvasGroup.blocksRaycasts = visible;
+
+            InputHelper.CursorVisible = visible;
         }
 
         public static void TogglePanelPause()

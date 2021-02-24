@@ -63,13 +63,13 @@ namespace Blobby.Game.Entities
             SetState(Idle);
         }
 
-        protected override void OnReady(Side side)
+        protected override void OnReady(Side givingSide)
         {
-            base.OnReady(side);
+            base.OnReady(givingSide);
 
             if (MatchComponent.IsSingle)
             {
-                if (side == PlayerData.Side)
+                if (givingSide == PlayerData.Side)
                 {
                     SetState(Offensive);
                 }
@@ -77,8 +77,29 @@ namespace Blobby.Game.Entities
             }
             else
             {
-                if (!IsTransparent[PlayerData.PlayerNum] && IsTransparent[(PlayerData.PlayerNum + 2) % 4]) SetState(Offensive);
-                else SetState(Defensive);
+                switch (PlayerData.PlayerNum)
+                {
+                    case 1:
+                        if (givingSide == PlayerData.Side) SetState(MatchComponent.IsRightSwitched ? Idle : Offensive);
+                        else SetState(Defensive);
+                        
+                        break;
+                    
+                    case 2:
+                        if (givingSide == PlayerData.Side) SetState(MatchComponent.IsLeftSwitched ? Offensive : Idle);
+                        else SetState(Defensive);
+                            
+                        break;
+
+                    case 3:
+                        if (givingSide == PlayerData.Side) SetState(MatchComponent.IsRightSwitched ? Offensive : Idle);
+                        else SetState(Defensive);
+                            
+                        break;
+                    
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
 
