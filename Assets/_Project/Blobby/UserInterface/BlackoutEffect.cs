@@ -18,7 +18,8 @@ namespace Blobby.UserInterface
 
         public async void Blackout()
         {
-            GameObject.Find("panel_black").GetComponent<Animator>().SetTrigger("black");
+            Debug.Log("Blackout");
+            GameObject.Find("panel_black").GetComponent<Animator>().SetBool("black", true);
 
             SetBlock(false);
             
@@ -29,7 +30,7 @@ namespace Blobby.UserInterface
 
         public async void Whiteout()
         {
-            GameObject.Find("panel_black").GetComponent<Animator>().SetTrigger("white");
+            GameObject.Find("panel_black").GetComponent<Animator>().SetBool("black", false);
 
             SetBlock(true);
 

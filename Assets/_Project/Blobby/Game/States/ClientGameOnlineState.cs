@@ -67,6 +67,7 @@ namespace Blobby.Game.States
 
         public void OnDisconnected()
         {
+            Debug.Log("OnDisconnected");
             MatchHandler.SetState(MatchHandler.ClientMenuState);
         }
 

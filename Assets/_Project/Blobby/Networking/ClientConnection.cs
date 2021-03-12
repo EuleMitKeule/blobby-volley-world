@@ -167,6 +167,7 @@ namespace Blobby.Networking
 
         public static void Connect()
         {
+            Debug.Log("Connect");
             _client?.Connect(_serverData.Host, _serverData.Port);
         }
 
