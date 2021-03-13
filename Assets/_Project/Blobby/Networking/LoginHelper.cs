@@ -187,6 +187,8 @@ namespace Blobby.Networking
 
         public static async Task PlayerRequest()
         {
+            Debug.Log("PlayerRequest");
+            
             var url = $"https://online.blobnet.de/info";
 
             using var client = new HttpClient();

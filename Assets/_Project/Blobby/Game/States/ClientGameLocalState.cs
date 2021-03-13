@@ -106,6 +106,8 @@ namespace Blobby.Game.States
             });
         }
 
+        public void OnStartReceived() { }
+
         public void OnRematchReceived() { }
 
         public void OnMatchStopped() { }

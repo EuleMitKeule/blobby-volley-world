@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace Blobby.Game
 {
@@ -24,6 +25,7 @@ namespace Blobby.Game
         public static ServerData ServerData { get; set; }
 
         public static bool IsAi { get; set; }
+        public static bool IsWaitingForGame { get; set; }
 
         public static SlideEffect SlideEffect { get; private set; }
         public static BlackoutEffect BlackoutEffect { get; private set; }
@@ -103,12 +105,14 @@ namespace Blobby.Game
             ClientConnection.OverReceived -= OnMatchOver;
             ClientConnection.RematchReceived -= OnRematchReceived;
             ClientConnection.Connected -= OnConnected;
+            ClientConnection.StartReceived -= OnStartReceived;
 
             ClientConnection.Connecting += OnConnecting;
             ClientConnection.Disconnected += OnDisconnected;
             ClientConnection.OverReceived += OnMatchOver;
             ClientConnection.RematchReceived += OnRematchReceived;
             ClientConnection.Connected += OnConnected;
+            ClientConnection.StartReceived += OnStartReceived;
         }
 
         static void OnButtonRanked()
@@ -169,6 +173,11 @@ namespace Blobby.Game
         static void OnConnected()
         {
             _clientState.OnConnected();
+        }
+
+        static void OnStartReceived()
+        {
+            _clientState.OnStartReceived();
         }
 
         static void OnDisconnected()

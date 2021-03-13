@@ -127,6 +127,8 @@ namespace Blobby.Networking
         /// <returns>Best matching Server object</returns>
         public static Server? FindBestServer()
         {
+            RequestServers();
+            
             Server? bestServer = null;
 
             foreach (var server in Servers)

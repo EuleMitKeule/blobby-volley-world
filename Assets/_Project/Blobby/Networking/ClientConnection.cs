@@ -93,6 +93,8 @@ namespace Blobby.Networking
         /// </summary>
         public static event Action<int, bool> AlphaReceived;
 
+        public static event Action StartReceived;
+
         /// <summary>
         /// Gets invoked when the client receives game over
         /// </summary>
@@ -102,10 +104,6 @@ namespace Blobby.Networking
         /// Invoked when a rematch message is received
         /// </summary>
         public static event Action RematchReceived;
-
-        public static event Action<Vector2, int> PlayerPositionReceived;
-
-        public static event Action<Vector2> BallPositionReceived;
 
         #endregion
 
@@ -117,7 +115,8 @@ namespace Blobby.Networking
             LoginHelper.Login += OnLogin;
             LoginHelper.Logout += OnLogout;
 
-            Start(); //TODO LÖSCHEN!
+            Start(); //TODO nur nach Login später
+            StartInfoQueue(); //TODO nur nach Login später
         }
 
         static void OnLogin(UserData userData)
@@ -236,7 +235,7 @@ namespace Blobby.Networking
             while (!_infoQueueTokenSource.IsCancellationRequested)
             {
                 await LoginHelper.OnlineRequest();
-                if (_matchQueueTokenSource == null || !_matchQueueTokenSource.IsCancellationRequested) await LoginHelper.QueueRequest();
+                if (MatchHandler.IsWaitingForGame || _matchQueueTokenSource != null && !_matchQueueTokenSource.IsCancellationRequested) await LoginHelper.QueueRequest();
 
                 await LoginHelper.PlayerRequest();
                 try
@@ -405,21 +404,9 @@ namespace Blobby.Networking
                         RematchReceived?.Invoke();
 
                         break;
-                    case ServerConnection.PLAYER_POSITION:
+                    case ServerConnection.START:
 
-                        var posX = frame.StreamData.GetBasicType<float>();
-                        var posY = frame.StreamData.GetBasicType<float>();
-                        playerNum = frame.StreamData.GetBasicType<int>();
-
-                        PlayerPositionReceived?.Invoke(new Vector2(posX, posY), playerNum);
-
-                        break;
-                    case ServerConnection.BALL_POSITION:
-
-                        posX = frame.StreamData.GetBasicType<float>();
-                        posY = frame.StreamData.GetBasicType<float>();
-
-                        BallPositionReceived?.Invoke(new Vector2(posX, posY));
+                        StartReceived?.Invoke();
 
                         break;
                     default:
