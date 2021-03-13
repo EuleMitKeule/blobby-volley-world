@@ -19,6 +19,8 @@ namespace Blobby.Game.States
     {
         public void EnterState()
         {
+            MatchHandler.IsWaitingForGame = true;
+            
             MatchHandler.BlackoutEffect?.Blackout();
         }
 
@@ -67,6 +69,7 @@ namespace Blobby.Game.States
 
         public void OnDisconnected()
         {
+            Debug.Log("OnDisconnected");
             MatchHandler.SetState(MatchHandler.ClientMenuState);
         }
 
@@ -110,6 +113,11 @@ namespace Blobby.Game.States
 
                 InputHelper.CursorVisible = true;
             });
+        }
+
+        public void OnStartReceived()
+        {
+            MatchHandler.IsWaitingForGame = false;
         }
 
         public void OnRematchReceived()

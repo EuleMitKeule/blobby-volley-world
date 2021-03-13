@@ -15,7 +15,7 @@ namespace Blobby.Game.States
     {
         public void EnterState()
         {
-
+            ServerConnection.SendStart();
         }
 
         public void ExitState()

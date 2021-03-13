@@ -49,6 +49,7 @@ namespace Blobby.Networking
         public const int REMATCH = MessageGroupIds.START_OF_GENERIC_IDS + 14;
         public const int BALL_POSITION = MessageGroupIds.START_OF_GENERIC_IDS + 15;
         public const int PLAYER_POSITION = MessageGroupIds.START_OF_GENERIC_IDS + 16;
+        public const int START = MessageGroupIds.START_OF_GENERIC_IDS + 17;
 
         //static string _masterServerHost = "89.163.134.176";
         //static ushort _masterServerPort = 15940;
@@ -193,6 +194,11 @@ namespace Blobby.Networking
         public static void SendPlayerPosition(Vector2 position, int playerNum)
         {
             _udpServer.Send(Receivers.Others, null, PLAYER_POSITION, true, position.x, position.y, playerNum);
+        }
+
+        public static void SendStart()
+        {
+            _udpServer.Send(Receivers.Others, null, START, true);
         }
 
         #endregion

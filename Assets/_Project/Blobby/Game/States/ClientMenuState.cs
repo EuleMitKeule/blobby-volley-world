@@ -17,6 +17,7 @@ namespace Blobby.Game.States
     {
         public void EnterState()
         {
+            MatchHandler.IsWaitingForGame = false;
             MatchHandler.BlackoutEffect?.Blackout();
 
             ClientConnection.Dispose();
@@ -68,12 +69,11 @@ namespace Blobby.Game.States
 
         public void OnMatchOver(Side winner, int scoreLeft, int scoreRight, int time) { }
 
+        public void OnStartReceived() { }
+
         public void OnRematchReceived() { }
 
-        public void OnMatchStopped()
-        {
-
-        }
+        public void OnMatchStopped() { }
 
         public void OnSlideOver() { }
 

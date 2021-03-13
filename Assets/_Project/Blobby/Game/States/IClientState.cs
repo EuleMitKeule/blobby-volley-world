@@ -37,6 +37,8 @@ namespace Blobby.Game.States
 
         void OnMatchOver(Side winner, int scoreLeft, int scoreRight, int time);
 
+        void OnStartReceived();
+        
         void OnRematchReceived();
 
         void OnMatchStopped();
