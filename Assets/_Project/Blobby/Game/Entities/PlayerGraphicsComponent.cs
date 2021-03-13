@@ -81,7 +81,7 @@ namespace Blobby.Game.Entities
                 var spriteRenderer = SpriteRenderers[i];
                 if (i == 1)
                 {
-                    spriteRenderer.sortingOrder = 0;
+                    spriteRenderer.sortingOrder = -1;
                     continue;
                 }
                 spriteRenderer.sortingOrder += num * SpriteRenderers.Length;
