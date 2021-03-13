@@ -13,4 +13,5 @@ COPY ./deploy-server-builds/StandaloneLinux64/ /root/blobby-volley-world-server/
 COPY ./entrypoint.sh /entrypoint.sh
 
 WORKDIR /root/blobby-volley-world-server
-ENTRYPOINT ["/bin/bash", "/entrypoint.sh", ${LISTEN_PORT}, ${MASTER_SERVER_HOST}]
+RUN echo "sh /entrypoint.sh $LISTEN_PORT $MASTER_SERVER_HOST" >> /run.sh
+ENTRYPOINT ["/bin/bash", "/run.sh"]
