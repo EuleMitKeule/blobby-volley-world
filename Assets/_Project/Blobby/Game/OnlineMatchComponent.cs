@@ -172,7 +172,7 @@ namespace Blobby.Game
         {
             base.OnScore(winner);
             
-            ServerConnection.SendScore(ScoreLeft, ScoreRight, LastWinner);
+            ServerConnection.SendScore(ScoreLeft, ScoreRight, CurrentWinner);
         }
 
         protected override void OnStop()
