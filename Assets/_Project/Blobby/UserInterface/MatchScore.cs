@@ -2,6 +2,7 @@
 using Blobby.Game;
 using Blobby.Models;
 using Blobby.Networking;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering.Universal;
 
@@ -80,9 +81,12 @@ namespace Blobby.UserInterface
                                                 (_match.Switched ? MapHelper.PanelScoreLeft : MapHelper.PanelScoreRight);
                 var light = side == Side.Left ? (_match.Switched ? MapHelper.LightScoreRight : MapHelper.LightScoreLeft) :
                                                 (_match.Switched ? MapHelper.LightScoreLeft : MapHelper.LightScoreRight);
+                var exclamation = side == Side.Left ? (_match.Switched ? MapHelper.ExclamationRight : MapHelper.ExclamationLeft) :
+                    (_match.Switched ? MapHelper.ExclamationLeft : MapHelper.ExclamationRight);
 
                 panel.GetComponent<SpriteRenderer>().color = color;
                 light.GetComponent<Light2D>().color = color;
+                exclamation.color = color;
             });
         }
 
