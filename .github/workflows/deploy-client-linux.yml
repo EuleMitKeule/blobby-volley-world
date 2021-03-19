@@ -84,12 +84,12 @@ jobs:
       - name: Storing build
         run: |
           mkdir -p ../builds/client/linux/${{ steps.build.outputs.buildVersion }}/
-          mkdir -p ../test-results/client/${{ steps.build.outputs.buildVersion }}/
+          mkdir -p ../test-results/client/linux/${{ steps.build.outputs.buildVersion }}/
           mv ./deploy-client-builds/StandaloneLinux64/* ../builds/client/linux/${{ steps.build.outputs.buildVersion }}/
 
       - name: Moving test-results
         run: |
-          mv ../test-results/client/temp/* ../test-results/client/${{ steps.build.outputs.buildVersion }}/
+          mv ../test-results/client/temp/* ../test-results/client/linux/${{ steps.build.outputs.buildVersion }}/
 
       - name: Zipping build
         uses: papeloto/action-zip@v1
