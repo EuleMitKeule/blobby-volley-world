@@ -25,7 +25,7 @@ jobs:
         uses: actions/cache@v2.1.4
         with:
           path: Library
-          key: Library-blobby-volley-world-StandaloneWindows64
+          key: Library-blobby-volley-world-StandaloneLinux64
 
       - name: Running unit tests
         uses: game-ci/unity-test-runner@v2.0-alpha-2
@@ -59,13 +59,13 @@ jobs:
         uses: actions/cache@v2.1.4
         with:
           path: Library
-          key: Library-blobby-volley-world-StandaloneWindows64
+          key: Library-blobby-volley-world-StandaloneLinux64
       
       - name: Building Client
         uses: game-ci/unity-builder@v2.0-alpha-6
         id: build
         with:
-          targetPlatform: StandaloneWindows64
+          targetPlatform: StandaloneLinux64
           buildsPath: ./deploy-client-builds/
           buildMethod: "Editor.Builder.BuildClient"
           buildName: "blobby-volley-world"
@@ -75,17 +75,17 @@ jobs:
         uses: josephbmanley/butler-publish-itchio-action@master
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
-          CHANNEL: windows
+          CHANNEL: linux
           ITCH_GAME: blobby-volley-world
           ITCH_USER: EuleMitKeule
-          PACKAGE: ./deploy-client-builds/StandaloneWindows64/
+          PACKAGE: ./deploy-client-builds/StandaloneLinux64/
           VERSION: ${{ steps.build.outputs.buildVersion }}
 
       - name: Storing build
         run: |
-          mkdir -p ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/
+          mkdir -p ../builds/client/linux/${{ steps.build.outputs.buildVersion }}/
           mkdir -p ../test-results/client/${{ steps.build.outputs.buildVersion }}/
-          mv ./deploy-client-builds/StandaloneWindows64/* ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/
+          mv ./deploy-client-builds/StandaloneLinux64/* ../builds/client/linux/${{ steps.build.outputs.buildVersion }}/
 
       - name: Moving test-results
         run: |
@@ -94,12 +94,12 @@ jobs:
       - name: Zipping build
         uses: papeloto/action-zip@v1
         with:
-          files: ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/
-          dest: ../builds/client/windows/${{ steps.build.outputs.buildVersion }}.zip
+          files: ../builds/client/linux/${{ steps.build.outputs.buildVersion }}/
+          dest: ../builds/client/linux/${{ steps.build.outputs.buildVersion }}.zip
 
       - name: Cleanup
         run: |
-          rm -r ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/
-          mkdir -p ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/
-          mv ../builds/client/windows/${{ steps.build.outputs.buildVersion }}.zip ../builds/client/windows/${{ steps.build.outputs.buildVersion }}/${{ steps.build.outputs.buildVersion }}.zip
+          rm -r ../builds/client/linux/${{ steps.build.outputs.buildVersion }}/
+          mkdir -p ../builds/client/linux/${{ steps.build.outputs.buildVersion }}/
+          mv ../builds/client/linux/${{ steps.build.outputs.buildVersion }}.zip ../builds/client/linux/${{ steps.build.outputs.buildVersion }}/${{ steps.build.outputs.buildVersion }}.zip
           rm -r ../test-results/client/temp/
