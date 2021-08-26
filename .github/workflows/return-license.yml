@@ -6,7 +6,7 @@ on:
 jobs:
   activation:
     name: Request manual activation file
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
           
       - name: Unity - Return License
