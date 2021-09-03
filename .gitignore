@@ -60,3 +60,4 @@ crashlytics-build.properties
 
 # Forge Networking Remastered
 /**/FNWizardData.bin
+**/.idea/*
