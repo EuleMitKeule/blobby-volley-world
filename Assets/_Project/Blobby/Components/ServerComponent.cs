@@ -15,7 +15,7 @@ namespace Blobby.Components
                 Host = "127.0.0.1",
                 Port = 1337,
                 PlayerCount = 0,
-                MasterServerHost = "89.163.134.176",
+                MasterServerHost = "https://bvmaster.blobnet.de",
                 MasterServerPort = 15940
             };
             serverData.MatchData = IoHelper.LoadServerMatchData();

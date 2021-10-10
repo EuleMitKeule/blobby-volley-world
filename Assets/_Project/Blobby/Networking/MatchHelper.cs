@@ -42,7 +42,7 @@ namespace Blobby.Networking
             _client.connectAttemptFailed += OnMasterServerFailed;
             _client.textMessageReceived += OnMasterServerResponse;
 
-            _client.Connect("89.163.134.176", 15940);
+            _client.Connect("https://bvmaster.blobnet.de", 15940);
 
             Update();
         }
