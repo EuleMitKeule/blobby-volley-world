@@ -169,7 +169,7 @@ namespace Blobby.Networking
 
         public static async Task OnlineRequest()
         {
-            var url = $"https://online.blobnet.de/online";
+            var url = $"https://bvonline.blobnet.de/online";
 
             using var client = new HttpClient();
             var content = new StringContent($"{{\"token\":\"{Token}\"}}", Encoding.UTF8, "application/json");
@@ -178,7 +178,7 @@ namespace Blobby.Networking
 
         public static async Task QueueRequest()
         {
-            string url = $"https://online.blobnet.de/queue";
+            string url = $"https://bvonline.blobnet.de/queue";
 
             using var client = new HttpClient();
             var content = new StringContent($"{{\"token\":\"{Token}\"}}", Encoding.UTF8, "application/json");
@@ -189,7 +189,7 @@ namespace Blobby.Networking
         {
             Debug.Log("PlayerRequest");
             
-            var url = $"https://online.blobnet.de/info";
+            var url = $"https://bvonline.blobnet.de/info";
 
             using var client = new HttpClient();
             var response = await client.GetAsync(url);
