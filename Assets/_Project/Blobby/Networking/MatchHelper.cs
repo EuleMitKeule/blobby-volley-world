@@ -6,6 +6,7 @@ using Blobby.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace Blobby.Networking
             _client.connectAttemptFailed += OnMasterServerFailed;
             _client.textMessageReceived += OnMasterServerResponse;
 
-            _client.Connect("https://bvmaster.blobnet.de", 15940);
+            _client.Connect("bvmaster.blobnet.de", 443);
 
             Update();
         }
@@ -70,6 +71,12 @@ namespace Blobby.Networking
         /// </summary>
         static void RequestServers()
         {
+            if (_client.Disposed || !_client.IsConnected)
+            {
+                Debug.Log("Master Client could not connect!");
+                return;
+            }
+
             string gameId = "Blobby Volley World";
             string gameType = "any";
             string gameMode = "all";
