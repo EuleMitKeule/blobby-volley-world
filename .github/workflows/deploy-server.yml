@@ -91,11 +91,11 @@ jobs:
           docker stop blobby-volley-world-server-3 || true && docker rm blobby-volley-world-server-3 || true
           docker stop blobby-volley-world-server-4 || true && docker rm blobby-volley-world-server-4 || true
           docker stop blobby-volley-world-server-5 || true && docker rm blobby-volley-world-server-5 || true
-          docker run -d --name blobby-volley-world-server-1 -e LISTEN_PORT=13331 -e MASTER_SERVER_HOST=172.17.0.1 -p 13331:13331/udp blobby-volley-world-server
-          docker run -d --name blobby-volley-world-server-2 -e LISTEN_PORT=13332 -e MASTER_SERVER_HOST=172.17.0.1 -p 13332:13332/udp blobby-volley-world-server
-          docker run -d --name blobby-volley-world-server-3 -e LISTEN_PORT=13333 -e MASTER_SERVER_HOST=172.17.0.1 -p 13333:13333/udp blobby-volley-world-server
-          docker run -d --name blobby-volley-world-server-4 -e LISTEN_PORT=13334 -e MASTER_SERVER_HOST=172.17.0.1 -p 13334:13334/udp blobby-volley-world-server
-          docker run -d --name blobby-volley-world-server-5 -e LISTEN_PORT=13335 -e MASTER_SERVER_HOST=172.17.0.1 -p 13335:13335/udp blobby-volley-world-server
+          docker run -d --name blobby-volley-world-server-1 -e LISTEN_PORT=13331 -e MASTER_SERVER_HOST=bvmaster.blobnet.de -p 13331:13331/udp blobby-volley-world-server
+          docker run -d --name blobby-volley-world-server-2 -e LISTEN_PORT=13332 -e MASTER_SERVER_HOST=bvmaster.blobnet.de -p 13332:13332/udp blobby-volley-world-server
+          docker run -d --name blobby-volley-world-server-3 -e LISTEN_PORT=13333 -e MASTER_SERVER_HOST=bvmaster.blobnet.de -p 13333:13333/udp blobby-volley-world-server
+          docker run -d --name blobby-volley-world-server-4 -e LISTEN_PORT=13334 -e MASTER_SERVER_HOST=bvmaster.blobnet.de -p 13334:13334/udp blobby-volley-world-server
+          docker run -d --name blobby-volley-world-server-5 -e LISTEN_PORT=13335 -e MASTER_SERVER_HOST=bvmaster.blobnet.de -p 13335:13335/udp blobby-volley-world-server
       - name: Zipping build
         uses: papeloto/action-zip@v1
         with:
