@@ -1,1 +1,1 @@
-{"Name":"BV Server","Host":"127.0.0.1","Port":1337,"Token":"bla","MasterServerHost":"172.17.0.137","MasterServerPort":15940}
+{"Name":"BV Server","Host":"127.0.0.1","Port":1337,"Token":"bla","MasterServerHost":"https://bvmaster.blobnet.de","MasterServerPort":15940}
