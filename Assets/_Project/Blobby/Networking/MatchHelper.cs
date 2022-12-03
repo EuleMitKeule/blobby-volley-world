@@ -40,7 +40,7 @@ namespace Blobby.Networking
             _client.connectAttemptFailed += OnMasterServerFailed;
             _client.textMessageReceived += OnMasterServerResponse;
 
-            _client.Connect("bvmaster.eulenet.eu", 443);
+            _client.Connect("147.185.221.180", 19994);
 
             StartCoroutine(UpdateServers());
         }
@@ -49,8 +49,8 @@ namespace Blobby.Networking
         {
             while (gameObject.activeSelf && !_isOffline)
             {
-                RequestServers();
                 yield return new WaitForSeconds(5);
+                RequestServers();
             }
         }
 
@@ -68,6 +68,8 @@ namespace Blobby.Networking
                 return;
             }
 
+            Debug.Log("Master Client connected!");
+            
             string gameId = "Blobby Volley World";
             string gameType = "any";
             string gameMode = "all";
