@@ -28,7 +28,7 @@ jobs:
           key: Library-blobby-volley-world-StandaloneLinux64
 
       - name: Running unit tests
-        uses: game-ci/unity-test-runner@v2.0-alpha-2
+        uses: game-ci/unity-test-runner@v2
         env:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
@@ -65,7 +65,7 @@ jobs:
           key: Library-blobby-volley-world-StandaloneLinux64
       
       - name: Building Client
-        uses: game-ci/unity-builder@v2.0-alpha-6
+        uses: game-ci/unity-builder@v2
         id: build
         env:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
