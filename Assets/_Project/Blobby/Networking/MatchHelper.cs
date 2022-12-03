@@ -4,6 +4,7 @@ using BeardedManStudios.SimpleJSON;
 using Blobby.Game;
 using Blobby.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -15,7 +16,7 @@ using static BeardedManStudios.Forge.Networking.MasterServerResponse;
 
 namespace Blobby.Networking
 {
-    public static class MatchHelper
+    public class MatchHelper : MonoBehaviour
     {
         public static List<Server> Servers { get; private set; } = new List<Server>();
 
@@ -27,11 +28,7 @@ namespace Blobby.Networking
 
         static bool _isOffline;
 
-        /// <summary>
-        /// Initialize the match client
-        /// </summary>
-        [RuntimeInitializeOnLoadMethod]
-        public static void Initialize()
+        void Awake()
         {
             if (ServerHandler.IsServer) return;
 
@@ -43,25 +40,18 @@ namespace Blobby.Networking
             _client.connectAttemptFailed += OnMasterServerFailed;
             _client.textMessageReceived += OnMasterServerResponse;
 
-            _client.Connect("bvmaster.blobnet.de", 443);
+            _client.Connect("bvmaster.eulenet.eu", 443);
 
-            Update();
+            StartCoroutine(UpdateServers());
         }
 
-        /// <summary>
-        /// Update function for the match client
-        /// </summary>
-        static async void Update()
+        IEnumerator UpdateServers()
         {
-            await Task.Run(() =>
+            while (gameObject.activeSelf && !_isOffline)
             {
-                while (!_isOffline)
-                {
-                    Thread.Sleep(5000);
-
-                    RequestServers();
-                }
-            });
+                RequestServers();
+                yield return new WaitForSeconds(5);
+            }
         }
 
         #region ServerList
@@ -74,6 +64,7 @@ namespace Blobby.Networking
             if (_client.Disposed || !_client.IsConnected)
             {
                 Debug.Log("Master Client could not connect!");
+                _isOffline = true;
                 return;
             }
 
@@ -104,7 +95,7 @@ namespace Blobby.Networking
             {
                 var response = new MasterServerResponse(data["hosts"].AsArray);
 
-                if (response != null && response.serverResponse.Count > 0)
+                if (response.serverResponse.Count > 0)
                 {
                     for (int i = 0; i < response.serverResponse.Count; i++)
                     {
@@ -114,11 +105,10 @@ namespace Blobby.Networking
                 }
             }
 
-            if (!Servers.SequenceEqual(servers))
-            {
-                Servers = servers;
-                ServersChanged?.Invoke(Servers);
-            }
+            if (Servers.SequenceEqual(servers)) return;
+            
+            Servers = servers;
+            ServersChanged?.Invoke(Servers);
         }
 
         static void OnMasterServerFailed(NetWorker sender)

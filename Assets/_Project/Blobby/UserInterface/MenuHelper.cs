@@ -25,8 +25,6 @@ namespace Blobby.UserInterface
             SetColor(Color.grey);
             SetPanelMenu(true);
 
-            LoginHelper.Login += OnLogin;
-            LoginHelper.Logout += OnLogout;
             //TimeHelper.ConnectTimerStopped += (string ip, ushort port) => OnBlackoutTimerStopped();
 
             ButtonBrowser.Clicked += OnButtonBrowser;
@@ -48,37 +46,6 @@ namespace Blobby.UserInterface
                 panel.GetComponent<Image>().color = new Color(color.r, color.g, color.b);
 
             GameObject.Find("menu_blob").GetComponent<SpriteRenderer>().color = color;
-        }
-
-        static void OnLogin(UserData userData)
-        {
-            return; //BETA
-            var sprite = Resources.Load<Sprite>("Graphics/UI/canvas_menu/panel_menu/button_globe/button_globe_online");
-            GameObject.Find("button_globe").GetComponent<Image>().sprite = sprite;
-            GameObject.Find("button_globe").GetComponent<Animator>().SetBool("offline", false);
-
-            GameObject.Find("button_ranked").GetComponentInChildren<Button>().interactable = true;
-            GameObject.Find("button_ranked").GetComponentInChildren<EventTrigger>().enabled = true;
-            GameObject.Find("button_browser").GetComponentInChildren<Button>().interactable = true;
-            GameObject.Find("button_browser").GetComponentInChildren<EventTrigger>().enabled = true;
-
-            var color = new Color(userData.colorR, userData.colorG, userData.colorB);
-            SetColor(color);
-        }
-
-        static void OnLogout()
-        {
-            return; //BETA
-            GameObject.Find("button_ranked").GetComponentInChildren<Button>().interactable = false;
-            GameObject.Find("button_ranked").GetComponentInChildren<EventTrigger>().enabled = false;
-            GameObject.Find("button_browser").GetComponentInChildren<Button>().interactable = false;
-            GameObject.Find("button_browser").GetComponentInChildren<EventTrigger>().enabled = false;
-
-            SetColor(Color.grey);
-
-            var sprite = Resources.Load<Sprite>("Graphics/UI/canvas_menu/panel_menu/button_globe/button_globe_offline");
-            GameObject.Find("button_globe").GetComponent<Image>().sprite = sprite;
-            GameObject.Find("button_globe").GetComponent<Animator>().SetBool("offline", true);
         }
 
         static void OnButtonBrowser()

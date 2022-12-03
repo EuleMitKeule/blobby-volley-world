@@ -12,7 +12,7 @@ env:
 jobs:
   test:
     name: Testing
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
 
       - name: Checking out
@@ -46,7 +46,7 @@ jobs:
   build:
     name: Building
     needs: test
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     
       - name: Checking out

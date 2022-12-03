@@ -14,7 +14,7 @@ namespace Blobby.Networking
 {
     public static class LoginHelper
     {
-        static string _rootUrl = "https://api.blobnet.de/api/";
+        static string _rootUrl = "https://bvonline.eulenet.eu/api/";
         static string Token { get; set; }
         
         #region Events
@@ -169,16 +169,25 @@ namespace Blobby.Networking
 
         public static async Task OnlineRequest()
         {
-            var url = $"https://bvonline.blobnet.de/online";
+            var url = $"https://bvonline.eulenet.eu/online";
 
             using var client = new HttpClient();
             var content = new StringContent($"{{\"token\":\"{Token}\"}}", Encoding.UTF8, "application/json");
-            await client.PostAsync(url, content);
+
+            try
+            {
+                await client.PostAsync(url, content);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Could not send online request!");
+                Debug.Log(e);
+            }
         }
 
         public static async Task QueueRequest()
         {
-            string url = $"https://bvonline.blobnet.de/queue";
+            string url = $"https://bvonline.eulenet.eu/queue";
 
             using var client = new HttpClient();
             var content = new StringContent($"{{\"token\":\"{Token}\"}}", Encoding.UTF8, "application/json");
@@ -187,23 +196,29 @@ namespace Blobby.Networking
 
         public static async Task PlayerRequest()
         {
-            Debug.Log("PlayerRequest");
-            
-            var url = $"https://bvonline.blobnet.de/info";
+            var url = $"https://bvonline.eulenet.eu/info";
 
             using var client = new HttpClient();
-            var response = await client.GetAsync(url);
-            if (response != null)
+
+            try
             {
-                var json = await response.Content.ReadAsStringAsync();
+                var response = await client.GetAsync(url);
+                if (response != null)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
 
-                var node = JSON.Parse(json);
+                    var node = JSON.Parse(json);
 
-                var playersOnline = int.Parse(node["online"]);
-                var playersQueue = int.Parse(node["queue"]);
+                    var playersOnline = int.Parse(node["online"]);
+                    var playersQueue = int.Parse(node["queue"]);
 
-                QueueInfoChanged?.Invoke(playersOnline, playersQueue);
-
+                    QueueInfoChanged?.Invoke(playersOnline, playersQueue);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Could not send player request!");
+                Debug.Log(e);
             }
         }
 

@@ -51,9 +51,6 @@ namespace Blobby.Networking
         public const int PLAYER_POSITION = MessageGroupIds.START_OF_GENERIC_IDS + 16;
         public const int START = MessageGroupIds.START_OF_GENERIC_IDS + 17;
 
-        //static string _masterServerHost = "89.163.134.176";
-        //static ushort _masterServerPort = 15940;
-
         public static void Initialize(ServerData serverData, MatchData matchData)
         {
             _serverData = serverData;
