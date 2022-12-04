@@ -61,7 +61,7 @@ jobs:
 
       - name: Copy Server Data
         run: |
-          cp ./serverData.json ./deploy-server-builds/StandaloneLinux64/serverData.json
+          sudo cp ./serverData.json ./deploy-server-builds/StandaloneLinux64/serverData.json
 
       - uses: belon/docker-build-push@v4.0
         with:
