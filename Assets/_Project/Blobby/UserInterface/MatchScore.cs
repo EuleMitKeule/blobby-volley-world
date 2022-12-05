@@ -4,7 +4,7 @@ using Blobby.Models;
 using Blobby.Networking;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering.Universal;
+
 
 namespace Blobby.UserInterface
 {
@@ -85,7 +85,7 @@ namespace Blobby.UserInterface
                     (_match.Switched ? MapHelper.ExclamationLeft : MapHelper.ExclamationRight);
 
                 panel.GetComponent<SpriteRenderer>().color = color;
-                light.GetComponent<Light2D>().color = color;
+                light.GetComponent<UnityEngine.Rendering.Universal.Light2D>().color = color;
                 exclamation.color = color;
             });
         }
