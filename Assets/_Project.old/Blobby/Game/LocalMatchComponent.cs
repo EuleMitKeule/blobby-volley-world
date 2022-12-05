@@ -1,0 +1,184 @@
+﻿using Blobby.UserInterface;
+using Blobby.Game.Entities;
+using Blobby.Models;
+using System;
+using Blobby.Game.Time;
+using UnityEngine;
+
+namespace Blobby.Game
+{
+    public class LocalMatchComponent : MatchComponent, IClientMatch
+    {
+        [SerializeField] bool _isAiGame;
+
+        public override MatchData MatchData => MatchHandler.MatchData;
+
+        public event Action MatchStarted;
+        public event Action<int, int, Side> ScoreChanged;
+        public event Action<int> TimeChanged;
+        public event Action MatchStopped;
+        public bool Switched => false;
+
+        MatchScore _matchScore;
+
+        protected override void Awake()
+        {
+            // base.Awake();
+            //
+            // MapHelper.ChangeMap(MatchData.Map);
+            //
+            // if (!_isAiGame)
+            // {
+            //     for (var i = 0; i < MatchData.PlayerCount; i++)
+            //     {
+            //         var playerData = new PlayerData(i, "", PanelSettings.SettingsData.Colors[i]);
+            //         var playerObject = Instantiate(PrefabHelper.LocalPlayer, transform);
+            //         var playerComponent = playerObject.GetComponent<PlayerComponent>();
+            //         playerComponent.PlayerData = playerData;
+            //         Players.Add(playerComponent);
+            //     }
+            // }
+            // else
+            // {
+            //     var playerData = new PlayerData(0, "", PanelSettings.SettingsData.Colors[0]);
+            //     var playerObject = Instantiate(PrefabHelper.LocalPlayer, transform);
+            //     var playerComponent = playerObject.GetComponent<PlayerComponent>();
+            //     playerComponent.PlayerData = playerData;
+            //     Players.Add(playerComponent);
+            //
+            //     for (var i = 1; i < MatchData.PlayerCount; i++)
+            //     {
+            //         playerData = new PlayerData(i, $"COM_{i}", PanelSettings.SettingsData.Colors[i]);
+            //         playerObject = Instantiate(PrefabHelper.AiPlayer, transform);
+            //         playerComponent = playerObject.GetComponent<PlayerComponent>();
+            //         playerComponent.PlayerData = playerData;
+            //         Players.Add(playerComponent);
+            //     }
+            // }
+            //
+            // var ballObject = Instantiate(IsBomb ? PrefabHelper.Bomb : PrefabHelper.Ball, transform);
+            // BallComponent = ballObject.GetComponent<BallComponent>();
+            //
+            // _matchScore = new MatchScore(this, Players[0].PlayerData, Players[1].PlayerData);
+            //
+            // SubscribeEventHandler();
+            // SubscribeBallEvents();
+        }
+
+        public void StartMatch()
+        {
+            MatchStarted?.Invoke();
+
+            SoundHelper.PlayAudio(SoundHelper.SoundClip.Whistle);
+
+            if (MatchData.JumpMode != JumpMode.NoJump) SetState(ReadyState);
+            else AutoDropTimer.Start();
+
+            UnityEngine.Time.timeScale = MatchData.TimeScale;
+        }
+
+        public void Restart()
+        {
+            for (int i = 0; i < MatchData.PlayerCount; i++)
+            {
+                if (MatchData.PlayerCount == 4) InvokeAlpha(i, false);
+            }
+
+            if (!IsSingle) InvokeAlpha(2, true);
+
+            IsLeftSwitched = false;
+            IsRightSwitched = false;
+            ScoreLeft = 0;
+            ScoreRight = 0;
+            HitCounts = new int[] { 0, 0, 1, 0, 0, 0 };
+            CurrentWinner = Side.None;
+            LastWinner = Side.None;
+
+            MatchTimer = new MatchTimer();
+            ResetBallTimer = new ResetBallTimer();
+            AutoDropTimer = new AutoDropTimer();
+            BombTimer = new BombTimer();
+
+            _matchScore = new MatchScore(this, Players[0].PlayerData, Players[1].PlayerData);
+
+            if (BallComponent) Destroy(BallComponent.gameObject);
+            var ballObject = Instantiate(PrefabHelper.Ball, transform);
+            BallComponent = ballObject.GetComponent<BallComponent>();
+
+            SubscribeBallEvents();
+            SubscribeTimerEvents();
+
+            SetState(ReadyState);
+            if (MatchData.JumpMode == JumpMode.NoJump) AutoDropTimer?.Start();
+                
+            // InputHelper.CursorVisible = false;
+        }
+
+        protected override void OnPlayer(PlayerComponent playerComponent)
+        {
+            base.OnPlayer(playerComponent);
+
+            SoundHelper.PlayAudio(SoundHelper.SoundClip.WallHit);
+        }
+
+        protected override void OnGround()
+        {
+            base.OnGround();
+
+            SoundHelper.PlayAudio(SoundHelper.SoundClip.WallHit);
+        }
+
+        protected override void OnWall()
+        {
+            base.OnWall();
+
+            SoundHelper.PlayAudio(SoundHelper.SoundClip.WallHit);
+        }
+
+        protected override void OnNet()
+        {
+            base.OnNet();
+
+            SoundHelper.PlayAudio(SoundHelper.SoundClip.WallHit);
+        }
+
+        protected override void OnMatchTimerTicked(int time)
+        {
+            TimeChanged?.Invoke(time);
+        }
+
+        protected override void OnBombTick()
+        {
+            base.OnBombTick();
+
+            SoundHelper.PlayAudio(SoundHelper.SoundClip.Bomb);
+        }
+
+        protected override void OnBombTimerStopped()
+        {
+            base.OnBombTimerStopped();
+
+            SoundHelper.PlayAudio(SoundHelper.SoundClip.Explosion);
+        }
+
+        protected override void OnScore(Side winner)
+        {
+            base.OnScore(winner);
+
+            ScoreChanged?.Invoke(ScoreLeft, ScoreRight, CurrentWinner);
+        }
+
+        protected override void OnStop()
+        {
+            base.OnStop();
+
+            SoundHelper.PlayAudio(SoundHelper.SoundClip.Whistle);
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            MatchStopped?.Invoke();
+        }
+    }
+}
