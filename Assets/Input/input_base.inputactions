@@ -1,0 +1,286 @@
+{
+    "name": "input_base",
+    "maps": [
+        {
+            "name": "firstPlayerMap",
+            "id": "824b77d6-6319-4c27-abe8-d8d1cc6eab47",
+            "actions": [
+                {
+                    "name": "jumpAction",
+                    "type": "Button",
+                    "id": "ec4b1b5e-9d3c-4adf-ba0f-8d25ad5e2c68",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "horizontalAction",
+                    "type": "Value",
+                    "id": "57b3f27d-65eb-49c9-9b94-844d9ea5b571",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "96582494-0fe2-448f-9378-e306a587071e",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "jumpAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "horizontalAxis",
+                    "id": "886119b2-97da-4c63-a273-f69c2abf08c2",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "horizontalAction",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "f218ddd6-1e19-4f96-aeee-d8b2b59ecde2",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "horizontalAction",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "630054d4-85cc-446c-a398-a7a5fe8f6e6e",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "horizontalAction",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "secondPlayerMap",
+            "id": "2de0db76-d6dc-495a-893c-aa815823c6e9",
+            "actions": [
+                {
+                    "name": "jumpAction",
+                    "type": "Button",
+                    "id": "1981ca68-ccb2-4d86-a016-306de77b98cd",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "horizontalAction",
+                    "type": "Value",
+                    "id": "bc2e27ad-84d2-45bb-a97a-585d8ba579a9",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "6741f4ef-75cf-4380-804b-7d9677bca434",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "jumpAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "horizontalAxis",
+                    "id": "b0913e90-e62d-4d7e-b377-2c2b069ce337",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "horizontalAction",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "925226a5-a2f7-4b77-a09f-c54b9aace5cf",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "horizontalAction",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "e02bbd4b-1150-48ae-bf20-163761b38b84",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "horizontalAction",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "thirdPlayerMap",
+            "id": "200f5d43-5aaa-46e5-919d-85d4edb188ca",
+            "actions": [
+                {
+                    "name": "jumpAction",
+                    "type": "Button",
+                    "id": "35e25f71-f597-4296-91b3-d4b3b98daa3f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "horizontalAction",
+                    "type": "Value",
+                    "id": "3302fda5-b275-4deb-a7e1-f7d01ad8fc67",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "0baedd40-6674-45f4-adf4-596a99ef6c80",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "jumpAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "horizontalAxis",
+                    "id": "804ccf36-3ff4-4f06-90b4-4c8b414ea374",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "horizontalAction",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "0afb6e32-7107-4d5b-b02e-ea5d7fcb30a7",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "horizontalAction",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "1628e04c-7205-4a7b-8df9-7f32b04ce9a6",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "horizontalAction",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "fourthPlayerMap",
+            "id": "50bf3bba-3957-40f5-99df-b741f6cfad2a",
+            "actions": [
+                {
+                    "name": "jumpAction",
+                    "type": "Button",
+                    "id": "8bb3af06-0d71-457a-a09c-119ec51bb2d6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "horizontalAction",
+                    "type": "Value",
+                    "id": "ee1930ca-e088-4285-b39f-515116748ccc",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "626de720-70f6-4dc7-951f-ccf898cbebda",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "jumpAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "horizontalAxis",
+                    "id": "cdc560af-3c98-465b-9128-f5ed5bf08dbf",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "horizontalAction",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "d9a123ae-ff6a-4d30-ad86-08cadb1cf2cf",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "horizontalAction",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "d184146b-05a6-4ab3-9efd-d15bb7dd3efc",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "horizontalAction",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

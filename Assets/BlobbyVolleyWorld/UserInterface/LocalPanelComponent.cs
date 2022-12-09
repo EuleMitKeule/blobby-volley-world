@@ -1,5 +1,8 @@
 using BlobbyVolleyWorld.Extensions;
+using BlobbyVolleyWorld.Game;
+using BlobbyVolleyWorld.Maps;
 using BlobbyVolleyWorld.Match;
+using BlobbyVolleyWorld.UserInterface.Animation;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using TMPro;
@@ -33,15 +36,15 @@ namespace BlobbyVolleyWorld.UserInterface
         [Required]
         Image ImageMap { get; set; }
         
-        GameComponent GameComponent { get; set; }
         ClientGameComponent ClientGameComponent { get; set; }
         MenuPanelComponent MenuPanelComponent { get; set; }
+        MapComponent MapComponent { get; set; }
 
         void Awake()
         {
-            GameComponent = FindObjectOfType<GameComponent>();
             ClientGameComponent = FindObjectOfType<ClientGameComponent>();
             MenuPanelComponent = FindObjectOfType<MenuPanelComponent>();
+            MapComponent = FindObjectOfType<MapComponent>();
         }
         
         public void OnButtonPlayerMode(int playerModeIndex)
@@ -82,7 +85,7 @@ namespace BlobbyVolleyWorld.UserInterface
             var map = isIncrease ? 
                 ClientGameComponent.MatchSettings.Map.Increase() : 
                 ClientGameComponent.MatchSettings.Map.Decrease();
-            var mapAsset = GameComponent.FindMapAsset(map);
+            var mapAsset = MapComponent.FindMapAsset(map);
 
             LabelMap.text = mapAsset.Name;
             ImageMap.sprite = mapAsset.Icon;
@@ -118,7 +121,7 @@ namespace BlobbyVolleyWorld.UserInterface
 
         public void OnButtonPlay()
         {
-            
+            ClientGameComponent.StartLocalGame();
         }
 
         public void OnButtonPlayAi()

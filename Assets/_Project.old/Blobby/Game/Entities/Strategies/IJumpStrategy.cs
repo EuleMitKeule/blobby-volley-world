@@ -24,7 +24,7 @@ namespace Blobby.Game.Entities.Strategies
                 JumpMode.Standard => new StandardJumpStrategy(playerComponent),
                 JumpMode.NoJump => new NoJumpStrategy(),
                 JumpMode.Pogo => new PogoJumpStrategy(playerComponent),
-                JumpMode.Spring => new SpringJumpStrategy(playerComponent),
+                JumpMode.Spring => new SpringJumpStrategy(),
                 _ => null
             };
         }
