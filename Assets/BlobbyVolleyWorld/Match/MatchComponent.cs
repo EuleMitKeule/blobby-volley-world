@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BlobbyVolleyWorld.Entities;
 using BlobbyVolleyWorld.Game;
@@ -23,8 +24,13 @@ namespace BlobbyVolleyWorld.Match
         [ReadOnly]
         Dictionary<FieldPosition, PlayerComponent> Players { get; set; } = new();
 
-        MatchTimeComponent MatchTimeComponent { get; set; }
+        [ShowInInspector]
+        [ReadOnly]
+        public Side GivingSide { get; set; }
         
+        public event EventHandler<Side> GivingSideChanged;
+        
+        MatchTimeComponent MatchTimeComponent { get; set; }
         GameComponent GameComponent { get; set; }
         
         protected override void Awake()
@@ -41,8 +47,7 @@ namespace BlobbyVolleyWorld.Match
         {
             foreach (var fieldPosition in GameComponent.MatchSettings.PlayerMode.ToFieldPositions())
             {
-                var playerPosition = GameComponent.PhysicsAsset.PlayerSpawnPositions[fieldPosition];
-                var playerObject = Instantiate(PlayerPrefab, playerPosition, Quaternion.identity);
+                var playerObject = Instantiate(PlayerPrefab);
                 var playerComponent = playerObject.GetComponent<PlayerComponent>();
                 
                 playerComponent.SetFieldPosition(fieldPosition);
@@ -51,9 +56,11 @@ namespace BlobbyVolleyWorld.Match
             }
             
             var ballObject = Instantiate(BallPrefab);
-            var ballComponent = ballObject.GetComponent<BallMovementComponent>();
 
             Time.timeScale = GameComponent.MatchSettings.Speed;
+            
+            GivingSide = Side.Left;
+            GivingSideChanged?.Invoke(this, GivingSide);
         }
 
         public void StartMatch()

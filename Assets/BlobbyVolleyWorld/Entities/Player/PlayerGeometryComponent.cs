@@ -22,15 +22,27 @@ namespace BlobbyVolleyWorld.Entities.Physics
         
         [ShowInInspector]
         [ReadOnly]
-        public Vector2 BottomCenterOffset { get; private set; }
+        public Vector2 UpperCenterOffset { get; private set; }
+        
+        [ShowInInspector]
+        [ReadOnly]
+        public float UpperRadius { get; private set; }
+
+        [ShowInInspector]
+        [ReadOnly]
+        public Vector2 TopOffset { get; private set; }
+        
+        [ShowInInspector]
+        [ReadOnly]
+        public Vector2 LowerCenterOffset { get; private set; }
+        
+        [ShowInInspector]
+        [ReadOnly]
+        public float LowerRadius { get; private set; }
 
         [ShowInInspector]
         [ReadOnly]
         public Vector2 BottomOffset { get; private set; }
-        
-        [ShowInInspector]
-        [ReadOnly]
-        public float BottomRadius { get; private set; }
 
         [ShowInInspector]
         [ReadOnly]
@@ -46,28 +58,35 @@ namespace BlobbyVolleyWorld.Entities.Physics
         
         PlayerComponent PlayerComponent { get; set; }
         MapGeometryComponent MapGeometryComponent { get; set; }
+        SideComponent SideComponent { get; set; }
         
         void Awake()
         {
             MapGeometryComponent = FindObjectOfType<MapGeometryComponent>();
             PlayerComponent = GetComponent<PlayerComponent>();
+            SideComponent = GetComponent<SideComponent>();
             
             PlayerComponent.FieldPositionChanged += OnFieldPositionChanged;
             
-            BottomCenterOffset = LowerCollider.offset;
-            BottomRadius = LowerCollider.radius;
-            BottomOffset = BottomCenterOffset + Vector2.down * BottomRadius;
+            UpperCenterOffset = UpperCollider.offset;
+            UpperRadius = UpperCollider.radius;
+            LowerCenterOffset = LowerCollider.offset;
+            LowerRadius = LowerCollider.radius;
+            TopOffset = UpperCenterOffset + Vector2.up * UpperRadius;
+            BottomOffset = LowerCenterOffset + Vector2.down * LowerRadius;
         }
 
         void OnFieldPositionChanged(object sender, FieldPosition fieldPosition)
         {
+            Debug.Log($"GEOMETRY");
+            
             var position = transform.position;
             var isAboveNet = position.y + BottomOffset.y > MapGeometryComponent.NetHeight;
-            var currentSide = position.x > 0 ? Side.Right : Side.Left;
+            var currentSide = SideComponent.Side;
             
-            LeftLimit = MapGeometryComponent.GetLeftLimit(fieldPosition, isAboveNet, currentSide) + BottomRadius;
-            RightLimit = MapGeometryComponent.GetRightLimit(fieldPosition, isAboveNet, currentSide) - BottomRadius;
-            GroundLimit = MapGeometryComponent.GroundHeight + BottomRadius;
+            LeftLimit = MapGeometryComponent.GetLeftLimit(fieldPosition, isAboveNet, currentSide) + LowerRadius;
+            RightLimit = MapGeometryComponent.GetRightLimit(fieldPosition, isAboveNet, currentSide) - LowerRadius;
+            GroundLimit = MapGeometryComponent.GroundHeight + LowerRadius;
         }
     }
 }

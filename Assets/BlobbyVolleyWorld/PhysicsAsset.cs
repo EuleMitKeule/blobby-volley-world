@@ -44,6 +44,15 @@ namespace BlobbyVolleyWorld.Entities.Physics
 
         [OdinSerialize]
         public float BallGroundedSpeedThreshold { get; private set; } = 3.5f;
+
+        [OdinSerialize]
+        public float BallGroundBounceFactor { get; private set; } = 0.5f;
+
+        [OdinSerialize]
+        public float BallAngularVelocityFactor { get; private set; } 
+        
+        [OdinSerialize]
+        public float BallGroundAngularVelocityFactor { get; private set; } = 0.5f;
         
         [OdinSerialize]
         public Dictionary<FieldPosition, Vector2> PlayerSpawnPositions { get; private set; }

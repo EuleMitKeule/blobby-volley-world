@@ -114,7 +114,6 @@ namespace Blobby.Game.Entities
 
             transform.position = Position;
             transform.rotation = Rotation.ToQuaternion();
-            
         }
 
         public void SetState(IBallState newState)

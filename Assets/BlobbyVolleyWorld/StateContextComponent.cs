@@ -13,6 +13,8 @@ namespace BlobbyVolleyWorld
         [ValueDropdown(nameof(StateComponentValues))]
         TBase InitialStateComponent { get; set; }
         
+        [ShowInInspector]
+        [ReadOnly]
         protected TBase StateComponent { get; private set; }
         protected IEnumerable<TBase> StateComponents { get; private set; }
 
@@ -51,6 +53,8 @@ namespace BlobbyVolleyWorld
             StateComponent.ChangeRequested += OnChangeRequested;
             StateComponent.Enter();
         }
+        
+        protected bool HasState<T>() where T : TBase => StateComponent is T;
         
         protected void SetState<T>() where T : TBase => 
             SetState(typeof(T));

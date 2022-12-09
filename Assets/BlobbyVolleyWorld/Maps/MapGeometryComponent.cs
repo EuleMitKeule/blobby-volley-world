@@ -12,27 +12,27 @@ namespace BlobbyVolleyWorld.Maps
         [TitleGroup("Geometry")]
         [OdinSerialize]
         [Required]
-        EdgeCollider2D GroundCollider { get; set; }
+        public EdgeCollider2D GroundCollider { get; set; }
         
         [OdinSerialize]
         [Required]
-        EdgeCollider2D LeftWallCollider { get; set; }
+        public EdgeCollider2D LeftWallCollider { get; set; }
         
         [OdinSerialize]
         [Required]
-        EdgeCollider2D RightWallCollider { get; set; }
+        public EdgeCollider2D RightWallCollider { get; set; }
         
         [OdinSerialize]
         [Required]
-        CircleCollider2D NetEdgeCollider { get; set; }
+        public CircleCollider2D NetEdgeCollider { get; set; }
         
         [OdinSerialize]
         [Required]
-        EdgeCollider2D LeftNetCollider { get; set; }
+        public EdgeCollider2D LeftNetCollider { get; set; }
         
         [OdinSerialize]
         [Required]
-        EdgeCollider2D RightNetCollider { get; set; }
+        public EdgeCollider2D RightNetCollider { get; set; }
 
         [ShowInInspector]
         [ReadOnly]
@@ -50,12 +50,17 @@ namespace BlobbyVolleyWorld.Maps
         [ReadOnly]
         public float RightFieldCenter { get; private set; }
         
+        [ShowInInspector]
+        [ReadOnly]
+        public float FieldWidth { get; private set; }
+        
         GameComponent GameComponent { get; set; }
         
         void Awake()
         {
             GameComponent = FindObjectOfType<GameComponent>();
             
+            FieldWidth = Mathf.Abs(LeftWallCollider.offset.x) + Mathf.Abs(RightWallCollider.offset.x);
             GroundHeight = GroundCollider.offset.y;
             NetHeight = NetEdgeCollider.offset.y + NetEdgeCollider.radius;
             LeftFieldCenter = -Mathf.Abs(LeftWallCollider.offset.x - LeftNetCollider.offset.x);

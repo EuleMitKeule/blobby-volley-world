@@ -45,12 +45,27 @@ MonoBehaviour:
     - Name: JumpChargeMax
       Entry: 4
       Data: 1.85
-    - Name: GroundHeight
+    - Name: BallGravity
       Entry: 4
-      Data: 1
-    - Name: NetHeight
+      Data: 78
+    - Name: BallSpeed
       Entry: 4
-      Data: 1
+      Data: 45.4
+    - Name: BallMaxSpeed
+      Entry: 4
+      Data: 52.2
+    - Name: BallGroundedSpeedThreshold
+      Entry: 4
+      Data: 3.5
+    - Name: BallGroundBounceFactor
+      Entry: 4
+      Data: 0.5
+    - Name: BallAngularVelocityFactor
+      Entry: 4
+      Data: 0
+    - Name: BallGroundAngularVelocityFactor
+      Entry: 4
+      Data: 0.5
     - Name: PlayerSpawnPositions
       Entry: 7
       Data: 0|System.Collections.Generic.Dictionary`2[[BlobbyVolleyWorld.FieldPosition,
@@ -85,7 +100,7 @@ MonoBehaviour:
       Data: -12
     - Name: 
       Entry: 4
-      Data: 1
+      Data: -5
     - Name: 
       Entry: 8
       Data: 
@@ -106,7 +121,7 @@ MonoBehaviour:
       Data: 12
     - Name: 
       Entry: 4
-      Data: 1
+      Data: -5
     - Name: 
       Entry: 8
       Data: 
@@ -127,7 +142,7 @@ MonoBehaviour:
       Data: -8
     - Name: 
       Entry: 4
-      Data: 1
+      Data: -5
     - Name: 
       Entry: 8
       Data: 
@@ -146,6 +161,74 @@ MonoBehaviour:
     - Name: 
       Entry: 4
       Data: 8
+    - Name: 
+      Entry: 4
+      Data: -5
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: BallSpawnPositions
+      Entry: 7
+      Data: 2|System.Collections.Generic.Dictionary`2[[BlobbyVolleyWorld.Match.Side,
+        BlobbyVolleyWorld],[UnityEngine.Vector2, UnityEngine.CoreModule]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 3|System.Collections.Generic.EnumEqualityComparer`1[[BlobbyVolleyWorld.Match.Side,
+        BlobbyVolleyWorld]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 0
+    - Name: $v
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: -10
+    - Name: 
+      Entry: 4
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 1
+    - Name: $v
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 10
     - Name: 
       Entry: 4
       Data: 1
