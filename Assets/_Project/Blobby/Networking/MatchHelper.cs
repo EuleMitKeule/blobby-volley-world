@@ -126,7 +126,7 @@ namespace Blobby.Networking
             OnlineStatusHelper.SetMasterServerOnline();
 
             if (Servers.SequenceEqual(servers)) return;
-            
+
             Servers = servers;
             ServersChanged?.Invoke(Servers);
         }
@@ -148,7 +148,7 @@ namespace Blobby.Networking
             if (_isOffline) return null;
 
             RequestServers();
-            
+
             Server? bestServer = null;
 
             foreach (var server in Servers)

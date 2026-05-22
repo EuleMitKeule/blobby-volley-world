@@ -328,22 +328,22 @@ namespace Blobby.Networking
             NetworkObject.Flush(_client);
 
             var color = PanelSettings.SettingsData.Colors[0];
-            
-            _client.Send(Receivers.Server, ServerConnection.CLIENT_HANDSHAKE, true, 
+
+            _client.Send(Receivers.Server, ServerConnection.CLIENT_HANDSHAKE, true,
                 PanelSettings.SettingsData.Username, color.r, color.g, color.b); //BETA
-            
+
             // if (UserData != null)
             // {
-            //     _client.Send(Receivers.Server, ServerConnection.CLIENT_HANDSHAKE, true, 
+            //     _client.Send(Receivers.Server, ServerConnection.CLIENT_HANDSHAKE, true,
             //         UserData.Username, UserData.token;
             // }
             // else
             // {
-            //     _client.Send(Receivers.Server, ServerConnection.CLIENT_HANDSHAKE, true, 
+            //     _client.Send(Receivers.Server, ServerConnection.CLIENT_HANDSHAKE, true,
             //         "player", "");
             // }
-            
-            MainThreadManager.Run(() => 
+
+            MainThreadManager.Run(() =>
             {
                 Connected?.Invoke();
             });
