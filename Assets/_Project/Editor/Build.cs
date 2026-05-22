@@ -9,7 +9,7 @@ namespace Editor
         public static void BuildClient()
         {
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Builds");
-            var levels = new[] {"Assets/_Project/Scenes/ClientScene.unity"};
+            var levels = new[] { "Assets/_Project/Scenes/ClientScene.unity" };
 
             BuildPipeline.BuildPlayer(levels, path + "/client.exe", BuildTarget.StandaloneWindows,
                 BuildOptions.None);
@@ -19,10 +19,17 @@ namespace Editor
         public static void BuildServerLinux()
         {
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Builds");
-            var levels = new[] {"Assets/_Project/Scenes/ServerScene.unity"};
+            var levels = new[] { "Assets/_Project/Scenes/ServerScene.unity" };
 
-            BuildPipeline.BuildPlayer(levels, path + "/server.exe", BuildTarget.StandaloneLinux64,
-                BuildOptions.EnableHeadlessMode);
+            var options = new BuildPlayerOptions
+            {
+                scenes = levels,
+                locationPathName = path + "/server.exe",
+                target = BuildTarget.StandaloneLinux64,
+                subtarget = (int)StandaloneBuildSubtarget.Server
+            };
+
+            BuildPipeline.BuildPlayer(options);
         }
     }
 }

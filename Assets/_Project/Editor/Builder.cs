@@ -12,18 +12,18 @@ namespace Editor
     {
       var options = ArgumentsParser.GetValidatedOptions();
       var scenes = new[] { "Assets/_Project/Scenes/ClientScene.unity" };
-      
+
       var buildOptions = BuildOptions.None;
-      foreach (string buildOptionString in Enum.GetNames(typeof(BuildOptions))) 
+      foreach (string buildOptionString in Enum.GetNames(typeof(BuildOptions)))
       {
-        if (options.ContainsKey(buildOptionString)) 
+        if (options.ContainsKey(buildOptionString))
         {
           var buildOptionEnum = (BuildOptions)Enum.Parse(typeof(BuildOptions), buildOptionString);
           buildOptions |= buildOptionEnum;
         }
       }
 
-      var buildPlayerOptions = new BuildPlayerOptions 
+      var buildPlayerOptions = new BuildPlayerOptions
       {
         scenes = scenes,
         locationPathName = options["customBuildPath"],
@@ -33,7 +33,7 @@ namespace Editor
 
       VersionApplicator.SetVersion(options["buildVersion"]);
       VersionApplicator.SetAndroidVersionCode(options["androidVersionCode"]);
-      
+
       if (buildPlayerOptions.target == BuildTarget.Android)
         AndroidSettings.Apply(options);
 
@@ -50,30 +50,29 @@ namespace Editor
     {
       var options = ArgumentsParser.GetValidatedOptions();
       var scenes = new[] { "Assets/_Project/Scenes/ServerScene.unity" };
-      
+
       var buildOptions = BuildOptions.None;
-      foreach (string buildOptionString in Enum.GetNames(typeof(BuildOptions))) 
+      foreach (string buildOptionString in Enum.GetNames(typeof(BuildOptions)))
       {
-        if (options.ContainsKey(buildOptionString)) 
+        if (options.ContainsKey(buildOptionString))
         {
           var buildOptionEnum = (BuildOptions)Enum.Parse(typeof(BuildOptions), buildOptionString);
           buildOptions |= buildOptionEnum;
         }
       }
 
-      buildOptions |= BuildOptions.EnableHeadlessMode;
-
-      var buildPlayerOptions = new BuildPlayerOptions 
+      var buildPlayerOptions = new BuildPlayerOptions
       {
         scenes = scenes,
         locationPathName = options["customBuildPath"],
         target = (BuildTarget)Enum.Parse(typeof(BuildTarget), options["buildTarget"]),
+        subtarget = (int)StandaloneBuildSubtarget.Server,
         options = buildOptions
       };
 
       VersionApplicator.SetVersion(options["buildVersion"]);
       VersionApplicator.SetAndroidVersionCode(options["androidVersionCode"]);
-      
+
       if (buildPlayerOptions.target == BuildTarget.Android)
         AndroidSettings.Apply(options);
 
@@ -83,7 +82,7 @@ namespace Editor
       StdOutReporter.ReportSummary(summary);
 
       var result = summary.result;
-      StdOutReporter.ExitWithResult(result); 
+      StdOutReporter.ExitWithResult(result);
     }
   }
 }

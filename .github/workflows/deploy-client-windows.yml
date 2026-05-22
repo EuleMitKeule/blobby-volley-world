@@ -1,82 +1,82 @@
-name: deploy-client-windows
+# name: deploy-client-windows
 
-on:
-  push:
-    branches: [ master ]
+# on:
+#   push:
+#     branches: [ master ]
 
-  workflow_dispatch:
+#   workflow_dispatch:
 
-jobs:
-  test:
-    name: Testing
-    runs-on: ubuntu-latest
-    steps:
+# jobs:
+#   test:
+#     name: Testing
+#     runs-on: ubuntu-latest
+#     steps:
 
-      - name: Checking out
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 0
+#       - name: Checking out
+#         uses: actions/checkout@v2
+#         with:
+#           lfs: true
+#           fetch-depth: 0
 
-      - name: Caching Library
-        uses: actions/cache@v2.1.4
-        with:
-          path: Library
-          key: Library-blobby-volley-world-StandaloneWindows64
+#       - name: Caching Library
+#         uses: actions/cache@v2.1.4
+#         with:
+#           path: Library
+#           key: Library-blobby-volley-world-StandaloneWindows64
 
-      - name: Running unit tests
-        uses: game-ci/unity-test-runner@v2
-        env:
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-        with:
-          artifactsPath: ./deploy-client-test-results/
+#       - name: Running unit tests
+#         uses: game-ci/unity-test-runner@v2
+#         env:
+#           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+#           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+#           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+#         with:
+#           artifactsPath: ./deploy-client-test-results/
 
-      - name: Uploading results
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-results
-          path: ./deploy-client-test-results/
+#       - name: Uploading results
+#         if: ${{ always() }}
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: test-results
+#           path: ./deploy-client-test-results/
 
-  build:
-    name: Building
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    
-      - name: Checking out
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-      
-      - name: Caching Library
-        uses: actions/cache@v2.1.4
-        with:
-          path: Library
-          key: Library-blobby-volley-world-StandaloneWindows64
-      
-      - name: Building Client
-        uses: game-ci/unity-builder@v2
-        id: build
-        env:
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-        with:
-          targetPlatform: StandaloneWindows64
-          buildsPath: ./deploy-client-builds/
-          buildMethod: "Editor.Builder.BuildClient"
-          buildName: "blobby-volley-world"
-          versioning: Semantic
-      
-      - name: Uploading to itch.io
-        uses: josephbmanley/butler-publish-itchio-action@master
-        env:
-          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
-          CHANNEL: windows
-          ITCH_GAME: blobby-volley-world
-          ITCH_USER: EuleMitKeule
-          PACKAGE: ./deploy-client-builds/StandaloneWindows64/
-          VERSION: ${{ steps.build.outputs.buildVersion }}
+#   build:
+#     name: Building
+#     needs: test
+#     runs-on: ubuntu-latest
+#     steps:
+
+#       - name: Checking out
+#         uses: actions/checkout@v2
+#         with:
+#           lfs: true
+
+#       - name: Caching Library
+#         uses: actions/cache@v2.1.4
+#         with:
+#           path: Library
+#           key: Library-blobby-volley-world-StandaloneWindows64
+
+#       - name: Building Client
+#         uses: game-ci/unity-builder@v2
+#         id: build
+#         env:
+#           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+#           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+#           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+#         with:
+#           targetPlatform: StandaloneWindows64
+#           buildsPath: ./deploy-client-builds/
+#           buildMethod: "Editor.Builder.BuildClient"
+#           buildName: "blobby-volley-world"
+#           versioning: Semantic
+
+#       - name: Uploading to itch.io
+#         uses: josephbmanley/butler-publish-itchio-action@master
+#         env:
+#           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+#           CHANNEL: windows
+#           ITCH_GAME: blobby-volley-world
+#           ITCH_USER: EuleMitKeule
+#           PACKAGE: ./deploy-client-builds/StandaloneWindows64/
+#           VERSION: ${{ steps.build.outputs.buildVersion }}

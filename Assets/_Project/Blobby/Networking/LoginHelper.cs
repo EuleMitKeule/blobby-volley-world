@@ -1,8 +1,6 @@
 ﻿using BeardedManStudios.Forge.Networking.Unity;
 using Blobby.Game;
-using SimpleJSON;
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -16,7 +14,7 @@ namespace Blobby.Networking
     {
         static string _rootUrl = "https://bvonline.eulenet.eu/api/";
         static string Token { get; set; }
-        
+
         #region Events
 
         public static event Action<UserData> Login;
@@ -40,7 +38,7 @@ namespace Blobby.Networking
             var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
 
             Token = new string(Enumerable.Range(1, 16).Select(_ => chars[Random.Range(0, chars.Length)]).ToArray());
-            
+
             var userData = IoHelper.LoadUserData();
             Task.Run(() => LoginRequest(userData.name, userData.password));
 
@@ -82,8 +80,8 @@ namespace Blobby.Networking
             if (response != null)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var dic = BeardedManStudios.SimpleJSON.JSON.Parse(json);
-                var token = dic["token"];
+                var loginResponse = JsonUtility.FromJson<LoginResponse>(json);
+                var token = loginResponse.token;
 
                 var userData = await GetUserData(username, token, password);
                 if (userData != null) MainThreadManager.Run(() => Login?.Invoke(userData));
@@ -104,19 +102,19 @@ namespace Blobby.Networking
             if (response != null)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var node = JSON.Parse(json);
+                var node = JsonUtility.FromJson<UserDataResponse>(json);
 
                 var userData = new UserData()
                 {
-                    name = node["username"],
-                    email = node["email"],
-                    elo = node["elo"],
-                    colorR = node["color_r"],
-                    colorG = node["color_g"],
-                    colorB = node["color_b"],
-                    hatID = node["hat_id"],
-                    eyesID = node["eyes_id"],
-                    mouthID = node["mouth_id"]
+                    name = node.username,
+                    email = node.email,
+                    elo = node.elo,
+                    colorR = node.color_r,
+                    colorG = node.color_g,
+                    colorB = node.color_b,
+                    hatID = node.hat_id,
+                    eyesID = node.eyes_id,
+                    mouthID = node.mouth_id
                 };
 
                 userData.token = token;
@@ -136,9 +134,13 @@ namespace Blobby.Networking
 
             using var client = new HttpClient();
 
-            var jsonData = $"{{\"color_r\": {userData.colorR.ToString(CultureInfo.GetCultureInfo("en-US"))}," +
-                           $"\"color_g\": {userData.colorG.ToString(CultureInfo.GetCultureInfo("en-US"))}," +
-                           $"\"color_b\": {userData.colorB.ToString(CultureInfo.GetCultureInfo("en-US"))}}}";
+            var colorData = new ColorData
+            {
+                color_r = userData.colorR,
+                color_g = userData.colorG,
+                color_b = userData.colorB
+            };
+            var jsonData = JsonUtility.ToJson(colorData);
 
             var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
             var response = await client.PostAsync(url, content);
@@ -172,7 +174,8 @@ namespace Blobby.Networking
             var url = $"https://bvonline.eulenet.eu/online";
 
             using var client = new HttpClient();
-            var content = new StringContent($"{{\"token\":\"{Token}\"}}", Encoding.UTF8, "application/json");
+            var jsonData = JsonUtility.ToJson(new TokenData { token = Token });
+            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
             try
             {
@@ -190,7 +193,8 @@ namespace Blobby.Networking
             string url = $"https://bvonline.eulenet.eu/queue";
 
             using var client = new HttpClient();
-            var content = new StringContent($"{{\"token\":\"{Token}\"}}", Encoding.UTF8, "application/json");
+            var jsonData = JsonUtility.ToJson(new TokenData { token = Token });
+            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
             await client.PostAsync(url, content);
         }
 
@@ -207,10 +211,10 @@ namespace Blobby.Networking
                 {
                     var json = await response.Content.ReadAsStringAsync();
 
-                    var node = JSON.Parse(json);
+                    var node = JsonUtility.FromJson<InfoResponse>(json);
 
-                    var playersOnline = int.Parse(node["online"]);
-                    var playersQueue = int.Parse(node["queue"]);
+                    var playersOnline = int.Parse(node.online);
+                    var playersQueue = int.Parse(node.queue);
 
                     QueueInfoChanged?.Invoke(playersOnline, playersQueue);
                 }
@@ -220,6 +224,51 @@ namespace Blobby.Networking
                 Debug.Log("Could not send player request!");
                 Debug.Log(e);
             }
+        }
+
+        #endregion
+
+        #region JSON DTOs
+
+        [Serializable]
+        private struct LoginResponse
+        {
+            public string token;
+        }
+
+        [Serializable]
+        private struct UserDataResponse
+        {
+            public string username;
+            public string email;
+            public int elo;
+            public float color_r;
+            public float color_g;
+            public float color_b;
+            public int hat_id;
+            public int eyes_id;
+            public int mouth_id;
+        }
+
+        [Serializable]
+        private struct ColorData
+        {
+            public float color_r;
+            public float color_g;
+            public float color_b;
+        }
+
+        [Serializable]
+        private struct TokenData
+        {
+            public string token;
+        }
+
+        [Serializable]
+        private struct InfoResponse
+        {
+            public string online;
+            public string queue;
         }
 
         #endregion

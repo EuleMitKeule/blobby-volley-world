@@ -18,12 +18,11 @@ namespace Blobby.UserInterface
 
         public async void Blackout()
         {
-            Debug.Log("Blackout");
             GameObject.Find("panel_black").GetComponent<Animator>().SetBool("black", true);
 
             SetBlock(false);
-            
-            await Task.Delay(1800); 
+
+            await Task.Delay(1800);
 
             _blackCallback?.Invoke();
         }

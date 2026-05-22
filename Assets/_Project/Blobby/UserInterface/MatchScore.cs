@@ -2,9 +2,8 @@
 using Blobby.Game;
 using Blobby.Models;
 using Blobby.Networking;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering.Universal;
+using UnityEngine.Rendering.Universal;
 
 namespace Blobby.UserInterface
 {
@@ -63,7 +62,7 @@ namespace Blobby.UserInterface
 
                     labelLeft.text = $"{scoreLeft % 100:00}";
                     labelRight.text = $"{scoreRight % 100:00}";
-                    
+
                     var exclamationLeft = _match.Switched ? MapHelper.ExclamationRight : MapHelper.ExclamationLeft;
                     var exclamationRight = _match.Switched ? MapHelper.ExclamationLeft : MapHelper.ExclamationRight;
 
