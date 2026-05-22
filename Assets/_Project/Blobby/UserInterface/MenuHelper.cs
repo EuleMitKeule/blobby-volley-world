@@ -75,6 +75,15 @@ namespace Blobby.UserInterface
 
             if (_indicatorOffline != null)
                 _indicatorOffline.SetActive(isOffline);
+
+            // Disable ranked button when servers are offline
+            var rankedBtn = GameObject.Find("button_ranked");
+            if (rankedBtn != null)
+            {
+                var btn = rankedBtn.GetComponent<Button>();
+                if (btn != null)
+                    btn.interactable = !isOffline;
+            }
         }
 
         public static void SetColor(Color color)
