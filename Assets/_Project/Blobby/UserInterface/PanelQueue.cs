@@ -23,6 +23,8 @@ namespace Blobby.UserInterface
             ClientConnection.QueueStopped += OnQueueStopped;
             LoginHelper.QueueInfoChanged += OnQueueInfoChanged;
 
+            // Update queue panel when online status changes
+            OnlineStatusHelper.StatusChanged += OnOnlineStatusChanged;
         }
 
         static void OnQueueStarted()
@@ -49,8 +51,29 @@ namespace Blobby.UserInterface
             {
                 GameObject labelQueueOnline = GameObject.Find("label_queue_online");
                 GameObject labelQueueQueued = GameObject.Find("label_queue_queued");
-                labelQueueOnline.GetComponent<TextMeshProUGUI>().text = "Online: " + online;
-                labelQueueQueued.GetComponent<TextMeshProUGUI>().text = "Queued: " + queued;
+
+                if (labelQueueOnline != null)
+                    labelQueueOnline.GetComponent<TextMeshProUGUI>().text = "Online: " + online;
+                if (labelQueueQueued != null)
+                    labelQueueQueued.GetComponent<TextMeshProUGUI>().text = "Queued: " + queued;
+            });
+        }
+
+        static void OnOnlineStatusChanged(OnlineStatusHelper.Status status)
+        {
+            MainThreadManager.Run(() =>
+            {
+                // Update queue info labels to show offline status
+                if (status == OnlineStatusHelper.Status.Offline)
+                {
+                    var labelQueueOnline = GameObject.Find("label_queue_online");
+                    var labelQueueQueued = GameObject.Find("label_queue_queued");
+
+                    if (labelQueueOnline != null)
+                        labelQueueOnline.GetComponent<TextMeshProUGUI>().text = "Online: --";
+                    if (labelQueueQueued != null)
+                        labelQueueQueued.GetComponent<TextMeshProUGUI>().text = "Queued: --";
+                }
             });
         }
     }

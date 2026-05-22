@@ -17,6 +17,8 @@ namespace Blobby.UserInterface
 {
     public static class MenuHelper
     {
+        static GameObject _indicatorOffline;
+
         [RuntimeInitializeOnLoadMethod]
         static void Initialize()
         {
@@ -31,6 +33,48 @@ namespace Blobby.UserInterface
             ButtonLocal.Clicked += OnButtonLocal;
             ButtonSettings.Clicked += OnButtonSettings;
             ButtonQuit.Clicked += OnButtonQuit;
+
+            CreateOfflineIndicator();
+
+            // Subscribe to online status changes for the offline indicator
+            OnlineStatusHelper.StatusChanged += OnOnlineStatusChanged;
+            // Apply initial status (may be set before MenuHelper initializes)
+            OnOnlineStatusChanged(OnlineStatusHelper.CurrentStatus);
+        }
+
+        static void CreateOfflineIndicator()
+        {
+            var mainMenuPanel = GameObject.Find("panel_mainmenu");
+            if (mainMenuPanel == null) return;
+
+            var canvas = mainMenuPanel.GetComponentInParent<Canvas>();
+            if (canvas == null) return;
+
+            _indicatorOffline = new GameObject("indicator_offline");
+            _indicatorOffline.transform.SetParent(canvas.transform, false);
+            _indicatorOffline.SetActive(false);
+
+            var rect = _indicatorOffline.AddComponent<RectTransform>();
+            rect.anchorMin = new Vector2(1, 1);
+            rect.anchorMax = new Vector2(1, 1);
+            rect.pivot = new Vector2(1, 1);
+            rect.anchoredPosition = new Vector2(-20, -20);
+            rect.sizeDelta = new Vector2(64, 64);
+
+            var text = _indicatorOffline.AddComponent<TextMeshProUGUI>();
+            text.text = "X";
+            text.color = new Color(0.9f, 0.1f, 0.1f, 1f);
+            text.fontSize = 48;
+            text.alignment = TextAlignmentOptions.Center;
+            text.fontStyle = FontStyles.Bold;
+        }
+
+        static void OnOnlineStatusChanged(OnlineStatusHelper.Status status)
+        {
+            bool isOffline = status == OnlineStatusHelper.Status.Offline;
+
+            if (_indicatorOffline != null)
+                _indicatorOffline.SetActive(isOffline);
         }
 
         public static void SetColor(Color color)

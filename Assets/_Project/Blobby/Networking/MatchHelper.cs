@@ -1,5 +1,6 @@
 ﻿using BeardedManStudios.Forge.Networking;
 using BeardedManStudios.Forge.Networking.Frame;
+using BeardedManStudios.Forge.Networking.Unity;
 using BeardedManStudios.SimpleJSON;
 using Blobby.Game;
 using Blobby.Models;
@@ -40,7 +41,22 @@ namespace Blobby.Networking
             _client.connectAttemptFailed += OnMasterServerFailed;
             _client.textMessageReceived += OnMasterServerResponse;
 
-            _client.Connect("147.185.221.180", 19994);
+            // Run TCP connect on a background thread to avoid blocking game startup.
+            // TcpClient constructor does a synchronous DNS resolve + TCP handshake
+            // which can hang the main thread for seconds if the server is unreachable.
+            Task.Run(() =>
+            {
+                try
+                {
+                    _client.Connect("147.185.221.180", 19994);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log($"Master server connection failed: {e.Message}");
+                    _isOffline = true;
+                    MainThreadManager.Run(() => OnlineStatusHelper.SetMasterServerOffline());
+                }
+            });
 
             StartCoroutine(UpdateServers());
         }
@@ -63,13 +79,11 @@ namespace Blobby.Networking
         {
             if (_client.Disposed || !_client.IsConnected)
             {
-                Debug.Log("Master Client could not connect!");
                 _isOffline = true;
+                OnlineStatusHelper.SetMasterServerOffline();
                 return;
             }
 
-            Debug.Log("Master Client connected!");
-            
             string gameId = "Blobby Volley World";
             string gameType = "any";
             string gameMode = "all";
@@ -107,6 +121,10 @@ namespace Blobby.Networking
                 }
             }
 
+            // Master server is responding, so we're online
+            _isOffline = false;
+            OnlineStatusHelper.SetMasterServerOnline();
+
             if (Servers.SequenceEqual(servers)) return;
             
             Servers = servers;
@@ -116,6 +134,7 @@ namespace Blobby.Networking
         static void OnMasterServerFailed(NetWorker sender)
         {
             _isOffline = true;
+            OnlineStatusHelper.SetMasterServerOffline();
         }
 
         #endregion
@@ -123,9 +142,11 @@ namespace Blobby.Networking
         /// <summary>
         /// Finds the best matching Server currently available for a ranked game
         /// </summary>
-        /// <returns>Best matching Server object</returns>
+        /// <returns>Best matching Server object, or null if offline/no servers available</returns>
         public static Server? FindBestServer()
         {
+            if (_isOffline) return null;
+
             RequestServers();
             
             Server? bestServer = null;

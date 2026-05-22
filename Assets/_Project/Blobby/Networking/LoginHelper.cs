@@ -15,6 +15,9 @@ namespace Blobby.Networking
         static string _rootUrl = "https://bvonline.eulenet.eu/api/";
         static string Token { get; set; }
 
+        /// <summary>Timeout in seconds for HTTP requests.</summary>
+        const int RequestTimeoutSeconds = 5;
+
         #region Events
 
         public static event Action<UserData> Login;
@@ -59,132 +62,182 @@ namespace Blobby.Networking
 
         #endregion
 
+        /// <summary>
+        /// Creates an HttpClient with a short timeout to prevent hanging when servers are unreachable.
+        /// </summary>
+        static HttpClient CreateClient()
+        {
+            var client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(RequestTimeoutSeconds);
+            return client;
+        }
+
         //TODO: swagger.io
         #region WebRequests
 
         public static async Task LoginRequest(string username, string password)
         {
-            var loginData = new LoginData()
+            try
             {
-                username = username,
-                password = password
-            };
+                var loginData = new LoginData()
+                {
+                    username = username,
+                    password = password
+                };
 
-            var jsonData = JsonUtility.ToJson(loginData);
-            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var url = _rootUrl + $"login";
+                var jsonData = JsonUtility.ToJson(loginData);
+                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                var url = _rootUrl + $"login";
 
-            using var client = new HttpClient();
-            var response = await client.PostAsync(url, content);
+                using var client = CreateClient();
+                var response = await client.PostAsync(url, content);
 
-            if (response != null)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                var loginResponse = JsonUtility.FromJson<LoginResponse>(json);
-                var token = loginResponse.token;
+                if (response != null && response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var loginResponse = JsonUtility.FromJson<LoginResponse>(json);
+                    var token = loginResponse.token;
 
-                var userData = await GetUserData(username, token, password);
-                if (userData != null) MainThreadManager.Run(() => Login?.Invoke(userData));
-                else MainThreadManager.Run(() => LoginFailed?.Invoke());
+                    var userData = await GetUserData(username, token, password);
+                    if (userData != null)
+                    {
+                        OnlineStatusHelper.SetLoginOnline();
+                        MainThreadManager.Run(() => Login?.Invoke(userData));
+                    }
+                    else
+                    {
+                        OnlineStatusHelper.SetLoginOffline();
+                        MainThreadManager.Run(() => LoginFailed?.Invoke());
+                    }
+                }
+                else
+                {
+                    OnlineStatusHelper.SetLoginOffline();
+                    MainThreadManager.Run(() => LoginFailed?.Invoke());
+                }
             }
-            else
+            catch (Exception e)
             {
+                Debug.Log($"Login request failed (server may be offline): {e.Message}");
+                OnlineStatusHelper.SetLoginOffline();
                 MainThreadManager.Run(() => LoginFailed?.Invoke());
             }
         }
 
         public static async Task<UserData> GetUserData(string username, string token, string password)
         {
-            var url = _rootUrl + $"user/{username}?token={token}";
-
-            using var client = new HttpClient();
-            var response = await client.GetAsync(url);
-            if (response != null)
+            try
             {
-                var json = await response.Content.ReadAsStringAsync();
-                var node = JsonUtility.FromJson<UserDataResponse>(json);
+                var url = _rootUrl + $"user/{username}?token={token}";
 
-                var userData = new UserData()
+                using var client = CreateClient();
+                var response = await client.GetAsync(url);
+                if (response != null && response.IsSuccessStatusCode)
                 {
-                    name = node.username,
-                    email = node.email,
-                    elo = node.elo,
-                    colorR = node.color_r,
-                    colorG = node.color_g,
-                    colorB = node.color_b,
-                    hatID = node.hat_id,
-                    eyesID = node.eyes_id,
-                    mouthID = node.mouth_id
-                };
+                    var json = await response.Content.ReadAsStringAsync();
+                    var node = JsonUtility.FromJson<UserDataResponse>(json);
 
-                userData.token = token;
-                userData.password = password;
+                    var userData = new UserData()
+                    {
+                        name = node.username,
+                        email = node.email,
+                        elo = node.elo,
+                        colorR = node.color_r,
+                        colorG = node.color_g,
+                        colorB = node.color_b,
+                        hatID = node.hat_id,
+                        eyesID = node.eyes_id,
+                        mouthID = node.mouth_id
+                    };
 
-                return userData;
+                    userData.token = token;
+                    userData.password = password;
+
+                    return userData;
+                }
             }
-            else
+            catch (Exception e)
             {
-                return null;
+                Debug.Log($"GetUserData request failed: {e.Message}");
             }
+
+            return null;
         }
 
         public static async Task PostColor(UserData userData)
         {
-            var url = _rootUrl + $"user/{userData.name}?token={userData.token}";
-
-            using var client = new HttpClient();
-
-            var colorData = new ColorData
+            try
             {
-                color_r = userData.colorR,
-                color_g = userData.colorG,
-                color_b = userData.colorB
-            };
-            var jsonData = JsonUtility.ToJson(colorData);
+                var url = _rootUrl + $"user/{userData.name}?token={userData.token}";
 
-            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(url, content);
-            if (response != null && response.IsSuccessStatusCode)
+                using var client = CreateClient();
+
+                var colorData = new ColorData
+                {
+                    color_r = userData.colorR,
+                    color_g = userData.colorG,
+                    color_b = userData.colorB
+                };
+                var jsonData = JsonUtility.ToJson(colorData);
+
+                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync(url, content);
+                if (response != null && response.IsSuccessStatusCode)
+                {
+                    await LoginRequest(userData.name, userData.password);
+                }
+            }
+            catch (Exception e)
             {
-                await LoginRequest(userData.name, userData.password);
+                Debug.Log($"PostColor request failed: {e.Message}");
             }
         }
 
         public static async Task RegisterRequest(string username, string password, string email)
         {
-            var loginData = new LoginData()
+            try
             {
-                username = username,
-                password = password,
-                Email = email
-            };
+                var loginData = new LoginData()
+                {
+                    username = username,
+                    password = password,
+                    Email = email
+                };
 
-            var jsonData = JsonUtility.ToJson(loginData);
-            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var url = _rootUrl + "register";
+                var jsonData = JsonUtility.ToJson(loginData);
+                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                var url = _rootUrl + "register";
 
-            using var client = new HttpClient();
-            var response = await client.PostAsync(url, content);
-            if (response != null) MainThreadManager.Run(() => RegisterSuccess?.Invoke());
-            else MainThreadManager.Run(() => RegisterFailed?.Invoke());
+                using var client = CreateClient();
+                var response = await client.PostAsync(url, content);
+                if (response != null && response.IsSuccessStatusCode)
+                    MainThreadManager.Run(() => RegisterSuccess?.Invoke());
+                else
+                    MainThreadManager.Run(() => RegisterFailed?.Invoke());
+            }
+            catch (Exception e)
+            {
+                Debug.Log($"Register request failed (server may be offline): {e.Message}");
+                MainThreadManager.Run(() => RegisterFailed?.Invoke());
+            }
         }
 
         public static async Task OnlineRequest()
         {
             var url = $"https://bvonline.eulenet.eu/online";
 
-            using var client = new HttpClient();
-            var jsonData = JsonUtility.ToJson(new TokenData { token = Token });
-            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
             try
             {
+                using var client = CreateClient();
+                var jsonData = JsonUtility.ToJson(new TokenData { token = Token });
+                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
                 await client.PostAsync(url, content);
+                OnlineStatusHelper.SetLoginOnline();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Debug.Log("Could not send online request!");
-                Debug.Log(e);
+                Debug.LogWarning("Online request failed — server unreachable");
+                OnlineStatusHelper.SetLoginOffline();
             }
         }
 
@@ -192,22 +245,28 @@ namespace Blobby.Networking
         {
             string url = $"https://bvonline.eulenet.eu/queue";
 
-            using var client = new HttpClient();
-            var jsonData = JsonUtility.ToJson(new TokenData { token = Token });
-            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            await client.PostAsync(url, content);
+            try
+            {
+                using var client = CreateClient();
+                var jsonData = JsonUtility.ToJson(new TokenData { token = Token });
+                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                await client.PostAsync(url, content);
+            }
+            catch (Exception)
+            {
+                // Server unreachable — already handled by OnlineRequest
+            }
         }
 
         public static async Task PlayerRequest()
         {
             var url = $"https://bvonline.eulenet.eu/info";
 
-            using var client = new HttpClient();
-
             try
             {
+                using var client = CreateClient();
                 var response = await client.GetAsync(url);
-                if (response != null)
+                if (response != null && response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
 
@@ -219,10 +278,9 @@ namespace Blobby.Networking
                     QueueInfoChanged?.Invoke(playersOnline, playersQueue);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Debug.Log("Could not send player request!");
-                Debug.Log(e);
+                Debug.LogWarning("Player info request failed — server unreachable");
             }
         }
 

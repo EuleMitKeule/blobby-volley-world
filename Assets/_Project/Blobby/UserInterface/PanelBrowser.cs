@@ -57,7 +57,33 @@ namespace Blobby.UserInterface
                 var serverDatas = ParseHelper.ParseServerList(servers);
 
                 PopulateBrowser(serverDatas);
+
+                // Show/hide the "no servers / offline" label
+                UpdateOfflineIndicator(serverDatas.Count == 0);
             });
+        }
+
+        /// <summary>
+        /// Shows or hides the offline/no-servers label in the browser panel.
+        /// </summary>
+        static void UpdateOfflineIndicator(bool noServers)
+        {
+            var panelBrowser = GameObject.Find("panel_browser");
+            if (panelBrowser == null) return;
+
+            var offlineLabel = panelBrowser.transform.Find("label_no_servers");
+            if (offlineLabel == null) return;
+
+            offlineLabel.gameObject.SetActive(noServers);
+
+            if (noServers)
+            {
+                var text = offlineLabel.GetComponent<TextMeshProUGUI>();
+                if (text != null)
+                    text.text = OnlineStatusHelper.CurrentStatus == OnlineStatusHelper.Status.Offline
+                        ? "Servers are currently offline"
+                        : "No servers available";
+            }
         }
 
         static void OnButtonBrowser()

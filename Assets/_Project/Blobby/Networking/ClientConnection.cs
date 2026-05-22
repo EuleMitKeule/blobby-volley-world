@@ -115,8 +115,15 @@ namespace Blobby.Networking
             LoginHelper.Login += OnLogin;
             LoginHelper.Logout += OnLogout;
 
-            Start(); //TODO nur nach Login später
-            StartInfoQueue(); //TODO nur nach Login später
+            try
+            {
+                Start(); //TODO nur nach Login später
+                StartInfoQueue(); //TODO nur nach Login später
+            }
+            catch (Exception e)
+            {
+                Debug.Log($"ClientConnection initialization failed (networking offline): {e.Message}");
+            }
         }
 
         static void OnLogin(UserData userData)
@@ -137,17 +144,26 @@ namespace Blobby.Networking
 
         public static void Start()
         {
-            _client = new UDPClient();
+            try
+            {
+                _client = new UDPClient();
 
-            //_client.PacketLossSimulation = 0.6f;
+                //_client.PacketLossSimulation = 0.6f;
 
-            _client.serverAccepted += OnServerAccepted;
-            _client.disconnected += OnDisconnected;
-            _client.forcedDisconnect += OnDisconnected;
-            _client.connectAttemptFailed += OnConnectAttemptFailed;
-            _client.binaryMessageReceived += OnBinaryMessage;
+                _client.serverAccepted += OnServerAccepted;
+                _client.disconnected += OnDisconnected;
+                _client.forcedDisconnect += OnDisconnected;
+                _client.connectAttemptFailed += OnConnectAttemptFailed;
+                _client.binaryMessageReceived += OnBinaryMessage;
 
-            NetworkManager.Instance.Initialize(_client);
+                // NetworkManager may not exist in the scene when networking is unavailable
+                if (NetworkManager.Instance != null)
+                    NetworkManager.Instance.Initialize(_client);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"ClientConnection.Start: networking unavailable — {e.Message}");
+            }
         }
 
         public static void Dispose()
@@ -174,6 +190,13 @@ namespace Blobby.Networking
 
         public static async void ToggleMatchQueue()
         {
+            // Don't allow queuing when servers are offline
+            if (OnlineStatusHelper.CurrentStatus == OnlineStatusHelper.Status.Offline)
+            {
+                StopMatchQueue();
+                return;
+            }
+
             if (_matchQueueTokenSource == null || _matchQueueTokenSource.IsCancellationRequested)
             {
                 _matchQueueTokenSource = new CancellationTokenSource();
@@ -200,6 +223,13 @@ namespace Blobby.Networking
                 MainThreadManager.Run(() =>
                 {
                     if (!_matchQueueTokenSource.IsCancellationRequested) QueueTicked?.Invoke(++queueTime);
+
+                    // Stop the queue if we've gone offline — no servers will be found
+                    if (OnlineStatusHelper.CurrentStatus == OnlineStatusHelper.Status.Offline)
+                    {
+                        StopMatchQueue();
+                        return;
+                    }
 
                     var bestServer = MatchHelper.FindBestServer();
 
@@ -234,10 +264,14 @@ namespace Blobby.Networking
         {
             while (!_infoQueueTokenSource.IsCancellationRequested)
             {
-                await LoginHelper.OnlineRequest();
-                if (MatchHandler.IsWaitingForGame || _matchQueueTokenSource != null && !_matchQueueTokenSource.IsCancellationRequested) await LoginHelper.QueueRequest();
+                // Skip info requests when we know the servers are offline
+                if (OnlineStatusHelper.CurrentStatus != OnlineStatusHelper.Status.Offline)
+                {
+                    await LoginHelper.OnlineRequest();
+                    if (MatchHandler.IsWaitingForGame || _matchQueueTokenSource != null && !_matchQueueTokenSource.IsCancellationRequested) await LoginHelper.QueueRequest();
+                    await LoginHelper.PlayerRequest();
+                }
 
-                await LoginHelper.PlayerRequest();
                 try
                 {
                     await Task.Delay(5000, _infoQueueTokenSource.Token);
