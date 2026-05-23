@@ -83,6 +83,8 @@ namespace Blobby.UserInterface
         static void SetPanel(GameObject panel, bool visible)
         {
             var canvasGroup = panel.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+                canvasGroup = panel.AddComponent<CanvasGroup>();
 
             canvasGroup.alpha = visible ? 1 : 0;
             canvasGroup.interactable = visible;

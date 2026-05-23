@@ -71,14 +71,14 @@ namespace Blobby.UserInterface
         static void OnLogin(UserData userData)
         {
             return; //BETA
-            GameObject panelOffline = GameObject.Find("panel_offline");
+            // GameObject panelOffline = GameObject.Find("panel_offline");
 
-            for (int i = 0; i < panelOffline.transform.childCount; i++)
-                panelOffline.transform.GetChild(i).gameObject.SetActive(false);
+            // for (int i = 0; i < panelOffline.transform.childCount; i++)
+            //     panelOffline.transform.GetChild(i).gameObject.SetActive(false);
 
-            GameObject.Find("parent_login").GetComponent<Animator>().SetBool("show", false);
-            InputHelper.SetTabCallback(null);
-            InputHelper.SetEnterCallback(null);
+            // GameObject.Find("parent_login").GetComponent<Animator>().SetBool("show", false);
+            // InputHelper.SetTabCallback(null);
+            // InputHelper.SetEnterCallback(null);
         }
 
         static void OnLogout()
